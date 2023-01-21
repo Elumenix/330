@@ -4,7 +4,28 @@
 <head>
     <meta charset="utf-8" />
     <title>Technobabble Generator</title>
-    <style></style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <style>
+        body {
+            font-family: monospace;
+        }
+
+        #output {
+            font-size: 200%;
+        }
+
+        #myButton {
+            width: 200px;
+            height: 50pt;
+            font-size: 15pt;
+        }
+
+        @media only screen and (max-width: 600px) {
+            body {
+                text-align: center;
+            }
+        }
+    </style>
     <script>
         "use strict";
 
@@ -13,8 +34,6 @@
         const words2 = ["Propulsion", "Dissipation", "Sensor", "Improbability", "Buffer", "Graviton", "Replicator", "Matter", "Anti-matter", "Organic", "Power", "Silicon", "Holographic", "Transient", "Integrity", "Plasma", "Fusion", "Control", "Access", "Auto", "Destruct", "Isolinear", "Transwarp", "Energy", "Medical", "Environmental", "Coil", "Impulse", "Warp", "Phaser", "Operating", "Photon", "Deflector", "Integrity", "Control", "Bridge", "Dampening", "Display", "Beam", "Quantum", "Baseline", "Input"];
 
         const words3 = ["Chamber", "Interface", "Coil", "Polymer", "Biosphere", "Platform", "Thruster", "Deflector", "Replicator", "Tricorder", "Operation", "Array", "Matrix", "Grid", "Sensor", "Mode", "Panel", "Storage", "Conduit", "Pod", "Hatch", "Regulator", "Display", "Inverter", "Spectrum", "Generator", "Cloud", "Field", "Terminal", "Module", "Procedure", "System", "Diagnostic", "Device", "Beam", "Probe", "Bank", "Tie-In", "Facility", "Bay", "Indicator", "Cell"];
-
-        console.log(words1[0]);
 
         // References
         let output;
@@ -26,23 +45,21 @@
             button = document.querySelector("#myButton");
 
             // Event
-            button.onclick = OutputWords;
+            button.onclick = outputWords;
         }
 
 
-        function OutputWords() {
-            // Random word is grabbed from each array
-            let word1 = GrabArrayMember(words1);
-            let word2 = GrabArrayMember(words2);
-            let word3 = GrabArrayMember(words3);
+        function outputWords() {
 
-            // Put new term in the output
-            output.innerHTML = `${word1} ${word2} ${word3}`;
+            // Helper Method
+            function grabArrayMember(array) {
+                return array[Math.floor(Math.random() * array.length)];
+            }
+
+            // Random word is grabbed from each array and output
+            output.innerHTML = `${grabArrayMember(words1)} ${grabArrayMember(words2)} ${grabArrayMember(words3)}`;
         }
 
-        function GrabArrayMember(array) {
-            return array[Math.floor(Math.random() * array.length)];
-        }
     </script>
 </head>
 
