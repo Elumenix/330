@@ -17,6 +17,9 @@ window.onload = function () {
 
     // Event
     button.onclick = outputWords;
+
+    // One is generated on page first loading
+    outputWords();
 }
 
 
