@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Greeter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Island+Moments&display=swap');
+
+        * {
+            font-size: 1.5em;
+        }
+
+        button {
+            height: 50px;
+            width: 150px;
+            font-size: 14pt;
+        }
+
+        p {
+            font-family: 'Island Moments';
+        }
+
+        @media only screen and (min-width: 1024px) {
+            body {
+                background-color: red;
+                padding: 100px;
+            }
+        }
+    </style>
+
+    <script>
+
+        // 1 - get a reference to the button
+        let button;
+        let button2;
+
+        window.onload = function () {
+            button = document.querySelector("#btn-hello");
+            button2 = document.querySelector("#btn-goodbye");
+            checkbox = document.querySelector("#shoutify");
+
+
+            // 2 - add a click event to button that calls a `sayHello` function
+            button.onclick = () => greet("Hello");
+            button2.onclick = () => greet("Goodbye");
+
+            document.querySelector("p").style = "color: red; background: yellow;";
+        }
+
+        /**
+         * @param {string} greeting - Is checked to act as a boolean on whether or not to shoutify string 
+         */
+        // 3 - create a `sayHello()` function
+        function greet(greeting) {
+            // 3A - get name of person from the <input>
+            let name = document.querySelector("#input-firstname").value;
+            let lastName = document.querySelector("#input-lastname").value;
+            // 3B - get a reference to the #output <p>
+            let output = document.querySelector("#output");
+
+            // 3C - update HTML of #output <p>
+            if (name.trim() === "") {
+                output.innerHTML = "Peter";
+            }
+            else {
+                output.innerHTML = name.trim();
+            }
+
+            // Last Name
+            if (greeting == "Hello") {
+                if (lastName.trim() === "") {
+                    output.innerHTML = `Hello ${output.innerHTML} Parker`;
+                }
+                else {
+                    output.innerHTML = `Hello ${output.innerHTML} ${lastName.trim()}`;
+                }
+
+                // If user specifies to shoutify code, it will all be uppercased
+                if (checkbox.checked) {
+                    output.innerHTML = output.innerHTML.toUpperCase();
+                }
+            }
+            else if (greeting == "Goodbye") {
+                if (lastName.trim() === "") {
+                    output.innerHTML = `Goodbye ${output.innerHTML} Parker`;
+                }
+                else {
+                    output.innerHTML = `Goodbye ${output.innerHTML} ${lastName.trim()}`;
+                }
+
+                // If user specifies to shoutify code, it will all be uppercased
+                if (checkbox.checked) {
+                    output.innerHTML = output.innerHTML.toUpperCase();
+                }
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <button id="btn-hello">Say Hello</button>
+    <button id="btn-goodbye">Say Goodbye</button>
+    <input type="checkbox" id="shoutify"> Shoutify!</input>
+    <input id="input-firstname" placeholder="Type in your name">
+    <input id="input-lastname" placeholder="Type in your last name">
+    <p id="output">???</p>
+</body>
+
+</html>
