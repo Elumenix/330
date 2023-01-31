@@ -27,7 +27,7 @@ window.onload = function () {
     }
 
     // One is generated on page first loading
-    outputWords();
+    generateTechno(1);
 }
 
 function generateTechno(num) {
@@ -41,16 +41,4 @@ function generateTechno(num) {
     for (let i = 0; i < num; i++) {
         output.innerHTML += `${grabArrayMember(words1)} ${grabArrayMember(words2)} ${grabArrayMember(words3)}<br>`
     }
-}
-
-
-function outputWords() {
-
-    // Helper Method
-    function grabArrayMember(array) {
-        return array[Math.floor(Math.random() * array.length)];
-    }
-
-    // Random word is grabbed from each array and output
-    output.innerHTML = `${grabArrayMember(words1)} ${grabArrayMember(words2)} ${grabArrayMember(words3)}`;
 }
