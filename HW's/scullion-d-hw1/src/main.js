@@ -4,6 +4,9 @@ import { grabArrayMember } from "./utils.js";
 let output;
 let button;
 let moreButton;
+let words1;
+let words2;
+let words3;
 
 // Initialize References
 window.onload = () => {
@@ -11,18 +14,8 @@ window.onload = () => {
     button = document.querySelector("#my-button");
     moreButton = document.querySelector("#more-button");
 
-
-    // Event
-    button.onclick = () => {
-        generateTechno(1);
-    }
-    moreButton.onclick = () => {
-        generateTechno(5);
-    }
-
+    // One babble is generated on page first loading
     loadBabble();
-    // One is generated on page first loading
-    generateTechno(1);
 }
 
 const loadBabble = () => {
@@ -40,11 +33,19 @@ const loadBabble = () => {
             return;
         }
 
-        const words1 = json["words1"];
-        const words2 = json["words2"];
-        const words3 = json["words3"];
+        words1 = json["words1"];
+        words2 = json["words2"];
+        words3 = json["words3"];
 
-        console.log(words1);
+        // Events
+    button.onclick = () => {
+        generateTechno(1);
+    }
+    moreButton.onclick = () => {
+        generateTechno(5);
+    }
+
+        generateTechno(1);
     };
     xhr.onerror = e => console.log(`In onerrer - HTTP Status Code = ${e.target.status}`);
     xhr.open("GET", url);
