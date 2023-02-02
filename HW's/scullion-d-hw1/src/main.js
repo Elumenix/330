@@ -1,5 +1,3 @@
-"use strict";
-
 const words1 = ["Acute", "Aft", "Anti-matter", "Bipolar", "Cargo", "Command", "Communication", "Computer", "Deuterium", "Dorsal", "Emergency", "Engineering", "Environmental", "Flight", "Fore", "Guidance", "Heat", "Impulse", "Increased", "Inertial", "Infinite", "Ionizing", "Isolinear", "Lateral", "Linear", "Matter", "Medical", "Navigational", "Optical", "Optimal", "Optional", "Personal", "Personnel", "Phased", "Reduced", "Science", "Ship's", "Shuttlecraft", "Structural", "Subspace", "Transporter", "Ventral"];
 
 const words2 = ["Propulsion", "Dissipation", "Sensor", "Improbability", "Buffer", "Graviton", "Replicator", "Matter", "Anti-matter", "Organic", "Power", "Silicon", "Holographic", "Transient", "Integrity", "Plasma", "Fusion", "Control", "Access", "Auto", "Destruct", "Isolinear", "Transwarp", "Energy", "Medical", "Environmental", "Coil", "Impulse", "Warp", "Phaser", "Operating", "Photon", "Deflector", "Integrity", "Control", "Bridge", "Dampening", "Display", "Beam", "Quantum", "Baseline", "Input"];
@@ -12,13 +10,13 @@ let button;
 let moreButton;
 
 // Initialize References
-window.onload = function () {
+window.onload = () => {
     output = document.querySelector("#output");
-    button = document.querySelector("#myButton");
-    moreButton = document.querySelector("#moreButton");
+    button = document.querySelector("#my-button");
+    moreButton = document.querySelector("#more-button");
+
 
     // Event
-
     button.onclick = () => {
         generateTechno(1);
     }
@@ -30,9 +28,9 @@ window.onload = function () {
     generateTechno(1);
 }
 
-function generateTechno(num) {
+const generateTechno = (num) => {
     // Helper Method
-    function grabArrayMember(array) {
+    const grabArrayMember = (array) => {
         return array[Math.floor(Math.random() * array.length)];
     }
 
