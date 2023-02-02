@@ -1,8 +1,4 @@
-const words1 = ["Acute", "Aft", "Anti-matter", "Bipolar", "Cargo", "Command", "Communication", "Computer", "Deuterium", "Dorsal", "Emergency", "Engineering", "Environmental", "Flight", "Fore", "Guidance", "Heat", "Impulse", "Increased", "Inertial", "Infinite", "Ionizing", "Isolinear", "Lateral", "Linear", "Matter", "Medical", "Navigational", "Optical", "Optimal", "Optional", "Personal", "Personnel", "Phased", "Reduced", "Science", "Ship's", "Shuttlecraft", "Structural", "Subspace", "Transporter", "Ventral"];
-
-const words2 = ["Propulsion", "Dissipation", "Sensor", "Improbability", "Buffer", "Graviton", "Replicator", "Matter", "Anti-matter", "Organic", "Power", "Silicon", "Holographic", "Transient", "Integrity", "Plasma", "Fusion", "Control", "Access", "Auto", "Destruct", "Isolinear", "Transwarp", "Energy", "Medical", "Environmental", "Coil", "Impulse", "Warp", "Phaser", "Operating", "Photon", "Deflector", "Integrity", "Control", "Bridge", "Dampening", "Display", "Beam", "Quantum", "Baseline", "Input"];
-
-const words3 = ["Chamber", "Interface", "Coil", "Polymer", "Biosphere", "Platform", "Thruster", "Deflector", "Replicator", "Tricorder", "Operation", "Array", "Matrix", "Grid", "Sensor", "Mode", "Panel", "Storage", "Conduit", "Pod", "Hatch", "Regulator", "Display", "Inverter", "Spectrum", "Generator", "Cloud", "Field", "Terminal", "Module", "Procedure", "System", "Diagnostic", "Device", "Beam", "Probe", "Bank", "Tie-In", "Facility", "Bay", "Indicator", "Cell"];
+import { grabArrayMember } from "./utils.js";
 
 // References
 let output;
@@ -24,17 +20,38 @@ window.onload = () => {
         generateTechno(5);
     }
 
+    loadBabble();
     // One is generated on page first loading
     generateTechno(1);
 }
 
+const loadBabble = () => {
+    const url = "data/babble-data.json";
+    const xhr = new XMLHttpRequest();
+    xhr.onload = (e) => {
+        console.log(`In onload - HTTP Status Code = ${e.target.status}`);
+        let json;
+
+        try {
+            json = JSON.parse(e.target.responseText);
+        }
+        catch {
+            document.querySelector("#output").innerHTML = "BAD JSON!";
+            return;
+        }
+
+        const words1 = json["words1"];
+        const words2 = json["words2"];
+        const words3 = json["words3"];
+
+        console.log(words1);
+    };
+    xhr.onerror = e => console.log(`In onerrer - HTTP Status Code = ${e.target.status}`);
+    xhr.open("GET", url);
+    xhr.send();
+}
+
 const generateTechno = (num) => {
-    // Helper Method
-    const grabArrayMember = (array) => {
-        return array[Math.floor(Math.random() * array.length)];
-    }
-
-
     output.innerHTML = "";
     for (let i = 0; i < num; i++) {
         output.innerHTML += `${grabArrayMember(words1)} ${grabArrayMember(words2)} ${grabArrayMember(words3)}<br>`
