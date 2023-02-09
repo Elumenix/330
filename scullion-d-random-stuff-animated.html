@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Random Canvas Stuff</title>
+    <style>
+        canvas {
+            border: 1px solid gray;
+        }
+    </style>
+    <script>
+        "use strict";
+
+        //https://en.wikipedia.org/wiki/List_of_Crayola_crayon_colors
+        const crayons = ["#ED0A3F", "#FF7034", "#FFB97B", "#FFFF9F", "#FFB97B", "#33CC99", "#00CCCC", "#009DC4", "#1560BD", "#6456B7", "#FC74FD", "#F7468A", "#9E5B40"];
+
+        let canvas;
+        let ctx;
+
+        const init = () => {
+            canvas = document.querySelector("canvas");
+            ctx = canvas.getContext("2d");
+            loop();
+        };
+
+        const loop = () => {
+            setTimeout(loop, 1000/12);
+            ctx.fillStyle = "salmon";
+            ctx.fillRect(20, 20, 600, 440);
+
+            // circles top-left to bottom-right
+            for (let i = 0; i <= 10; i++) {
+                //ctx.fillStyle = "Yellow"; // try making each one a random crayon color
+                ctx.fillStyle = crayons[Math.floor(Math.random() * crayons.length)];
+                ctx.beginPath();
+                ctx.arc(i * 64, i * 48, 10 + i + (Math.random() * 5), 0, Math.PI * 2, false); // vary the radius by a random amount
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // circles center of screen - large to small radius
+            for (let i = 0; i <= 15; i++) {
+                //ctx.fillStyle = "red";
+                ctx.fillStyle = `rgba(${255 - i * 10},${i * 15},${255 - i * 5},.25)`;
+                ctx.beginPath();
+                ctx.arc(320, 240, 200 - 12 * i - Math.random() * 4, 0, Math.PI * 2, false)
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // wandering line
+            let y = 240;
+            ctx.lineWidth = 4;
+            for (let x = 0; x <= 640; x += 10) {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                y += Math.random() * 32 - 16
+                ctx.lineTo(x + 10, y);
+                ctx.closePath();
+                ctx.strokeStyle = `rgb(${y},255,${x / 3})`;
+                ctx.stroke();
+            }
+
+
+            // grid
+            for (let y = 0; y <= 480; y += 20) {
+                for (let x = 0; x < 640; x += 20) {
+                    ctx.strokeStyle = "black";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, 16, 16);
+                    if (Math.random() < .1) {
+                        ctx.fillStyle = crayons[Math.floor(Math.random() * crayons.length)];
+                        ctx.globalAlpha = .7;
+                        ctx.fillRect(x, y, 16, 16);
+                        ctx.globalAlpha = 1;
+                    }
+                }
+            }
+
+        };
+
+        window.onload = init;
+    </script>
+</head>
+
+<body>
+    <canvas width="640" height="480">
+        Get a real browser!
+    </canvas>
+</body>
+
+</html>
