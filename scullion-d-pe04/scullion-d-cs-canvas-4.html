@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>First Canvas</title>
+    <style>
+        canvas {
+            border: 1px solid gray;
+        }
+
+        body {
+            font-family: sans-serif;
+        }
+
+        button {
+            font-size: 1.2em;
+        }
+
+        section {
+            margin: .5em 0 .5em 0;
+        }
+    </style>
+    <script>
+        // #0 - in this class we will always use ECMAScript 5's "strict" mode
+        // See what 'use strict' does here:
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode
+        "use strict";
+
+        // #1 call the `init` function after the pages loads
+        window.onload = init;
+
+        let ctx;
+        let paused = false;
+
+
+        function init() {
+            console.log("page loaded!");
+            // #2 Now that the page has loaded, start drawing!
+
+            // A - `canvas` variable points at <canvas> tag
+            let canvas = document.querySelector("canvas");
+
+            // B - the `ctx` variable points at a "2D drawing context"
+            ctx = canvas.getContext("2d");
+
+            // C - all fill operations are now in red
+            ctx.fillStyle = "red";
+
+            // D - fill a rectangle with the current fill color
+            ctx.fillRect(20, 20, 600, 440);
+
+            // Creating Rects
+            ctx.strokeStyle = 'magenta';
+            ctx.fillStyle = 'yellow';
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.rect(120, 120, 400, 300);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(20, 20);
+            ctx.lineTo(620, 460);
+            ctx.closePath();
+            ctx.lineWidth = 5;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(620, 20);
+            ctx.lineTo(20, 460);
+            ctx.closePath();
+            ctx.stroke();
+
+            // circle
+            ctx.fillStyle = 'green';
+            ctx.strokeStyle = 'purple';
+            ctx.beginPath();
+            ctx.arc(320, 240, 50, 0, Math.PI * 2, false);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // small circle
+            ctx.fillStyle = 'gray';
+            ctx.strokeStyle = 'yellow';
+            ctx.beginPath();
+            ctx.arc(320, 240, 20, 0, Math.PI, false);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = 'White';
+            ctx.strokeStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(220, 200, 20, 0, Math.PI, false);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = 'White';
+            ctx.strokeStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(420, 200, 20, 0, Math.PI, false);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(20, 180);
+            ctx.lineTo(620, 180);
+            ctx.closePath();
+            ctx.lineWidth = 20;
+            ctx.stroke();
+
+            setupUI();
+            update(ctx);
+        }
+
+        // handy helper functions!
+        function getRandomColor() {
+            function getByte() {
+                return 55 + Math.round(Math.random() * 200);
+            }
+            return "rgba(" + getByte() + "," + getByte() + "," + getByte() + ",.8)";
+        }
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function drawRandomRect(ctx) {
+            ctx.strokeStyle = getRandomColor();
+            ctx.fillStyle = getRandomColor();
+            ctx.lineWidth = getRandomInt(2, 12);
+            ctx.beginPath();
+            ctx.rect(getRandomInt(0, 640), getRandomInt(0, 480), getRandomInt(10, 90), getRandomInt(10, 90));
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        function canvasClicked(e) {
+            let rect = e.target.getBoundingClientRect();
+            let mouseX = e.clientX - rect.x;
+            let mouseY = e.clientY - rect.y;
+            console.log(mouseX, mouseY);
+        }
+
+        function setupUI(){
+            document.querySelector("#btnPause").onclick = function() {
+                paused = true;
+            };
+            document.querySelector("#btnPlay").onclick = function() {
+                paused = false;
+                update();
+            };
+        }
+        function update() {
+            if (paused) return;
+            requestAnimationFrame(update);
+            drawRandomRect(ctx);
+        }
+    </script>
+</head>
+
+<body>
+    <canvas width="640" height="480">
+        Get a real browser!
+    </canvas>
+    <section>
+        <button id="btnPlay">Play</button>
+        <button id="btnPause">Pause</button>
+    </section>
+    <section>
+        <span>
+            <input type="checkbox" id="cbRectangles" checked>
+            <label for="cbRectangles">Rectangles</label>
+        </span>
+    </section>
+    <section>
+        <p>Click on the screen to "spraypaint" rectangles (you probably want the screensaver to be paused)</p>
+    </section>
+</body>
+
+</html>
