@@ -32,14 +32,15 @@
 
         let ctx;
         let paused = false;
-
+        let canvas;
+let createRectangles = true;
 
         function init() {
             console.log("page loaded!");
             // #2 Now that the page has loaded, start drawing!
 
             // A - `canvas` variable points at <canvas> tag
-            let canvas = document.querySelector("canvas");
+            canvas = document.querySelector("canvas");
 
             // B - the `ctx` variable points at a "2D drawing context"
             ctx = canvas.getContext("2d");
@@ -131,14 +132,7 @@
         }
 
         function drawRandomRect(ctx) {
-            ctx.strokeStyle = getRandomColor();
-            ctx.fillStyle = getRandomColor();
-            ctx.lineWidth = getRandomInt(2, 12);
-            ctx.beginPath();
-            ctx.rect(getRandomInt(0, 640), getRandomInt(0, 480), getRandomInt(10, 90), getRandomInt(10, 90));
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
+            drawRectangle(ctx,getRandomInt(0, 640), getRandomInt(0, 480), getRandomInt(10, 90), getRandomInt(10, 90),getRandomColor(),getRandomInt(2, 12),getRandomColor());
         }
 
         function canvasClicked(e) {
@@ -146,6 +140,14 @@
             let mouseX = e.clientX - rect.x;
             let mouseY = e.clientY - rect.y;
             console.log(mouseX, mouseY);
+            for(let i=0;i<10;i++) {
+                let x = getRandomInt(-100,100) + mouseX;
+                let y = getRandomInt(-100,100) + mouseY;
+                let width = getRandomInt(20,50);
+                let height = getRandomInt(20,50);
+                let color=getRandomColor();
+                drawRectangle(ctx,x,y,width,height,color);
+            }
         }
 
         function setupUI(){
@@ -153,14 +155,37 @@
                 paused = true;
             };
             document.querySelector("#btnPlay").onclick = function() {
+                if (!paused) return;
                 paused = false;
                 update();
             };
+
+            canvas.onclick = canvasClicked;
+
+            document.querySelector("#cbRectangles").onclick = function(e){
+                createRectangles = e.target.checked;
+            }
         }
         function update() {
             if (paused) return;
             requestAnimationFrame(update);
+            if (createRectangles) {
             drawRandomRect(ctx);
+            }
+        }
+        function drawRectangle(ctx,x,y,width,height,fillStyle="black",lineWidth=0,strokeStyle="black") {
+            ctx.save();
+            ctx.fillStyle = fillStyle;
+            ctx.beginPath()
+            ctx.rect(x,y,width,height);
+            ctx.fill();
+            if(lineWidth > 0) {
+                ctx.lineWidth = lineWidth;
+                ctx.strokeStyle = strokeStyle;
+                ctx.stroke();
+            }
+            ctx.closePath();
+            ctx.restore();
         }
     </script>
 </head>
