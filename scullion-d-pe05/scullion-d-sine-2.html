@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Sine Start</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+    <script>
+        "use strict";
+        const canvasWidth = 400, canvasHeight = 300;
+        let ctx;
+        let x = 0, y = 0;
+        let counter = 0;
+        const fps = 12;
+
+        window.onload = init;
+
+        function init() {
+            ctx = canvas.getContext("2d");
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            loop();
+        }
+
+        function loop() {
+            setTimeout(loop, 1000 / fps);
+            ctx.save();
+            ctx.fillStyle = "black";
+            ctx.globalAlpha = 1/fps;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            ctx.restore();
+            x += 10;
+            counter += .3;
+            y = canvasHeight / 2 + Math.sin(counter) * 100;
+            drawCircle(ctx, x, y, 2, "white");
+
+            y = canvasHeight / 2 + Math.cos(counter) * 100;
+            drawCircle(ctx, x, y, 2, "red");
+
+            y = canvasHeight/2 - Math.sqrt(x%50) * 5;
+            drawCircle(ctx,x,y,4,"yellow");
+
+            if (x > canvasWidth) x = 0;
+            /* let counter = 0;
+            let increase = Math.PI * 2 / 100;
+            for (let i = 0; i < 1; i += .01) {
+                x = i;
+                y = Math.sin(counter) / 2 + 0.5;
+                drawCircle(ctx, x * canvasWidth, canvasHeight / 2 + (y * 100), 2, "white");
+                counter += increase;
+            } */
+        }
+
+
+        // helpers
+        function dtr(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        function drawCircle(ctx, x, y, radius, color) {
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+    </script>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+</body>
+
+</html>
