@@ -15,7 +15,7 @@
         let ctx;
         let n = 0;
         let divergence = 137.5;
-        const c = 4;
+        let c = 4;
 
         window.onload = init;
 
@@ -33,6 +33,7 @@
                 ctx.fillRect(0,0,canvasWidth,canvasHeight);
 
                 divergence = document.querySelector("#ctrl-divergence").value;
+                c = document.querySelector("#ctrl-padding").value;
             }
         }
 
@@ -87,7 +88,19 @@
             <option value="137.7">137.7</option>
             <option value="137.9">137.9</option>
         </select>
+        <label>Padding</label>
+        <select id="ctrl-padding">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+        </select>
         <button id="btn-restart">Restart App</button>
+    </div>
+    <div id="explanation">
+        <h1>Changes made<h1>
+        <p>I added controls for both the divergence angle and the padding between circles.</p>
     </div>
 </body>
 
