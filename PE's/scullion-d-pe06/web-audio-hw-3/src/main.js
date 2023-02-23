@@ -15,7 +15,9 @@ const drawParams = {
   showGradient: true,
   showBars: true,
   showCircles: true,
-  showNoise: true
+  showNoise: false,
+  showInvert: false,
+  showEmboss: false
 };
 
 // 1 - here we are faking an enumeration
@@ -98,6 +100,8 @@ function setupUI(canvasElement) {
   const barsBox = document.querySelector("#barsCB");
   const circlesBox = document.querySelector("#circlesCB");
   const noiseBox = document.querySelector("#noiseCB");
+  const invertBox = document.querySelector("#invertCB");
+  const embossBox = document.querySelector("#embossCB");
 
   // add onclick event to checkboxes
   gradientBox.onclick = e => {
@@ -130,6 +134,22 @@ function setupUI(canvasElement) {
     }
     else {
       drawParams.showNoise = false;
+    }
+  }
+  invertBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.showInvert = true;
+    }
+    else {
+      drawParams.showInvert = false;
+    }
+  }
+  embossBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.showEmboss = true;
+    }
+    else {
+      drawParams.showEmboss = false;
     }
   }
 } // end setupUI
