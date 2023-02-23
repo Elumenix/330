@@ -9,7 +9,7 @@
 
 import * as utils from './utils.js';
 import * as audio from './audio.js';
-import * as canvas from './canvas.js';
+import * as canvas from './visualizer.js';
 
 const drawParams = {
   showGradient: true,
@@ -92,6 +92,46 @@ function setupUI(canvasElement) {
       playButton.dispatchEvent(new MouseEvent("click"));
     }
   };
+
+  // E - Add event handlers for the checkbox settings
+  const gradientBox = document.querySelector("#gradientCB");
+  const barsBox = document.querySelector("#barsCB");
+  const circlesBox = document.querySelector("#circlesCB");
+  const noiseBox = document.querySelector("#noiseCB");
+
+  // add onclick event to checkboxes
+  gradientBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.showGradient = true;
+    }
+    else {
+      drawParams.showGradient = false;
+    }
+  }
+  barsBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.showBars = true;
+    }
+    else {
+      drawParams.showBars = false;
+    }
+  }
+  circlesBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.showCircles = true;
+    }
+    else {
+      drawParams.showCircles = false;
+    }
+  }
+  noiseBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.showNoise = true;
+    }
+    else {
+      drawParams.showNoise = false;
+    }
+  }
 } // end setupUI
 
 function loop() {
