@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Sine Start</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+    <script>
+        "use strict";
+        const canvasWidth = 400, canvasHeight = 300;
+        let ctx;
+        let circleCenterX;
+        let circleCenterY;
+        let width = 0;
+        let height = 0;
+
+
+        window.onload = init;
+
+        function init() {
+            ctx = canvas.getContext("2d");
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            circleCenterX = canvasWidth / 2;
+            circleCenterY = canvasHeight / 2;
+            // loop();
+
+            ctx.fillStyle = "red";
+
+            /*for (let i = 0; i < 360; i++) {
+                ctx.fillRect(circleCenterX + Math.cos(dtr(i)) * 150, circleCenterY - Math.sin(dtr(i)) * 5, 2, 2);
+            }*/
+
+            loop();
+        }
+
+        function drawCircle(widthScale, heightScale) {
+            ctx.strokeStyle = 'red';
+            
+            ctx.beginPath();
+            ctx.moveTo(circleCenterX + Math.cos(dtr(0)) * widthScale, circleCenterY - Math.sin(dtr(0))) * heightScale;
+            for (let i = 0; i < 360; i++) {
+                ctx.lineTo(circleCenterX + Math.cos(dtr(i)) * widthScale, circleCenterY - Math.sin(dtr(i)) * heightScale);
+            }
+
+            ctx.closePath();
+            ctx.lineWidth=1;
+            ctx.stroke();
+        }
+
+        function loop() {
+            setTimeout(loop, 1000 / 15);
+            ctx.fillStyle = "black";
+            ctx.fillRect(0,0,canvasWidth, canvasHeight);
+
+            width += 1;
+            height += .03;
+
+            drawCircle(width, height);
+            
+        }
+
+        // helpers
+        function dtr(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+
+</html>
