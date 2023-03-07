@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Audio Visualizer</title>
+  <link href="./styles/default-styles.css" type="text/css" rel="stylesheet" />
+  <script src="./src/loader.js" type="module"></script>
+</head>
+
+<body>
+  <main>
+    <canvas width="800" height="400"></canvas>
+    <div id="controls">
+      <section>
+        <button id="play-button" data-playing="no"></button>
+        <button id="fs-button">Full Screen</button>
+
+        <label>Track:
+          <select id="track-select">
+            <option value="media/new_adventure_theme.mp3" selected>New Adventure Theme</option>
+            <option value="media/peanuts_theme.mp3">Peanuts Theme</option>
+            <option value="media/the_picard_song.mp3">The Picard Song</option>
+          </select>
+        </label>
+      </section>
+
+      <section>
+        Volume: <input type="range" id="volume-slider" min="0" max="2" value="1" step="0.01">
+        <span id="volume-label">???</span>
+      </section>
+      <section>
+        <span><input type="checkbox" id="gradient-cb" checked="true"><label for="gradient-cb">Show
+            Gradient</label></span>
+        <span><input type="checkbox" id="bars-cb" checked="true"><label for="bars-cb">Show Bars</label></span>
+        <span><input type="checkbox" id="circles-cb" checked="true"><label for="circles-cb">Show Circles</label></span>
+        <span><input type="checkbox" id="noise-cb"><label for="noise-cb">Show Noise</label></span>
+        <span><input type="checkbox" id="invert-cb"><label for="invert-cb">Invert Colors</label></span>
+        <span><input type="checkbox" id="emboss-cb"><label for="emboss-cb">Show Emboss</label></span>
+      </section>
+    </div>
+  </main>
+</body>
+
+</html>
