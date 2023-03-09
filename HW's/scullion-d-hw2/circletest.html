@@ -11,26 +11,67 @@
     </style>
     <script>
         "use strict";
-        const canvasWidth = 400, canvasHeight = 300;
+        const canvasWidth = 1440, canvasHeight = 900;
         let ctx;
-        let circleCenterX;
-        let circleCenterY;
-        let width = 0;
-        let height = 0;
+        let circle1;
+        let circle2;
+        let circle3;
+        let circle4;
+        let circle5;
+        let circle6;
+        let circle7;
+        let circle8;
 
 
         window.onload = init;
+
+        class Circle {
+            constructor(circleCenterX, circleCenterY, baseWidth, baseHeight) {
+                this.circleCenterX = circleCenterX;
+                this.circleCenterY = circleCenterY;
+                this.baseWidth = baseWidth;
+                this.baseHeight = baseHeight;
+            }
+            drawCircle(widthScale, heightScale) {
+                ctx.strokeStyle = 'red';
+
+                ctx.beginPath();
+                ctx.moveTo(this.circleCenterX + Math.cos(this.dtr(0)) * (widthScale * this.baseWidth), this.circleCenterY - Math.sin(this.dtr(0))) * (heightScale * this.baseHeight);
+                for (let i = 0; i < 360; i++) {
+                    ctx.lineTo(this.circleCenterX + Math.cos(this.dtr(i)) * (widthScale * this.baseWidth), this.circleCenterY - (Math.sin(this.dtr(i))) * (heightScale * this.baseHeight));
+                }
+
+                ctx.closePath();
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+
+            // helpers
+            dtr(degrees) {
+                return degrees * (Math.PI / 180);
+            }
+        }
 
         function init() {
             ctx = canvas.getContext("2d");
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-            circleCenterX = canvasWidth / 2;
-            circleCenterY = canvasHeight / 2;
+
+            circle1 = new Circle(canvasWidth / 2, canvasHeight / 2, 300, 20);
+            circle2 = new Circle(canvasWidth / 2, canvasHeight / 2 + 20, 261, 17.4);
+            circle8 = new Circle(canvasWidth / 2, canvasHeight / 2 + 40, 225, 15);
+            circle3 = new Circle(canvasWidth / 2, canvasHeight / 2 + 80, 161, 10.75);
+            circle4 = new Circle(canvasWidth / 2, canvasHeight / 2 + 120, 108, 7.2);
+            circle5 = new Circle(canvasWidth / 2, canvasHeight / 2 + 180, 48, 3.2);
+            circle6 = new Circle(canvasWidth / 2, canvasHeight / 2 + 220, 21, 1.4);
+            circle7 = new Circle(canvasWidth / 2, canvasHeight / 2 + 260, 5, .35);
+
+
+
             // loop();
 
-            ctx.fillStyle = "red";
+            //ctx.fillStyle = "red";
 
             /*for (let i = 0; i < 360; i++) {
                 ctx.fillRect(circleCenterX + Math.cos(dtr(i)) * 150, circleCenterY - Math.sin(dtr(i)) * 5, 2, 2);
@@ -39,7 +80,7 @@
             loop();
         }
 
-        function drawCircle(widthScale, heightScale) {
+        /*function drawCircle(widthScale, heightScale) {
             ctx.strokeStyle = 'red';
             
             ctx.beginPath();
@@ -49,27 +90,29 @@
             }
 
             ctx.closePath();
-            ctx.lineWidth=1;
+            ctx.lineWidth=3;
             ctx.stroke();
-        }
+        }*/
 
         function loop() {
             setTimeout(loop, 1000 / 15);
             ctx.fillStyle = "black";
-            ctx.fillRect(0,0,canvasWidth, canvasHeight);
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-            width += 1;
+            /*width += 1;
             height += .03;
 
-            drawCircle(width, height);
-            
-        }
+            drawCircle(width, height);*/
+            circle1.drawCircle(1, 1);
+            circle2.drawCircle(1, 1);
+            circle3.drawCircle(1, 1);
+            circle4.drawCircle(1, 1);
+            circle5.drawCircle(1, 1);
+            circle6.drawCircle(1, 1);
+            circle7.drawCircle(1, 1);
+            circle8.drawCircle(1,1);
 
-        // helpers
-        function dtr(degrees) {
-            return degrees * (Math.PI / 180);
         }
-
 
     </script>
 </head>
