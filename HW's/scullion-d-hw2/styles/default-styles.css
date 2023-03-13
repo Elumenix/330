@@ -40,3 +40,11 @@ button[data-playing="no"]:after {
   font-size: 1.2rem;
   width: 8rem;
 }
+
+* {
+  font-family: sans-serif;
+}
+
+span {
+  margin-right: 2em;
+}

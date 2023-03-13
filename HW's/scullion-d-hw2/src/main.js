@@ -17,7 +17,9 @@ const drawParams = {
   showCircles: true,
   showNoise: false,
   showInvert: false,
-  showEmboss: false
+  showEmboss: false,
+  useTreble: false,
+  useBase: false
 };
 
 // 1 - here we are faking an enumeration
@@ -102,6 +104,8 @@ function setupUI(canvasElement) {
   const noiseBox = document.querySelector("#noise-cb");
   const invertBox = document.querySelector("#invert-cb");
   const embossBox = document.querySelector("#emboss-cb");
+  const trebleBox = document.querySelector("#highshelf-cb");
+  const baseBox = document.querySelector("#lowshelf-cb");
 
   // add onclick event to checkboxes
   gradientBox.onclick = e => {
@@ -150,6 +154,30 @@ function setupUI(canvasElement) {
     }
     else {
       drawParams.showEmboss = false;
+    }
+  }
+
+  trebleBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.useTreble = true;
+      audio.biquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
+      audio.biquadFilter.gain.setValueAtTime(25, audio.audioCtx.currentTime);
+    }
+    else {
+      drawParams.useTreble = false;
+      audio.biquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
+    }
+  }
+
+  baseBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.useBase = true;
+      audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
+      audio.lowShelfBiquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
+    }
+    else {
+      drawParams.useBase = false;
+      audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
     }
   }
 } // end setupUI
