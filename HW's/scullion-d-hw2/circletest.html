@@ -13,6 +13,7 @@
         "use strict";
         const canvasWidth = 1440, canvasHeight = 900;
         let ctx;
+        let circle
         let circle1;
         let circle2;
         let circle3;
@@ -25,30 +26,72 @@
 
         window.onload = init;
 
-        class Circle {
-            constructor(circleCenterX, circleCenterY, baseWidth, baseHeight) {
-                this.circleCenterX = circleCenterX;
-                this.circleCenterY = circleCenterY;
-                this.baseWidth = baseWidth;
-                this.baseHeight = baseHeight;
+        class Point {
+            constructor(xPos, yPos, zPos) {
+                this.x = xPos;
+                this.y = yPos;
+                this.z = zPos;
+                this.trueY = yPos;
             }
-            drawCircle(widthScale, heightScale) {
-                ctx.strokeStyle = 'red';
+        }
 
-                ctx.beginPath();
-                ctx.moveTo(this.circleCenterX + Math.cos(this.dtr(0)) * (widthScale * this.baseWidth), this.circleCenterY - Math.sin(this.dtr(0))) * (heightScale * this.baseHeight);
-                for (let i = 0; i < 360; i++) {
-                    ctx.lineTo(this.circleCenterX + Math.cos(this.dtr(i)) * (widthScale * this.baseWidth), this.circleCenterY - (Math.sin(this.dtr(i))) * (heightScale * this.baseHeight));
+        class Sphere {
+            constructor(radius) {
+                this.boundry = new Array();
+                this.radius = radius;
+                this.numberOfVertices = 0;
+
+                // Establish x and z position of points
+                for (let i = 0; i <= 2 * Math.PI; i += .17) {
+                    this.boundry[this.numberOfVertices] = new Point(Math.cos(i) * this.radius, 0, Math.sin(i) * this.radius);
+                    this.numberOfVertices++;
                 }
 
-                ctx.closePath();
-                ctx.lineWidth = 3;
-                ctx.stroke();
+                // Create Vertical points in line with center ring
+                for (let direction = 1; direction >= -1; direction -= 2) {
+                    for (let j = 0.19; j < 1.445; j += .17) {
+                        let radius = Math.cos(j) * this.radius;
+                        let fixedY = Math.sin(j) * this.radius * direction;
+
+                        // Establish all x and z positions on ring
+                        for (let i = 0; i < 6.28; i += 0.17) {
+                            this.boundry[this.numberOfVertices] = new Point(Math.cos(i) * radius, fixedY, Math.sin(i) * radius);
+                            this.numberOfVertices++;
+                        }
+                    }
+                }
             }
 
-            // helpers
-            dtr(degrees) {
-                return degrees * (Math.PI / 180);
+            drawCircle() {
+                for (const point of this.boundry) {
+                    //if (point.z > 0) {
+                    ctx.fillRect(canvasWidth / 2 + point.x, canvasHeight / 2 - point.y, 2, 2);
+                    //}
+                }
+            }
+
+            rotateX(radians) {
+                for (const point of this.boundry) {
+                    let y = point.y;
+                    point.y = (y * Math.cos(radians)) + (point.z * Math.sin(radians) * -1.0);
+                    point.z = (y * Math.sin(radians)) + (point.z * Math.cos(radians));
+                }
+            }
+
+            rotateY(radians) {
+                for (const point of this.boundry) {
+                    let x = point.x;
+                    point.x = (x * Math.cos(radians)) + (point.z * Math.sin(radians) * -1.0);
+                    point.z = (x * Math.sin(radians)) + (point.z * Math.cos(radians));
+                }
+            }
+
+            rotateZ(radians) {
+                for (const point of this.boundry) {
+                    let x = point.x;
+                    point.x = (x * Math.cos(radians)) + (point.y * Math.sin(radians) * -1.0);
+                    point.y = (x * Math.sin(radians)) + (point.y * Math.cos(radians));
+                }
             }
         }
 
@@ -58,60 +101,30 @@
             canvas.height = canvasHeight;
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-            circle1 = new Circle(canvasWidth / 2, canvasHeight / 2, 300, 20);
+            /*circle1 = new Circle(canvasWidth / 2, canvasHeight / 2, 300, 20);
             circle2 = new Circle(canvasWidth / 2, canvasHeight / 2 + 20, 261, 17.4);
             circle8 = new Circle(canvasWidth / 2, canvasHeight / 2 + 40, 225, 15);
             circle3 = new Circle(canvasWidth / 2, canvasHeight / 2 + 80, 161, 10.75);
             circle4 = new Circle(canvasWidth / 2, canvasHeight / 2 + 120, 108, 7.2);
             circle5 = new Circle(canvasWidth / 2, canvasHeight / 2 + 180, 48, 3.2);
             circle6 = new Circle(canvasWidth / 2, canvasHeight / 2 + 220, 21, 1.4);
-            circle7 = new Circle(canvasWidth / 2, canvasHeight / 2 + 260, 5, .35);
-
-
-
-            // loop();
-
-            //ctx.fillStyle = "red";
-
-            /*for (let i = 0; i < 360; i++) {
-                ctx.fillRect(circleCenterX + Math.cos(dtr(i)) * 150, circleCenterY - Math.sin(dtr(i)) * 5, 2, 2);
-            }*/
+            circle7 = new Circle(canvasWidth / 2, canvasHeight / 2 + 260, 5, .35);*/
+            circle = new Sphere(100);
+            ctx.strokeStyle = "red";
 
             loop();
         }
 
-        /*function drawCircle(widthScale, heightScale) {
-            ctx.strokeStyle = 'red';
-            
-            ctx.beginPath();
-            ctx.moveTo(circleCenterX + Math.cos(dtr(0)) * widthScale, circleCenterY - Math.sin(dtr(0))) * heightScale;
-            for (let i = 0; i < 360; i++) {
-                ctx.lineTo(circleCenterX + Math.cos(dtr(i)) * widthScale, circleCenterY - Math.sin(dtr(i)) * heightScale);
-            }
-
-            ctx.closePath();
-            ctx.lineWidth=3;
-            ctx.stroke();
-        }*/
 
         function loop() {
             setTimeout(loop, 1000 / 15);
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-            /*width += 1;
-            height += .03;
-
-            drawCircle(width, height);*/
-            circle1.drawCircle(1, 1);
-            circle2.drawCircle(1, 1);
-            circle3.drawCircle(1, 1);
-            circle4.drawCircle(1, 1);
-            circle5.drawCircle(1, 1);
-            circle6.drawCircle(1, 1);
-            circle7.drawCircle(1, 1);
-            circle8.drawCircle(1,1);
-
+            ctx.fillStyle = "red";
+            circle.rotateX(.05);
+            circle.rotateY(.03);
+            circle.drawCircle();
         }
 
     </script>
