@@ -31,116 +31,177 @@
                 this.boundry = new Array();
                 this.radius = radius;
                 this.numberOfVertices = 0;
+                this.constant = (2 * Math.PI) / 40;
+                this.rings = [];
 
                 // Establish x and z position of points
-                for (let i = 0; i <= 2 * Math.PI; i += .17) {
+                for (let i = 0; i <= 2 * Math.PI; i += this.constant) {
                     this.boundry[this.numberOfVertices] = new Point(Math.cos(i) * this.radius, 0, Math.sin(i) * this.radius);
                     this.numberOfVertices++;
                 }
 
                 // Create Vertical points in line with center ring
                 for (let direction = 1; direction >= -1; direction -= 2) {
-                    for (let j = 0.17; j < 1.51; j += .17) {
+                    for (let j = this.constant; j < Math.PI / 2; j += this.constant) {
                         let radius = Math.cos(j) * this.radius;
                         let fixedY = Math.sin(j) * this.radius * direction;
 
                         // Establish all x and z positions on ring
-                        for (let i = 0; i < 6.28; i += 0.17) {
+                        for (let i = 0; i < 6.28; i += this.constant) {
                             this.boundry[this.numberOfVertices] = new Point(Math.cos(i) * radius, fixedY, Math.sin(i) * radius);
                             this.numberOfVertices++;
                         }
                     }
                 }
-            }
 
-            drawCircle() {
+
+                // Next section of code puts all points into 2D array by what ring they're in
+                // This will make it much easier to sort for when they get affected by wavelengths
                 let currentYRow = this.boundry[0].trueY;
                 let firstPoint = this.boundry[0];
+                let currentRing = 0;
+                let pointNum = 0;
 
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = "red";
-                ctx.fillStyle = "red";
-                ctx.moveTo(canvasWidth / 2 + this.boundry[0].x, canvasHeight / 2 + this.boundry[0].y);
-                ctx.beginPath();
-                
-                
+                // Central Ring
+                this.rings[0] = new Array();
+
 
                 for (let i = 0; i < this.numberOfVertices; i++) {
                     if (this.boundry[i].trueY != currentYRow) {
-                        //ctx.lineTo(canvasWidth / 2 + firstPoint.x, canvasHeight / 2 - firstPoint.y);
-                        ctx.closePath();
-                        
-                        ctx.stroke();
-                        
-
                         // Move on to next line
                         currentYRow = this.boundry[i].trueY;
                         firstPoint = this.boundry[i];
+                        currentRing++;
+                        pointNum = 0;
 
-                        ctx.moveTo(canvasWidth / 2 + this.boundry[i].x, canvasHeight / 2 + this.boundry[i].y);
-                        ctx.beginPath();
-                        
+                        // New ring is established
+                        this.rings[currentRing] = new Array();
 
+                        this.rings[currentRing][pointNum] = firstPoint;
+                        pointNum++;
                     }
                     else {
-                        ctx.lineTo(canvasWidth / 2 + this.boundry[i].x, canvasHeight / 2 - this.boundry[i].y);
+                        this.rings[currentRing][pointNum] = this.boundry[i];
+                        pointNum++;
                     }
                 }
 
-                /*ctx.closePath();
-                ctx.stroke();*/
-            }
+                // Bubble Sort the rings: They are currently count from center outwards
+                for (let i = 0; i < this.rings.length; i++) {
 
-            rotateX(radians) {
-                for (const point of this.boundry) {
-                    let y = point.y;
-                    point.y = (y * Math.cos(radians)) + (point.z * Math.sin(radians) * -1.0);
-                    point.z = (y * Math.sin(radians)) + (point.z * Math.cos(radians));
+                    // Last i elements are already in place 
+                    for (let j = 0; j < (this.rings.length - i - 1); j++) {
+
+                        // Checking if the item at present iteration
+                        // is greater than the next iteration
+                        if (this.rings[j][0].trueY > this.rings[j + 1][0].trueY) {
+
+                            // If the condition is true then swap them
+                            let temp = this.rings[j];
+                            this.rings[j] = this.rings[j + 1];
+                            this.rings[j + 1] = temp;
+                        }
+                    }
                 }
             }
 
-            rotateY(radians) {
-                for (const point of this.boundry) {
-                    let x = point.x;
-                    point.x = (x * Math.cos(radians)) + (point.z * Math.sin(radians) * -1.0);
-                    point.z = (x * Math.sin(radians)) + (point.z * Math.cos(radians));
-                }
-            }
+                        drawCircle() {
+                            let currentYRow = this.boundry[0].trueY;
+                            let firstPoint = this.boundry[0];
 
-            rotateZ(radians) {
-                for (const point of this.boundry) {
-                    let x = point.x;
-                    point.x = (x * Math.cos(radians)) + (point.y * Math.sin(radians) * -1.0);
-                    point.y = (x * Math.sin(radians)) + (point.y * Math.cos(radians));
-                }
-            }
-        }
-
-        function init() {
-            ctx = canvas.getContext("2d");
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-            circle = new Sphere(100);
-            ctx.strokeStyle = "red";
-
-            ctx.fillStyle = "red"
-            loop();
-        }
+                            ctx.lineWidth = 3;
+                            ctx.strokeStyle = "red";
+                            ctx.fillStyle = "red";
+                            ctx.moveTo(canvasWidth / 2 + this.boundry[0].x, canvasHeight / 2 + this.boundry[0].y);
+                            ctx.beginPath();
 
 
-        function loop() {
-            setTimeout(loop, 1000 / 15);
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-            ctx.fillStyle = "red";
-            circle.rotateX(.05);
-            circle.rotateY(.03);
-            circle.rotateZ(.01);
-            circle.drawCircle();
-        }
+                            for (let i = 0; i < this.numberOfVertices; i++) {
+                                if (this.boundry[i].trueY != currentYRow) {
+                                    ctx.closePath();
+
+                                    ctx.stroke();
+
+
+                                    // Move on to next line
+                                    currentYRow = this.boundry[i].trueY;
+                                    firstPoint = this.boundry[i];
+
+                                    ctx.moveTo(canvasWidth / 2 + this.boundry[i].x, canvasHeight / 2 + this.boundry[i].y);
+                                    ctx.beginPath();
+
+
+                                }
+                                else {
+                                    ctx.lineTo(canvasWidth / 2 + this.boundry[i].x, canvasHeight / 2 - this.boundry[i].y);
+                                }
+                            }
+
+                            ctx.closePath();
+                            ctx.stroke();
+                        }
+
+                        rotateX(degrees) {
+                            degrees = this.rdt(degrees);
+
+                            for (const point of this.boundry) {
+                                let y = point.y;
+                                point.y = (y * Math.cos(degrees)) + (point.z * Math.sin(degrees) * -1.0);
+                                point.z = (y * Math.sin(degrees)) + (point.z * Math.cos(degrees));
+                            }
+                        }
+
+                        rotateY(degrees) {
+                            degrees = this.rdt(degrees);
+
+                            for (const point of this.boundry) {
+                                let x = point.x;
+                                point.x = (x * Math.cos(degrees)) + (point.z * Math.sin(degrees) * -1.0);
+                                point.z = (x * Math.sin(degrees)) + (point.z * Math.cos(degrees));
+                            }
+                        }
+
+                        rotateZ(degrees) {
+                            degrees = this.rdt(degrees);
+
+                            for (const point of this.boundry) {
+                                let x = point.x;
+                                point.x = (x * Math.cos(degrees)) + (point.y * Math.sin(degrees) * -1.0);
+                                point.y = (x * Math.sin(degrees)) + (point.y * Math.cos(degrees));
+                            }
+                        }
+
+                        rdt(radians) {
+                            return radians * (Math.PI / 180);
+                        }
+                    }
+
+                    function init() {
+                        ctx = canvas.getContext("2d");
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                        circle = new Sphere(100);
+                        ctx.strokeStyle = "red";
+
+                        ctx.fillStyle = "red"
+                        loop();
+                    }
+
+
+                    function loop() {
+                        setTimeout(loop, 1000 / 15);
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                        ctx.fillStyle = "red";
+                        circle.rotateX(.5);
+                        circle.rotateY(.3);
+                        circle.rotateZ(.1);
+                        circle.drawCircle();
+                    }
 
     </script>
 </head>
