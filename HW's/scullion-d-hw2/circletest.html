@@ -13,16 +13,7 @@
         "use strict";
         const canvasWidth = 1440, canvasHeight = 900;
         let ctx;
-        let circle
-        let circle1;
-        let circle2;
-        let circle3;
-        let circle4;
-        let circle5;
-        let circle6;
-        let circle7;
-        let circle8;
-
+        let circle;
 
         window.onload = init;
 
@@ -49,7 +40,7 @@
 
                 // Create Vertical points in line with center ring
                 for (let direction = 1; direction >= -1; direction -= 2) {
-                    for (let j = 0.19; j < 1.445; j += .17) {
+                    for (let j = 0.17; j < 1.51; j += .17) {
                         let radius = Math.cos(j) * this.radius;
                         let fixedY = Math.sin(j) * this.radius * direction;
 
@@ -63,11 +54,41 @@
             }
 
             drawCircle() {
-                for (const point of this.boundry) {
-                    //if (point.z > 0) {
-                    ctx.fillRect(canvasWidth / 2 + point.x, canvasHeight / 2 - point.y, 2, 2);
-                    //}
+                let currentYRow = this.boundry[0].trueY;
+                let firstPoint = this.boundry[0];
+
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "red";
+                ctx.fillStyle = "red";
+                ctx.moveTo(canvasWidth / 2 + this.boundry[0].x, canvasHeight / 2 + this.boundry[0].y);
+                ctx.beginPath();
+                
+                
+
+                for (let i = 0; i < this.numberOfVertices; i++) {
+                    if (this.boundry[i].trueY != currentYRow) {
+                        //ctx.lineTo(canvasWidth / 2 + firstPoint.x, canvasHeight / 2 - firstPoint.y);
+                        ctx.closePath();
+                        
+                        ctx.stroke();
+                        
+
+                        // Move on to next line
+                        currentYRow = this.boundry[i].trueY;
+                        firstPoint = this.boundry[i];
+
+                        ctx.moveTo(canvasWidth / 2 + this.boundry[i].x, canvasHeight / 2 + this.boundry[i].y);
+                        ctx.beginPath();
+                        
+
+                    }
+                    else {
+                        ctx.lineTo(canvasWidth / 2 + this.boundry[i].x, canvasHeight / 2 - this.boundry[i].y);
+                    }
                 }
+
+                /*ctx.closePath();
+                ctx.stroke();*/
             }
 
             rotateX(radians) {
@@ -101,17 +122,10 @@
             canvas.height = canvasHeight;
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-            /*circle1 = new Circle(canvasWidth / 2, canvasHeight / 2, 300, 20);
-            circle2 = new Circle(canvasWidth / 2, canvasHeight / 2 + 20, 261, 17.4);
-            circle8 = new Circle(canvasWidth / 2, canvasHeight / 2 + 40, 225, 15);
-            circle3 = new Circle(canvasWidth / 2, canvasHeight / 2 + 80, 161, 10.75);
-            circle4 = new Circle(canvasWidth / 2, canvasHeight / 2 + 120, 108, 7.2);
-            circle5 = new Circle(canvasWidth / 2, canvasHeight / 2 + 180, 48, 3.2);
-            circle6 = new Circle(canvasWidth / 2, canvasHeight / 2 + 220, 21, 1.4);
-            circle7 = new Circle(canvasWidth / 2, canvasHeight / 2 + 260, 5, .35);*/
             circle = new Sphere(100);
             ctx.strokeStyle = "red";
 
+            ctx.fillStyle = "red"
             loop();
         }
 
@@ -124,6 +138,7 @@
             ctx.fillStyle = "red";
             circle.rotateX(.05);
             circle.rotateY(.03);
+            circle.rotateZ(.01);
             circle.drawCircle();
         }
 
