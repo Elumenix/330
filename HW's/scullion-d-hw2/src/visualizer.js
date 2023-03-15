@@ -5,7 +5,7 @@ import { Sphere } from './Sphere.js';
 let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
 
 // Necessary for this script
-let lastTime, currentTime, delta;
+let lastTime, currentTime, delta, slowData;
 
 
 const setupCanvas = (canvasElement, analyserNodeRef) => {
@@ -28,6 +28,11 @@ const setupCanvas = (canvasElement, analyserNodeRef) => {
     lastTime = (new Date()).getTime();
     currentTime = 0;
     delta = 0;
+    slowData = new Array(128);
+
+    for (let i = 0; i < slowData.length; i++) {
+        slowData[i] = 0;
+    }
 }
 
 const draw = (params = {}) => {
@@ -39,14 +44,25 @@ const draw = (params = {}) => {
 
     // 1 - populate the audioData array with the frequency data from the analyserNode
     // notice these arrays are passed "by reference" 
-    analyserNode.getByteFrequencyData(audioData);
+    if (params.displayFrequency) {
+        analyserNode.getByteFrequencyData(audioData);
+        slowData = audioData;
+    }
     // OR
-    //analyserNode.getByteTimeDomainData(audioData); // waveform data
+    if (params.displayWaveform) {
+        analyserNode.getByteTimeDomainData(audioData); // waveform data
+
+        // Average the data so it changes slower
+        for (let i = 0; i < 128; i++) {
+            slowData[i] = (slowData[i] + audioData[i]) / 2;
+        }
+    }
+
 
     // 2 - draw background
     ctx.save();
     ctx.fillStyle = "black";
-    ctx.globalAlpha = .1;
+    ctx.globalAlpha = 1;
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     ctx.restore();
 
@@ -54,27 +70,20 @@ const draw = (params = {}) => {
     if (params.showGradient) {
         ctx.save();
         ctx.fillStyle = gradient;
-        ctx.globalAlpha = .3;
+        ctx.globalAlpha = 1;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
         ctx.restore();
     }
 
     // 4 - draw bars
     if (params.showBars) {
-        let barSpacing = 4;
-        let margin = 5;
-        let screenWidthForBars = canvasWidth - (audioData.length * barSpacing) - margin * 2;
-        let barWidth = screenWidthForBars / audioData.length;
-        let barHeight = 200;
-        let topSpacing = 100;
-
         ctx.save();
         let frequencyBinCount = analyserNode.frequencyBinCount;
-        let frequencyWidth = ((canvasWidth / 128) - 0.03),
+        let frequencyWidth = ((canvasWidth / 128) - .5),
             frequencyHeight = 0,
             x = 0;
         for (var i = 0; i < frequencyBinCount; i++) {
-            frequencyHeight = audioData[i] * (canvasHeight * 0.002);
+            frequencyHeight = slowData[i] * (canvasHeight * 0.002);
             ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
             ctx.fillRect(x, canvasHeight - frequencyHeight, frequencyWidth, frequencyHeight);
             x += frequencyWidth + 0.5;
@@ -87,10 +96,10 @@ const draw = (params = {}) => {
         ctx.save();
 
         if (params.pulseSphere) {
-            sphere.drawSphere(audioData, true);
+            sphere.drawSphere(slowData, true);
         }
         else {
-            sphere.drawSphere(audioData, false);
+            sphere.drawSphere(slowData, false);
         }
 
         if (params.spinSphere) {
@@ -100,17 +109,17 @@ const draw = (params = {}) => {
 
             // Bass power
             for (let i = 0; i < 43; i++) {
-                bassVolume += audioData[i];
+                bassVolume += slowData[i];
             }
 
             // Medium power
             for (let i = 43; i < 85; i++) {
-                mediumVolume += audioData[i];
+                mediumVolume += slowData[i];
             }
 
             // Treble power
             for (let i = 86; i < 128; i++) {
-                trebleVolume += audioData[i];
+                trebleVolume += slowData[i];
             }
 
             if (bassVolume != 0) {
@@ -129,7 +138,6 @@ const draw = (params = {}) => {
             sphere.rotateX(bassVolume * delta);
             sphere.rotateY(mediumVolume * delta);
             sphere.rotateZ(trebleVolume * delta);
-            console.log(audioData);
         }
         ctx.restore();
     }

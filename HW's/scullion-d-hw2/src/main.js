@@ -12,6 +12,8 @@ import * as audio from './audio.js';
 import * as canvas from './visualizer.js';
 
 const drawParams = {
+  displayFrequency: true,
+  displayWaveform: false,
   showGradient: true,
   showBars: true,
   showSphere: true,
@@ -110,6 +112,8 @@ function setupUI(canvasElement) {
   const embossBox = document.querySelector("#emboss-cb");
   const trebleBox = document.querySelector("#highshelf-cb");
   const baseBox = document.querySelector("#lowshelf-cb");
+  const frequencyButton = document.querySelector("#frequency");
+  const waveformButton = document.querySelector("#waveform");
 
   // add onclick event to checkboxes
   gradientBox.onclick = e => {
@@ -200,10 +204,23 @@ function setupUI(canvasElement) {
       audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
     }
   }
+
+  frequencyButton.onclick = () => {
+    drawParams.displayFrequency = true;
+    drawParams.displayWaveform = false;
+  }
+
+  waveformButton.onclick = () => {
+    drawParams.displayFrequency = false;
+    drawParams.displayWaveform = true;
+  }
 } // end setupUI
 
 function loop() {
-  setTimeout(requestAnimationFrame(loop), 1000 / 60);
+  setTimeout(() => {
+    requestAnimationFrame(loop);
+  }, 1000 / 60);
+
   canvas.draw(drawParams);
 }
 
