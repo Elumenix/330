@@ -105,103 +105,189 @@
                 }
             }
 
-                        drawCircle() {
-                            let currentYRow = this.boundry[0].trueY;
-                            let firstPoint = this.boundry[0];
+            drawCircle() {
+                let currentRing = this.rings[0];
 
-                            ctx.lineWidth = 3;
-                            ctx.strokeStyle = "red";
-                            ctx.fillStyle = "red";
-                            ctx.moveTo(canvasWidth / 2 + this.boundry[0].x, canvasHeight / 2 + this.boundry[0].y);
-                            ctx.beginPath();
+                ctx.lineWidth = 3;
+
+                // Color The back af all rings
+                for (let i = 0; i < this.rings.length; i++, currentRing = this.rings[i]) {
 
 
+                    ctx.moveTo(canvasWidth / 2 + currentRing[0].x, canvasHeight / 2 - currentRing[0].y)
+                    ctx.beginPath();
 
-                            for (let i = 0; i < this.numberOfVertices; i++) {
-                                if (this.boundry[i].trueY != currentYRow) {
-                                    ctx.closePath();
+                    for (let pointNum = 0; pointNum < currentRing.length; pointNum++) {
+                        ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
+                    }
 
-                                    ctx.stroke();
-
-
-                                    // Move on to next line
-                                    currentYRow = this.boundry[i].trueY;
-                                    firstPoint = this.boundry[i];
-
-                                    ctx.moveTo(canvasWidth / 2 + this.boundry[i].x, canvasHeight / 2 + this.boundry[i].y);
-                                    ctx.beginPath();
+                    ctx.strokeStyle = "blue";
+                    ctx.closePath();
+                    ctx.stroke();
+                }
 
 
+                // Color the front side of all rings
+                currentRing = this.rings[0];
+                for (let i = 0; i < this.rings.length; i++, currentRing = this.rings[i]) {
+                    let startNum = -1;
+                    let allSame = false;
+
+                    if (currentRing[0].z >= 0 && currentRing[currentRing.length - 1].z < 0) {
+                        startNum = 0;
+                    }
+                    else {
+                        for (let j = 1; j < currentRing.length; j++) {
+                            if (currentRing[j].z >= 0 && currentRing[j - 1].z < 0) {
+                                startNum = j;
+                                break;
+                            }
+                        }
+
+                        // All of it is Positive or negative
+                        if (startNum == -1) {
+                            startNum = 0;
+                            allSame = true;
+                        }
+                    }
+
+                    ctx.moveTo(canvasWidth / 2 + currentRing[startNum].x, canvasHeight / 2 - currentRing[startNum].y)
+                    ctx.beginPath();
+
+                    for (let pointNum = startNum + 1; pointNum != startNum; pointNum++) {
+                        // Early escape, it isn't necessary to color this ring
+                        if (allSame && currentRing[0].z < 0) {
+                            break;
+                        }
+
+                        // Go to beginning of ring
+                        if (pointNum >= currentRing.length) {
+                            pointNum = 0;
+
+                            // Another edge case, spheres are complicated
+                            if (currentRing[currentRing.length - 1].z >= 0 && currentRing[0].z < 0) {
+                                ctx.lineTo(canvasWidth / 2 + currentRing[0].x, canvasHeight / 2 - currentRing[0].height);
+
+                                ctx.strokeStyle = "red";
+                                ctx.stroke();
+                                break;
+                            }
+                        }
+
+                        // This was an annoying edge case
+                        if (startNum == 0 && pointNum == 0) {
+                            break;
+                        }
+
+                        if (allSame) {
+                            ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
+                        }
+                        else {
+                            if (currentRing[pointNum].z < 0 && pointNum - 1 != -1 && currentRing[pointNum - 1].z >= 0) {
+                                ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
+
+                                if (pointNum + 1 == currentRing.length) {
+                                    ctx.lineTo(canvasWidth / 2 + currentRing[0].x, canvasHeight / 2 - currentRing[0].y);
                                 }
                                 else {
-                                    ctx.lineTo(canvasWidth / 2 + this.boundry[i].x, canvasHeight / 2 - this.boundry[i].y);
+                                    ctx.lineTo(canvasWidth / 2 + currentRing[pointNum + 1].x, canvasHeight / 2 - currentRing[pointNum + 1].y);
                                 }
-                            }
 
+
+                                ctx.strokeStyle = "red";
+                                ctx.stroke()
+                                break;
+                            }
+                            // Another annoying edge case
+                            else if (pointNum == 0 && currentRing[pointNum].z < 0 && currentRing[currentRing.length - 1] >= 0) {
+                                ctx.lineTo(canvasWidth / 2 + currentRing[0].x, canvasHeight / 2 - currentRing[0].y);
+                                ctx.strokeStyle = "red";
+                                ctx.stroke();
+                            }
+                            else {
+                                ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
+                            }
+                        }
+                    }
+
+                    if (allSame) {
+
+                        if (currentRing[startNum].z >= 0) {
+                            ctx.strokeStyle = "red";
+                            // Path can be closed because full loop
                             ctx.closePath();
                             ctx.stroke();
                         }
-
-                        rotateX(degrees) {
-                            degrees = this.rdt(degrees);
-
-                            for (const point of this.boundry) {
-                                let y = point.y;
-                                point.y = (y * Math.cos(degrees)) + (point.z * Math.sin(degrees) * -1.0);
-                                point.z = (y * Math.sin(degrees)) + (point.z * Math.cos(degrees));
-                            }
-                        }
-
-                        rotateY(degrees) {
-                            degrees = this.rdt(degrees);
-
-                            for (const point of this.boundry) {
-                                let x = point.x;
-                                point.x = (x * Math.cos(degrees)) + (point.z * Math.sin(degrees) * -1.0);
-                                point.z = (x * Math.sin(degrees)) + (point.z * Math.cos(degrees));
-                            }
-                        }
-
-                        rotateZ(degrees) {
-                            degrees = this.rdt(degrees);
-
-                            for (const point of this.boundry) {
-                                let x = point.x;
-                                point.x = (x * Math.cos(degrees)) + (point.y * Math.sin(degrees) * -1.0);
-                                point.y = (x * Math.sin(degrees)) + (point.y * Math.cos(degrees));
-                            }
-                        }
-
-                        rdt(radians) {
-                            return radians * (Math.PI / 180);
-                        }
                     }
+                }
 
-                    function init() {
-                        ctx = canvas.getContext("2d");
-                        canvas.width = canvasWidth;
-                        canvas.height = canvasHeight;
-                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                ctx.beginPath();
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 5.25;
+                ctx.arc(canvasWidth / 2, canvasHeight / 2, this.radius, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
 
-                        circle = new Sphere(100);
-                        ctx.strokeStyle = "red";
+            rotateX(degrees) {
+                degrees = this.rdt(degrees);
 
-                        ctx.fillStyle = "red"
-                        loop();
-                    }
+                for (const point of this.boundry) {
+                    let y = point.y;
+                    point.y = (y * Math.cos(degrees)) + (point.z * Math.sin(degrees) * -1.0);
+                    point.z = (y * Math.sin(degrees)) + (point.z * Math.cos(degrees));
+                }
+            }
+
+            rotateY(degrees) {
+                degrees = this.rdt(degrees);
+
+                for (const point of this.boundry) {
+                    let x = point.x;
+                    point.x = (x * Math.cos(degrees)) + (point.z * Math.sin(degrees) * -1.0);
+                    point.z = (x * Math.sin(degrees)) + (point.z * Math.cos(degrees));
+                }
+            }
+
+            rotateZ(degrees) {
+                degrees = this.rdt(degrees);
+
+                for (const point of this.boundry) {
+                    let x = point.x;
+                    point.x = (x * Math.cos(degrees)) + (point.y * Math.sin(degrees) * -1.0);
+                    point.y = (x * Math.sin(degrees)) + (point.y * Math.cos(degrees));
+                }
+            }
+
+            rdt(radians) {
+                return radians * (Math.PI / 180);
+            }
+        }
+
+        function init() {
+            ctx = canvas.getContext("2d");
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            circle = new Sphere(100);
+            ctx.strokeStyle = "red";
+
+            ctx.fillStyle = "red"
+            loop();
+        }
 
 
-                    function loop() {
-                        setTimeout(loop, 1000 / 15);
-                        ctx.fillStyle = "black";
-                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        function loop() {
+            setTimeout(loop, 1000 / 15);
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-                        ctx.fillStyle = "red";
-                        circle.rotateX(.5);
-                        circle.rotateY(.3);
-                        circle.rotateZ(.1);
-                        circle.drawCircle();
-                    }
+            ctx.fillStyle = "red";
+            circle.rotateX(.5);
+            circle.rotateY(.3);
+            circle.rotateZ(.1);
+            circle.drawCircle();
+        }
 
     </script>
 </head>
