@@ -1,6 +1,7 @@
 import * as utils from './utils.js';
+import { Sphere } from './Sphere.js';
 
-let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData;
+let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
 
 
 const setupCanvas = (canvasElement, analyserNodeRef) => {
@@ -14,6 +15,7 @@ const setupCanvas = (canvasElement, analyserNodeRef) => {
     analyserNode = analyserNodeRef;
     // this is the array where the analyser data will be stored
     audioData = new Uint8Array(analyserNode.fftSize / 2);
+    sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight);
 }
 
 const draw = (params = {}) => {
@@ -60,36 +62,14 @@ const draw = (params = {}) => {
     }
 
     // 5 - draw circles
-    if (params.showCircles) {
-        let maxRadius = canvasHeight / 4;
+    if (params.showSphere) {
         ctx.save();
-        ctx.globalAlpha = 0.5;
-        for (let i = 0; i < audioData.length; i++) {
-            // red-ish circles
-            let percent = audioData[i] / 255;
 
-            let circleRadius = percent * maxRadius;
-            ctx.beginPath();
-            ctx.fillStyle = utils.makeColor(255, 111, 111, .34 - percent / 3.0)
-            ctx.arc(canvasWidth / 2, canvasHeight / 2, circleRadius, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
+        sphere.drawSphere();
+        sphere.rotateX(1.57);
+        sphere.rotateY(2.5);
+        sphere.rotateZ(2);
 
-            // blue-ish circles, bigger, more transparent
-            ctx.fillStyle = utils.makeColor(0, 0, 255, .10 - percent / 10.0);
-            ctx.arc(canvasWidth / 2, canvasHeight / 2, circleRadius * 1.5, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
-
-            // yellow-ish circles, smaller
-            ctx.save();
-            ctx.beginPath();
-            ctx.fillStyle = utils.makeColor(200, 200, 0, .5 - percent / 5.0);
-            ctx.arc(canvasWidth / 2, canvasHeight / 2, circleRadius * .5, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
-            ctx.restore();
-        }
         ctx.restore();
     }
 

@@ -14,7 +14,7 @@ import * as canvas from './visualizer.js';
 const drawParams = {
   showGradient: true,
   showBars: true,
-  showCircles: true,
+  showSphere: true,
   showNoise: false,
   showInvert: false,
   showEmboss: false,
@@ -100,7 +100,7 @@ function setupUI(canvasElement) {
   // E - Add event handlers for the checkbox settings
   const gradientBox = document.querySelector("#gradient-cb");
   const barsBox = document.querySelector("#bars-cb");
-  const circlesBox = document.querySelector("#circles-cb");
+  const sphereBox = document.querySelector("#sphere-cb");
   const noiseBox = document.querySelector("#noise-cb");
   const invertBox = document.querySelector("#invert-cb");
   const embossBox = document.querySelector("#emboss-cb");
@@ -124,12 +124,12 @@ function setupUI(canvasElement) {
       drawParams.showBars = false;
     }
   }
-  circlesBox.onclick = e => {
+  sphereBox.onclick = e => {
     if (e.target.checked) {
-      drawParams.showCircles = true;
+      drawParams.showSphere = true;
     }
     else {
-      drawParams.showCircles = false;
+      drawParams.showSphere = false;
     }
   }
   noiseBox.onclick = e => {
