@@ -22,6 +22,7 @@ const draw = (params = {}) => {
     // 1 - populate the audioData array with the frequency data from the analyserNode
     // notice these arrays are passed "by reference" 
     analyserNode.getByteFrequencyData(audioData);
+    console.log(audioData[5]);
     // OR
     //analyserNode.getByteTimeDomainData(audioData); // waveform data
 
@@ -51,14 +52,18 @@ const draw = (params = {}) => {
         let topSpacing = 100;
 
         ctx.save();
-        ctx.fillStyle = 'rgba(255,255,255,0.50)';
-        ctx.strokeStyle = 'rgba(0,0,0,0.50)';
-        // loop through the data and draw
-        for (let i = 0; i < audioData.length; i++) {
-            ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256 - audioData[i], barWidth, barHeight);
-            ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256 - audioData[i], barWidth, barHeight);
+        let frequencyBinCount = analyserNode.frequencyBinCount;
+        console.log(frequencyBinCount);
+        let frequencyWidth = ((canvasWidth / 128) - 0.03),
+            frequencyHeight = 0,
+            x = 0;
+        for (var i = 0; i < frequencyBinCount; i++) {
+            frequencyHeight = audioData[i] * (canvasHeight * 0.002);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.fillRect(x, canvasHeight - frequencyHeight, frequencyWidth, frequencyHeight);
+            x += frequencyWidth + 0.5;
+            ctx.restore();
         }
-        ctx.restore();
     }
 
     // 5 - draw circles
