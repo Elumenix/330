@@ -82,11 +82,34 @@ export class Sphere {
         }
     }
 
-    drawSphere() {
+    drawSphere(audioData, pulse) {
         let ctx = this.ctx;
         let currentRing = this.rings[0];
         let canvasWidth = this.canvasWidth;
         let canvasHeight = this.canvasHeight;
+        let scaling = new Array(this.rings.length);
+
+
+        const soundDistribution = 128 / this.rings.length
+        // Figure out scaling audio Data
+        for (let i = 0; i < this.rings.length; i++) {
+            if (pulse) {
+                let scale = 0;
+
+                for (let j = Math.round(soundDistribution * i); j < Math.round(soundDistribution * (i + 1)); j++) {
+                    scale += audioData[j];
+                }
+
+                scale /= (Math.round(soundDistribution * (i + 1)) - Math.round(soundDistribution * i));
+
+                // Final numbers should be between 1 and 1.5
+                scaling[i] = (scale / 255) / 2 + 1;
+            }
+            else {
+                // All rings remain default size
+                scaling[i] = 1;
+            }
+        }
 
         ctx.lineWidth = 3;
 
@@ -94,14 +117,14 @@ export class Sphere {
         for (let i = 0; i < this.rings.length; i++, currentRing = this.rings[i]) {
 
 
-            ctx.moveTo(canvasWidth / 2 + currentRing[0].x, canvasHeight / 2 - currentRing[0].y)
+            ctx.moveTo(canvasWidth / 2 + (currentRing[0].x * scaling[0]), canvasHeight / 2 - (currentRing[0].y * scaling[0]))
             ctx.beginPath();
 
             for (let pointNum = 0; pointNum < currentRing.length; pointNum++) {
-                ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
+                ctx.lineTo(canvasWidth / 2 + (currentRing[pointNum].x * scaling[i]), canvasHeight / 2 - (currentRing[pointNum].y * scaling[i]));
             }
 
-            ctx.strokeStyle = "blue";
+            ctx.strokeStyle = `rgb(${Math.floor(54.3 + 16.7 * (scaling[i] ** 6))}, ${Math.floor(2 * (scaling[i] ** 11.96))}, ${Math.floor(255)})`;
             ctx.closePath();
             ctx.stroke();
         }
@@ -112,6 +135,7 @@ export class Sphere {
         for (let i = 0; i < this.rings.length; i++, currentRing = this.rings[i]) {
             let startNum = -1;
             let allSame = false;
+            ctx.strokeStyle = `rgb(${Math.floor(220 + 10 * (scaling[i] ** 3.1))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))})`;
 
             if (currentRing[0].z >= 0 && currentRing[currentRing.length - 1].z < 0) {
                 startNum = currentRing.length - 1;
@@ -140,11 +164,11 @@ export class Sphere {
                 beginning = this.slerp(currentRing[startNum], currentRing[startNum - 1]);
             }
 
-            ctx.moveTo(canvasWidth / 2 + beginning.x, canvasHeight / 2 - beginning.y)
+            ctx.moveTo(canvasWidth / 2 + (beginning.x * scaling[i]), canvasHeight / 2 - (beginning.y * scaling[i]))
 
             ctx.beginPath();
 
-            ctx.lineTo(canvasWidth / 2 + currentRing[startNum].x, canvasHeight / 2 - currentRing[startNum].y)
+            ctx.lineTo(canvasWidth / 2 + (currentRing[startNum].x * scaling[i]), canvasHeight / 2 - (currentRing[startNum].y * scaling[i]))
 
             for (let pointNum = startNum + 1; pointNum != startNum; pointNum++) {
                 // Early escape, it isn't necessary to color this ring
@@ -159,9 +183,9 @@ export class Sphere {
                     // Another edge case, spheres are complicated
                     if (currentRing[currentRing.length - 1].z >= 0 && currentRing[0].z < 0) {
                         let ending = this.slerp(currentRing[0], currentRing[currentRing.length - 1])
-                        ctx.lineTo(canvasWidth / 2 + ending.x, canvasHeight / 2 - ending.y);
+                        ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
 
-                        ctx.strokeStyle = "red";
+                        
                         ctx.stroke();
                         break;
                     }
@@ -173,75 +197,61 @@ export class Sphere {
                 }
 
                 if (allSame) {
-                    ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
+                    ctx.lineTo(canvasWidth / 2 + (currentRing[pointNum].x * scaling[i]), canvasHeight / 2 - (currentRing[pointNum].y * scaling[i]));
                 }
                 else {
                     if (currentRing[pointNum].z < 0 && pointNum - 1 != -1 && currentRing[pointNum - 1].z >= 0) {
-                        ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
+                        ctx.lineTo(canvasWidth / 2 + (currentRing[pointNum].x * scaling[i]), canvasHeight / 2 - (currentRing[pointNum].y * scaling[i]));
 
                         if (pointNum + 1 == currentRing.length) {
                             let ending = this.slerp(currentRing[pointNum], currentRing[currentRing.length - 1])
-                            ctx.lineTo(canvasWidth / 2 + ending.x, canvasHeight / 2 - ending.y);
+                            ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
                         }
                         else {
                             let ending = this.slerp(currentRing[pointNum - 1], currentRing[pointNum])
-                            ctx.lineTo(canvasWidth / 2 + ending.x, canvasHeight / 2 - ending.y);
+                            ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
                         }
 
-
-
-                        ctx.strokeStyle = "red";
                         ctx.stroke()
                         break;
                     }
                     // Another annoying edge case
                     else if (pointNum == 0 && currentRing[pointNum].z < 0 && currentRing[currentRing.length - 1] >= 0) {
                         let ending = this.slerp(currentRing[pointNum], currentRing[pointNum - 1])
-                        ctx.lineTo(canvasWidth / 2 + ending.x, canvasHeight / 2 - ending.y);
+                        ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
 
-                        ctx.strokeStyle = "red";
                         ctx.stroke();
                     }
                     else {
-                        ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
+                        ctx.lineTo(canvasWidth / 2 + (currentRing[pointNum].x * scaling[i]), canvasHeight / 2 - (currentRing[pointNum].y * scaling[i]));
 
                         // Edge case where only one point is negative : This should be the final one
                         if (pointNum + 1 == startNum) {
                             let ending = this.slerp(currentRing[pointNum], currentRing[startNum])
-                            ctx.lineTo(canvasWidth / 2 + ending.x, canvasHeight / 2 - ending.y);
+                            ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
 
-                            ctx.strokeStyle = "red";
                             ctx.stroke();
                         }
                         else if (pointNum + 1 >= currentRing.length && startNum == 0) {
                             let ending = this.slerp(currentRing[pointNum], currentRing[0])
-                            ctx.lineTo(canvasWidth / 2 + ending.x, canvasHeight / 2 - ending.y);
+                            ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
 
-                            ctx.strokeStyle = "red";
                             ctx.stroke();
                         }
                     }
                 }
             }
 
-
-
             if (allSame) {
 
                 if (currentRing[startNum].z >= 0) {
-                    ctx.strokeStyle = "red";
+
                     // Path can be closed because full loop
                     ctx.closePath();
                     ctx.stroke();
                 }
             }
         }
-
-        /*ctx.beginPath();
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 5.25;
-        ctx.arc(canvasWidth / 2, canvasHeight / 2, this.radius, 0, 2 * Math.PI);
-        ctx.stroke();*/
     }
 
     rotateX(degrees) {

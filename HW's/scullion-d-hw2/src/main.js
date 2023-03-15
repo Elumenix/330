@@ -15,6 +15,7 @@ const drawParams = {
   showGradient: true,
   showBars: true,
   showSphere: true,
+  pulseSphere: true,
   spinSphere: false,
   showNoise: false,
   showInvert: false,
@@ -102,6 +103,7 @@ function setupUI(canvasElement) {
   const gradientBox = document.querySelector("#gradient-cb");
   const barsBox = document.querySelector("#bars-cb");
   const sphereBox = document.querySelector("#sphere-cb");
+  const pulseBox = document.querySelector("#pulse-sphere-cb")
   const spinBox = document.querySelector("#spin-sphere-cb");
   const noiseBox = document.querySelector("#noise-cb");
   const invertBox = document.querySelector("#invert-cb");
@@ -132,6 +134,14 @@ function setupUI(canvasElement) {
     }
     else {
       drawParams.showSphere = false;
+    }
+  }
+  pulseBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.pulseSphere = true;
+    }
+    else {
+      drawParams.pulseSphere = false;
     }
   }
   spinBox.onclick = e => {

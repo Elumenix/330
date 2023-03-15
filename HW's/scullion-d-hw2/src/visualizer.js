@@ -86,8 +86,12 @@ const draw = (params = {}) => {
     if (params.showSphere) {
         ctx.save();
 
-
-        sphere.drawSphere();
+        if (params.pulseSphere) {
+            sphere.drawSphere(audioData, true);
+        }
+        else {
+            sphere.drawSphere(audioData, false);
+        }
 
         if (params.spinSphere) {
             let bassVolume = 0;
@@ -110,15 +114,15 @@ const draw = (params = {}) => {
             }
 
             if (bassVolume != 0) {
-            bassVolume = (bassVolume - 128) / 44;
+                bassVolume = (bassVolume - 128) / 44;
             }
 
             if (mediumVolume != 0) {
-            mediumVolume = (mediumVolume - 90) / 43;
+                mediumVolume = (mediumVolume - 90) / 43;
             }
 
             if (trebleVolume != 0) {
-            trebleVolume = (trebleVolume - 50) / 43;
+                trebleVolume = (trebleVolume - 50) / 43;
             }
 
 
