@@ -114,19 +114,19 @@ export class Sphere {
             let allSame = false;
 
             if (currentRing[0].z >= 0 && currentRing[currentRing.length - 1].z < 0) {
-                startNum = 0;
+                startNum = currentRing.length - 1;
             }
             else {
                 for (let j = 1; j < currentRing.length; j++) {
                     if (currentRing[j].z >= 0 && currentRing[j - 1].z < 0) {
-                        startNum = j;
+                        startNum = j - 1;
                         break;
                     }
                 }
 
                 // All of it is Positive or negative
                 if (startNum == -1) {
-                    startNum = 0;
+                    startNum = currentRing.length - 1;
                     allSame = true;
                 }
             }
@@ -141,8 +141,10 @@ export class Sphere {
             }
 
             ctx.moveTo(canvasWidth / 2 + beginning.x, canvasHeight / 2 - beginning.y)
-            ctx.lineTo(canvasWidth / 2 + currentRing[startNum].x, canvasHeight / 2 - currentRing[startNum].y)
+
             ctx.beginPath();
+
+            ctx.lineTo(canvasWidth / 2 + currentRing[startNum].x, canvasHeight / 2 - currentRing[startNum].y)
 
             for (let pointNum = startNum + 1; pointNum != startNum; pointNum++) {
                 // Early escape, it isn't necessary to color this ring
@@ -178,7 +180,7 @@ export class Sphere {
                         ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
 
                         if (pointNum + 1 == currentRing.length) {
-                            let ending = this.slerp(currentRing[0], currentRing[currentRing.length - 1])
+                            let ending = this.slerp(currentRing[pointNum], currentRing[currentRing.length - 1])
                             ctx.lineTo(canvasWidth / 2 + ending.x, canvasHeight / 2 - ending.y);
                         }
                         else {
@@ -202,9 +204,27 @@ export class Sphere {
                     }
                     else {
                         ctx.lineTo(canvasWidth / 2 + currentRing[pointNum].x, canvasHeight / 2 - currentRing[pointNum].y);
+
+                        // Edge case where only one point is negative : This should be the final one
+                        if (pointNum + 1 == startNum) {
+                            let ending = this.slerp(currentRing[pointNum], currentRing[startNum])
+                            ctx.lineTo(canvasWidth / 2 + ending.x, canvasHeight / 2 - ending.y);
+
+                            ctx.strokeStyle = "red";
+                            ctx.stroke();
+                        }
+                        else if (pointNum + 1 >= currentRing.length && startNum == 0) {
+                            let ending = this.slerp(currentRing[pointNum], currentRing[0])
+                            ctx.lineTo(canvasWidth / 2 + ending.x, canvasHeight / 2 - ending.y);
+
+                            ctx.strokeStyle = "red";
+                            ctx.stroke();
+                        }
                     }
                 }
             }
+
+
 
             if (allSame) {
 

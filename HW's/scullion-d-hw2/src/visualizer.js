@@ -1,7 +1,11 @@
 import * as utils from './utils.js';
 import { Sphere } from './Sphere.js';
 
+// Imported
 let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
+
+// Necessary for this script
+let lastTime, currentTime, delta;
 
 
 const setupCanvas = (canvasElement, analyserNodeRef) => {
@@ -16,13 +20,26 @@ const setupCanvas = (canvasElement, analyserNodeRef) => {
     // this is the array where the analyser data will be stored
     audioData = new Uint8Array(analyserNode.fftSize / 2);
     sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight);
+
+    // Set default position of the sphere
+    sphere.rotateX(30);
+    sphere.rotateY(10);
+
+    lastTime = (new Date()).getTime();
+    currentTime = 0;
+    delta = 0;
 }
 
 const draw = (params = {}) => {
+    // Update everything to find deltaTime
+    currentTime = (new Date()).getTime();
+    delta = (currentTime - lastTime) / 1000;
+
+
+
     // 1 - populate the audioData array with the frequency data from the analyserNode
     // notice these arrays are passed "by reference" 
     analyserNode.getByteFrequencyData(audioData);
-    console.log(audioData[5]);
     // OR
     //analyserNode.getByteTimeDomainData(audioData); // waveform data
 
@@ -53,7 +70,6 @@ const draw = (params = {}) => {
 
         ctx.save();
         let frequencyBinCount = analyserNode.frequencyBinCount;
-        console.log(frequencyBinCount);
         let frequencyWidth = ((canvasWidth / 128) - 0.03),
             frequencyHeight = 0,
             x = 0;
@@ -66,15 +82,51 @@ const draw = (params = {}) => {
         }
     }
 
-    // 5 - draw circles
+    // 5 - draw sphere
     if (params.showSphere) {
         ctx.save();
 
-        sphere.drawSphere();
-        sphere.rotateX(1.57);
-        sphere.rotateY(2.5);
-        sphere.rotateZ(2);
 
+        sphere.drawSphere();
+
+        if (params.spinSphere) {
+            let bassVolume = 0;
+            let mediumVolume = 0;
+            let trebleVolume = 0;
+
+            // Bass power
+            for (let i = 0; i < 43; i++) {
+                bassVolume += audioData[i];
+            }
+
+            // Medium power
+            for (let i = 43; i < 85; i++) {
+                mediumVolume += audioData[i];
+            }
+
+            // Treble power
+            for (let i = 86; i < 128; i++) {
+                trebleVolume += audioData[i];
+            }
+
+            if (bassVolume != 0) {
+            bassVolume = (bassVolume - 128) / 44;
+            }
+
+            if (mediumVolume != 0) {
+            mediumVolume = (mediumVolume - 90) / 43;
+            }
+
+            if (trebleVolume != 0) {
+            trebleVolume = (trebleVolume - 50) / 43;
+            }
+
+
+            sphere.rotateX(bassVolume * delta);
+            sphere.rotateY(mediumVolume * delta);
+            sphere.rotateZ(trebleVolume * delta);
+            console.log(audioData);
+        }
         ctx.restore();
     }
 
@@ -125,6 +177,8 @@ const draw = (params = {}) => {
 
     // D) copy image data back to canvas
     ctx.putImageData(imageData, 0, 0);
+
+    lastTime = currentTime
 }
 
 export { setupCanvas, draw };

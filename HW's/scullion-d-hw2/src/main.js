@@ -15,6 +15,7 @@ const drawParams = {
   showGradient: true,
   showBars: true,
   showSphere: true,
+  spinSphere: false,
   showNoise: false,
   showInvert: false,
   showEmboss: false,
@@ -101,6 +102,7 @@ function setupUI(canvasElement) {
   const gradientBox = document.querySelector("#gradient-cb");
   const barsBox = document.querySelector("#bars-cb");
   const sphereBox = document.querySelector("#sphere-cb");
+  const spinBox = document.querySelector("#spin-sphere-cb");
   const noiseBox = document.querySelector("#noise-cb");
   const invertBox = document.querySelector("#invert-cb");
   const embossBox = document.querySelector("#emboss-cb");
@@ -132,6 +134,14 @@ function setupUI(canvasElement) {
       drawParams.showSphere = false;
     }
   }
+  spinBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.spinSphere = true;
+    }
+    else {
+      drawParams.spinSphere = false;
+    }
+  }
   noiseBox.onclick = e => {
     if (e.target.checked) {
       drawParams.showNoise = true;
@@ -161,7 +171,7 @@ function setupUI(canvasElement) {
     if (e.target.checked) {
       drawParams.useTreble = true;
       audio.biquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
-      audio.biquadFilter.gain.setValueAtTime(25, audio.audioCtx.currentTime);
+      audio.biquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
     }
     else {
       drawParams.useTreble = false;
@@ -173,7 +183,7 @@ function setupUI(canvasElement) {
     if (e.target.checked) {
       drawParams.useBase = true;
       audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
-      audio.lowShelfBiquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
+      audio.lowShelfBiquadFilter.gain.setValueAtTime(30, audio.audioCtx.currentTime);
     }
     else {
       drawParams.useBase = false;
@@ -183,7 +193,7 @@ function setupUI(canvasElement) {
 } // end setupUI
 
 function loop() {
-  requestAnimationFrame(loop);
+  setTimeout(requestAnimationFrame(loop), 1000 / 60);
   canvas.draw(drawParams);
 }
 
