@@ -82,10 +82,10 @@ const draw = (params = {}) => {
         let frequencyWidth = ((canvasWidth / 128) - .5),
             frequencyHeight = 0,
             x = 0;
-        for (var i = 0; i < frequencyBinCount; i++) {
+        for (let i = 0; i < frequencyBinCount; i++) {
             frequencyHeight = slowData[i] * (canvasHeight * 0.002);
             ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-            ctx.fillRect(x, canvasHeight - frequencyHeight, frequencyWidth, frequencyHeight);
+            ctx.fillRect(x, canvasHeight / 2 - frequencyHeight + frequencyHeight / 2, frequencyWidth, frequencyHeight);
             x += frequencyWidth + 0.5;
             ctx.restore();
         }
