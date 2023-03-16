@@ -22,6 +22,7 @@
         "showSphere": true,
         "pulseSphere": true,
         "spinSphere": false,
+        "showConfetti": true,
         "showNoise": false,
         "showInvert": false,
         "showEmboss": false,

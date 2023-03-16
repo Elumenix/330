@@ -134,6 +134,7 @@ function setupUI(canvasElement) {
   const sphereBox = document.querySelector("#sphere-cb");
   const pulseBox = document.querySelector("#pulse-sphere-cb")
   const spinBox = document.querySelector("#spin-sphere-cb");
+  const confettiBox = document.querySelector("#confetti-cb");
   const noiseBox = document.querySelector("#noise-cb");
   const invertBox = document.querySelector("#invert-cb");
   const embossBox = document.querySelector("#emboss-cb");
@@ -181,6 +182,14 @@ function setupUI(canvasElement) {
     }
     else {
       drawParams.spinSphere = false;
+    }
+  }
+  confettiBox.onclick = e => {
+    if (e.target.checked) {
+      drawParams.showConfetti = true;
+    }
+    else {
+      drawParams.showConfetti = false;
     }
   }
   noiseBox.onclick = e => {

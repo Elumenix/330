@@ -185,7 +185,7 @@ export class Sphere {
                         let ending = this.slerp(currentRing[0], currentRing[currentRing.length - 1])
                         ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
 
-                        
+
                         ctx.stroke();
                         break;
                     }

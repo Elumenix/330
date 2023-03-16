@@ -1,11 +1,12 @@
 import * as utils from './utils.js';
 import { Sphere } from './Sphere.js';
+import { Circle } from './Circle.js';
 
 // Imported
 let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
 
 // Necessary for this script
-let lastTime, currentTime, delta, slowData;
+let lastTime, currentTime, delta, slowData, circleArray;
 
 
 const setupCanvas = (canvasElement, analyserNodeRef) => {
@@ -25,6 +26,12 @@ const setupCanvas = (canvasElement, analyserNodeRef) => {
     sphere.rotateX(30);
     sphere.rotateY(10);
 
+    circleArray = new Array(30);
+
+    for (let i = 0; i < circleArray.length; i++) {
+        circleArray[i] = new Circle(canvasWidth, canvasHeight);
+    }
+
     lastTime = (new Date()).getTime();
     currentTime = 0;
     delta = 0;
@@ -39,8 +46,6 @@ const draw = (params = {}) => {
     // Update everything to find deltaTime
     currentTime = (new Date()).getTime();
     delta = (currentTime - lastTime) / 1000;
-
-
 
     // 1 - populate the audioData array with the frequency data from the analyserNode
     // notice these arrays are passed "by reference" 
@@ -73,6 +78,13 @@ const draw = (params = {}) => {
         ctx.globalAlpha = 1;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
         ctx.restore();
+    }
+
+    if (params.showConfetti) {
+        for (let i = 0; i < circleArray.length; i++) {
+            circleArray[i].update(slowData);
+            circleArray[i].draw(ctx, slowData);
+        }
     }
 
     // 4 - draw bars
