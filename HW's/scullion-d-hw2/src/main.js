@@ -12,18 +12,6 @@ import * as audio from './audio.js';
 import * as canvas from './visualizer.js';
 
 const drawParams = {
-  displayFrequency: true,
-  displayWaveform: false,
-  showGradient: true,
-  showBars: true,
-  showSphere: true,
-  pulseSphere: true,
-  spinSphere: false,
-  showNoise: false,
-  showInvert: false,
-  showEmboss: false,
-  useTreble: false,
-  useBase: false
 };
 
 // 1 - here we are faking an enumeration
@@ -38,8 +26,47 @@ function init() {
   let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
   setupUI(canvasElement);
   canvas.setupCanvas(canvasElement, audio.analyserNode);
+
+  const url = "./data/av-data.json"
+
+  const xhr = new XMLHttpRequest();
+  xhr.onload = (e) => {
+    console.log(`In onload - HTTP Status Code = ${e.target.status}`);
+    const json = e.target.responseText;
+
+    const { drawParams: params } = JSON.parse(json);
+    Object.assign(drawParams, params);
+
+    const data = JSON.parse(json);
+
+    const title = document.createElement('h1');
+    title.textContent = data.Title;
+
+    // Add the h1 element to the DOM
+    document.body.insertBefore(title, document.body.firstChild);
+
+
+    const select = document.getElementById('track-select');
+
+    // Loop through the songs and create an option element for each one
+    for (let i = 0; i < data.Songs.length; i++) {
+      const song = data.Songs[i];
+      const option = document.createElement('option');
+      option.value = song.location;
+      option.textContent = song.title;
+      if (i === 0) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    };
+  }
+  xhr.onerror = e => console.log(`In onerrer - HTTP Status Code = ${e.target.status}`);
+  xhr.open("GET", url);
+  xhr.send();
+
   loop();
 }
+
 
 function setupUI(canvasElement) {
   // A - hookup fullscreen button

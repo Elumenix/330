@@ -1,0 +1,31 @@
+{
+    "Title": "Spherical Audio Visualizer",
+    "Songs": [
+        {
+            "title": "New Adventure Theme",
+            "location": "media/new_adventure_theme.mp3"
+        },
+        {
+            "title": "Peanuts Theme",
+            "location": "media/peanuts_theme.mp3"
+        },
+        {
+            "title": "The Picard Song",
+            "location": "media/the_picard_song.mp3"
+        }
+    ],
+    "drawParams": {
+        "displayFrequency": true,
+        "displayWaveform": false,
+        "showGradient": true,
+        "showBars": true,
+        "showSphere": true,
+        "pulseSphere": true,
+        "spinSphere": false,
+        "showNoise": false,
+        "showInvert": false,
+        "showEmboss": false,
+        "useTreble": false,
+        "useBase": false
+    }
+}
