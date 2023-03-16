@@ -19,7 +19,7 @@ const DEFAULTS = Object.freeze({
   sound1: "media/new_adventure_theme.mp3"
 });
 
-function init() {
+ const init = () => {
   console.log("init called");
   console.log(`Testing utils.getRandomColor() import: ${utils.getRandomColor()}`);
   audio.setupWebaudio(DEFAULTS.sound1);
@@ -68,7 +68,7 @@ function init() {
 }
 
 
-function setupUI(canvasElement) {
+const setupUI = (canvasElement) => {
   // A - hookup fullscreen button
   const fsButton = document.querySelector("#fs-button");
 
@@ -252,7 +252,7 @@ function setupUI(canvasElement) {
   }
 } // end setupUI
 
-function loop() {
+const loop = () => {
   setTimeout(() => {
     requestAnimationFrame(loop);
   }, 1000 / 60);
