@@ -116,8 +116,6 @@ export class Sphere {
         // Color The back af all rings
         for (let i = 0; i < this.rings.length; i++, currentRing = this.rings[i]) {
 
-
-            ctx.moveTo(canvasWidth / 2 + (currentRing[0].x * scaling[0]), canvasHeight / 2 - (currentRing[0].y * scaling[0]))
             ctx.beginPath();
 
             for (let pointNum = 0; pointNum < currentRing.length; pointNum++) {
@@ -163,8 +161,6 @@ export class Sphere {
             else {
                 beginning = this.slerp(currentRing[startNum], currentRing[startNum - 1]);
             }
-
-            ctx.moveTo(canvasWidth / 2 + (beginning.x * scaling[i]), canvasHeight / 2 - (beginning.y * scaling[i]))
 
             ctx.beginPath();
 
