@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Map Start</title>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+
+</head>
+
+<body>
+    <div id='map' style='width: 400px; height: 300px;'></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZWx1bWVuaXgiLCJhIjoiY2xnNWlteDEyMDN0ZjNlbjlwYXI1a2RocSJ9.dO0Dj8YQUJ5iXVEfP-EaJA';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v10'
+        });
+
+        map.setZoom(9);
+        map.setCenter([-77.6799, 43.083848]); // note the order - it's longitude,latitude - which is opposite of Google Maps
+        map.addControl(new mapboxgl.NavigationControl());
+        map.setStyle('mapbox://styles/mapbox/dark-v10');
+
+    </script>
+</body>
+
+</html>
