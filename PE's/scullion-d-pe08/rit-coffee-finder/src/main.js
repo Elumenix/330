@@ -1,35 +1,73 @@
-const geojson = {
-    type: 'FeatureCollection',
-    features: []
-};
+import * as map from "./map.js";
+import * as ajax from "./ajax.js";
 
-function init() {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZWx1bWVuaXgiLCJhIjoiY2xnNWlteDEyMDN0ZjNlbjlwYXI1a2RocSJ9.dO0Dj8YQUJ5iXVEfP-EaJA';
+let poi;
 
-    const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [-77.67454147338866, 43.08484339838443],
-        zoom: 15.5
-    });
+const loadPOI = () => {
+    const url = "https://people.rit.edu/~acjvks/shared/330/igm-points-of-interest.php";
 
-    // add markers to map
-    for (const feature of geojson.features) {
-        // create a HTML element for each feature
-        const el = document.createElement('div');
-        el.className = 'marker';
+    // callback function for when data shows up
+    const poiLoaded = (jsonString) => {
+        poi = JSON.parse(jsonString);
+        console.log(poi);
 
-        // make a marker for each feature and add to the map
-        new mapboxgl.Marker(el)
-            .setLngLat(feature.geometry.coordinates)
-            .setPopup(
-                new mapboxgl.Popup({ offset: 25 }) // add popups
-                    .setHTML(
-                        `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
-                    )
-            )
-            .addTo(map);
+        // make markers and add them to the map
+        for (let p of poi) {
+            map.addMarker(p.coordinates, p.title, "A POI!", "marker");
+        }
     }
+
+    // start download
+    ajax.downloadFile(url, poiLoaded);
+}
+
+const init = () => {
+    map.initMap();
+    map.loadMarkers();
+    map.addMarkersToMap();
+    setupUI();
+}
+
+const setupUI = () => {
+    // it's easy to get [longitude,latitude] coordinates with this tool: http://geojson.io/
+    const lnglatRIT = [-77.67454147338866, 43.08484339838443];
+    const lnglatIGM = [-77.67990589141846, 43.08447511795301];
+
+    // RIT Zoom 15.5
+    btn1.onclick = () => {
+        map.setZoomLevel(15.5);
+        map.setPitchAndBearing(0, 0);
+        map.flyTo(lnglatRIT);
+    }
+
+    // RIT isometric view
+    btn2.onclick = () => {
+        map.setZoomLevel(15.5);
+        map.setPitchAndBearing(45, 0);
+        map.flyTo(lnglatRIT);
+    }
+
+    // World zoom 0
+    btn3.onclick = () => {
+        map.setZoomLevel();
+        map.setPitchAndBearing(0, 0);
+        map.flyTo();
+    }
+
+    // IGM zoom 18
+    btn4.onclick = () => {
+        map.setZoomLevel(18);
+        map.setPitchAndBearing(0, 0);
+        map.flyTo(lnglatIGM);
+    }
+
+    // load some marker data
+    btn5.onclick = () => {
+        // only download this data once
+        if (!poi) {
+            loadPOI();
+        }
+    };
 }
 
 export { init };
