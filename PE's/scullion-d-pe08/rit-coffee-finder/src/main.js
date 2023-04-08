@@ -13,7 +13,7 @@ const loadPOI = () => {
 
         // make markers and add them to the map
         for (let p of poi) {
-            map.addMarker(p.coordinates, p.title, "A POI!", "marker");
+            map.addMarker(p.coordinates, p.title, "A POI!", "poi");
         }
     }
 
@@ -65,6 +65,7 @@ const setupUI = () => {
     btn5.onclick = () => {
         // only download this data once
         if (!poi) {
+            poi = "clicked"
             loadPOI();
         }
     };
