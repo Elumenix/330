@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Components - Hello</title>
+    <style>
+        /* Note that we can style custom elements just like any other built-in element such as a <p>, <h1> etc*/
+        hello-1,
+        hello-2,
+        hello-3 {
+            font-weight: bold;
+            color: red;
+            border: 1px dashed black;
+            padding: 2px;
+        }
+    </style>
+    <script>
+        class Hello1 extends HTMLElement {
+            // a component lifecycle event - called when the component is inserted into the DOM
+            connectedCallback() {
+                this.textContent = "Hello!";
+            }
+        }
+
+        customElements.define('hello-1', Hello1);
+
+        class Hello2 extends HTMLElement {
+            // called when the component is first created, but before it is added to the DOM
+            constructor() {
+                super();
+                this.name = "Ace Coder";
+            }
+
+            // a component lifecycle event - called when the component is inserted into the DOM
+            connectedCallback() {
+                this.textContent = `Hey ${this.name}!`
+            }
+        }
+
+        customElements.define('hello-2', Hello2)
+
+        window.onload = () => {
+            // create a new <hello-2> element
+            const hello2 = new Hello2();
+            hello2.name = "Jimmy";
+            document.body.appendChild(hello2);
+
+            // another way 
+            const hello2B = document.createElement("hello-2");
+            hello2B.name = "Johnny";
+            document.body.appendChild(hello2B);
+
+            // get first <hello-3> on the page
+            // PS - the second "data-shout" is a convention for boolean attributes
+            document.querySelector("hello-3").setAttribute("data-shout", "data-shout");
+        };
+
+        class Hello3 extends HTMLElement {
+            // connect componont = a componenet lifecycle event
+            constructor() {
+                super();
+                this.name = "Ace Coder";
+            }
+
+            // tell the component what attributes to "watch"
+            static get observedAttributes() {
+                return ["data-name"]; // data-name is a custom attribute
+            }
+
+            // ** lifecycle events **
+
+            // called when the component is inserted into the DOM
+            connectedCallback() {
+                this.render();
+            }
+
+            // this method is invoked each time one of the component's "watched" attributes changes
+            attributeChangedCallback(attributeName, oldValue, newValue) {
+                console.log(attributeName, oldValue, newValue);
+                if (oldValue === newValue) return;
+                if (attributeName == "data-name") {
+                    this.name = newValue;
+                }
+                this.render();
+            }
+
+            // helper method
+            render() {
+                this.textContent = `Greetings ${this.name}!`;
+
+                if (this.hasAttribute("data-shout")) {
+                    this.textContent = this.textContent.toUpperCase();
+                }
+            }
+        }
+
+        customElements.define('hello-3', Hello3)
+    </script>
+</head>
+
+<body>
+    <hello-1></hello-1>
+    <br>
+    <hello-2></hello-2>
+    <br>
+    <hello-3 data-name="Jeffrey"></hello-3>
+    <br>
+    <hello-3 data-name="Janet" data-shout></hello-3>
+</body>
+
+</html>
