@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Components - Shadow DOM & HTML Templates</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        /* Note that we can style custom elements just like any other built-in element such as a <p>, <h1> etc*/
+        my-bookmark {
+            border: 1px dashed black;
+            padding: 2px;
+        }
+    </style>
+    <script>
+
+
+        class MyBookmark extends HTMLElement {
+            // called when the component is first created, but before it is added to the DOM
+            constructor() {
+                super();
+                this._text = "RIT";
+                this._url = "https://www.rit.edu/";
+
+                // Attach a shadow DOM tree to this instance - this reates `.shadowRoot` for us
+                this.attachShadow({ mode: "open" });
+                // Clone `template` and append it
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+            }
+
+            // tell the component what attributes to "watch"
+            static get observedAttributes() {
+                return ["data-text", "data-url"];
+            }
+
+            // ** lifecycle events **
+
+            // called when the component is inserted into the DOM
+            connectedCallback() {
+                this.render();
+            }
+
+            // this method is invoked each time one of the component's "watched" attributes changes
+            attributeChangedCallback(attributeName, oldValue, newValue) {
+                console.log(attributeName, oldValue, newValue);
+                if (oldValue === newValue) return;
+                if (attributeName == "data-text") {
+                    this._text = newValue;
+                }
+                if (attributeName == "data-url") {
+                    this._url = newValue;
+                }
+                this.render();
+            }
+
+            // helper method
+            render() {
+                //this.innerHTML = `<span><a href="${this._url}">${this._text}</a></span>`;
+
+                // Is the template loaded?
+                let a = this.shadowRoot.querySelector("a");
+                // if so, update the shadow DOM
+                if (a) {
+                    a.href = this._url;
+                    a.textContent = this._text;
+                }
+            }
+        }
+
+        const template = document.createElement("template");
+        template.innerHTML = `
+    <style>
+        :host{
+            display: inline-block;
+            background-color: #ddd;
+        }
+        span{
+            color: #F76902;
+            font-variant: small-caps;
+            font-weight: bolder;
+            font-family: sans-serif;
+        }
+        </style>
+        <span><a href="">???</a></span>
+        `;
+
+        customElements.define('my-bookmark', MyBookmark);
+
+        window.onload = () => {
+            // Create a MyBookmark and add it to the list
+            const bing = document.createElement("my-bookmark");
+
+            // ANOTHER way to set custom attributes, the .dataset property
+            // note that these 2 lines of code will also trigger attributeChangedCallback()
+            bing.dataset.text = "Bing";
+            bing.dataset.url = "https://www.bing.com/";
+
+            const newLI = document.createElement("li");
+            newLI.appendChild(bing);
+            document.querySelector("#bookmarks").appendChild(newLI);
+        };
+
+    </script>
+</head>
+
+<body>
+    <h1>Web Components - Shadow DOM & HTML Templates</h1>
+    <ul id="bookmarks">
+        <li><my-bookmark></my-bookmark></li>
+        <li><my-bookmark data-text="Google" data-url="https://www.google.com/"></my-bookmark></li>
+        <li><my-bookmark data-text="MDN Web components docs"
+                data-url="https://developer.mozilla.org/en-US/docs/Web/Web_Components"></my-bookmark></li>
+    </ul>
+</body>
+
+</html>
