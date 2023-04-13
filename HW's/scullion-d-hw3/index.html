@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HW-3 - Link Buddy!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <style>
+        #bookmarks {
+            list-style-type: none;
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        #bookmarks li {
+            margin-bottom: 2px;
+        }
+    </style>
+    <script src="src/main.js" type="module"></script>
+</head>
+
+<body>
+    <header class="hero is-small is-primary is-bold p-2">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">HW-3 - Link Buddy!</h1>
+                <h2 class="subtitle">Save your links for later!</h2>
+            </div>
+        </div>
+    </header>
+
+    <div class="columns section has-background-light"> <!-- Columns -->
+        <div class="column"> <!--Left Column-->
+            <h2 class="subtitle is-5">Favorites List</h2>
+            <div class="is-size-7 has-text-weight-bold">Number of favorites: XX</div>
+            <ul id="bookmarks"></ul>
+        </div>
+        <div class="column"><!--Right Column-->
+            <h2 class="subtitle is-5">Add Favorite</h2>
+            <form> <!--Begin Form-->
+                <div class="field">
+                    <label class="label">Text</label>
+                    <div class="control">
+                        <input id="favorite-text" class="input" type="text" placeholder="Name of link" size="30"
+                            required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">URL</label>
+                    <div class="control">
+                        <input id="favorite-url" class="input" type="url" placeholder="https://example.com"
+                            pattern="https://.*" size="30" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Comments</label>
+                    <div class="control">
+                        <input id="favorite-comments" class="input" type="text" placeholder="Comments" size="30"
+                            required>
+                    </div>
+                </div>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button id="favorite-submit-button" class="button is-success">Submit</button>
+                    </div>
+                    <div class="control">
+                        <button id="favorite-cancel-button" class="button is-warning">Cancel</button>
+                    </div>
+                </div>
+            </form><!--End Form-->
+        </div> <!--End Right Column-->
+    </div> <!--End Columns-->
+</body>
+
+</html>
