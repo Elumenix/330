@@ -87,7 +87,7 @@ template.innerHTML = `
         </style>
         <div class="has-background-link pl-1 pr-1">
         <span id="link" class="is-family-sans-serif">
-        <a href="" class="has-text-light">???</a>
+        <a href="" target="_blank" class="has-text-light">???</a>
         </span>
         <span id = "buttons">
         <button class="button is-success is-small">

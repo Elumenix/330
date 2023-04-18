@@ -2,11 +2,29 @@ import { MyBookmark } from "./myBookmark.js";
 import { Favorite } from "./favorite.js";
 
 let favorites = [];
+let textField;
+let urlField;
+let commentField;
+let bookmark;
 
 const submitClicked = (evt) => {
     console.log("submitClicked");
+    let string;
 
+    if ((textField.value.trim().length >= 1) && (urlField.value.trim().length >= 1) && (commentField.value.trim().length >= 1)) {
+        // An FID will be generated automatically
+        let favorite = new Favorite(textField.value, urlField.value, commentField.value);
+        favorites.push(favorite);
 
+        createBookmarkComponent(favorite.text, favorite.url, favorite.comments, favorite.fid);
+
+        textField.value = "";
+        urlField.value = "";
+        commentField.value = "";
+    }
+    else {
+        console.log("Not all fields are filled out correctly");
+    }
 
     evt.preventDefault();
     return false;
@@ -15,23 +33,20 @@ const submitClicked = (evt) => {
 const clearFormFields = (evt) => {
     console.log("cancelClicked");
 
-    document.querySelector("#favorite-text").value = "";
-    document.querySelector("#favorite-url").value = "";
-    document.querySelector("#favorite-comments").value = "";
+    textField.value = "";
+    urlField.value = "";
+    commentField.value = "";
 
     evt.preventDefault();
     return false;
 }
 
 const createBookmarkComponent = (text, url, comments, fid = crypto.randomUUID()) => {
-    const bookmark = document.querySelector("#bookmarks");
-
     let newBookmark = new MyBookmark();
-    newBookmark.text = text;
-    newBookmark.url = url;
-    newBookmark.comments = comments;
-    newBookmark.fid = fid;
-
+    newBookmark.dataset.text = text;
+    newBookmark.dataset.url = url;
+    newBookmark.dataset.comments = comments;
+    newBookmark.dataset.fid = fid;
 
     console.log(newBookmark.comments);
 
@@ -57,10 +72,20 @@ favorites.push(new Favorite("RIT", "https://www.rit.edu", "A private university 
 
 
 window.onload = () => {
+    // Establish important page elements
+    textField = document.querySelector("#favorite-text");
+    urlField = document.querySelector("#favorite-url");
+    commentField = document.querySelector("#favorite-comments");
+    bookmark = document.querySelector("#bookmarks");
+
     loadFavoritesFromStorage();
 }
 
+const deleteFavorite = (fid) => {
+    for (let i = 0; i < favorites.length; i++) {
 
+    }
+}
 
 /*
 const bookmarks = [
