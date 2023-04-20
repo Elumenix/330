@@ -90,7 +90,7 @@ template.innerHTML = `
         <a href="" target="_blank" class="has-text-light">???</a>
         </span>
         <span id = "buttons">
-        <button class="button is-success is-small">
+        <button class="button is-success is-small" disabled>
         <span class="icon is-small">
         <i class="fas fa-check"></i>
         </span>

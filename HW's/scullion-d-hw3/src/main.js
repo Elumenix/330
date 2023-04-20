@@ -6,6 +6,8 @@ let textField;
 let urlField;
 let commentField;
 let bookmark;
+let numElements;
+let favoriteString;
 
 const submitClicked = (evt) => {
     console.log("submitClicked");
@@ -56,6 +58,9 @@ const createBookmarkComponent = (text, url, comments, fid = crypto.randomUUID())
 
     // put element in a list element on the page
     bookmark.appendChild(newElement);
+
+    numElements++;
+    numberChange
 }
 
 const loadFavoritesFromStorage = () => {
@@ -68,7 +73,9 @@ document.querySelector("#favorite-submit-button").onclick = submitClicked;
 document.querySelector("#favorite-cancel-button").onclick = clearFormFields;
 
 
-favorites.push(new Favorite("RIT", "https://www.rit.edu", "A private university located near Rochester, NY."));
+favorites.push(new Favorite("RIT", "https://www.rit.edu", "A private university located near Rochester, NY.", "123"));
+favorites.push(new Favorite("RIT", "https://www.rit.edu", "A private university located near Rochester, NY.", "124"));
+
 
 
 window.onload = () => {
@@ -77,13 +84,40 @@ window.onload = () => {
     urlField = document.querySelector("#favorite-url");
     commentField = document.querySelector("#favorite-comments");
     bookmark = document.querySelector("#bookmarks");
+    favoriteString = document.querySelector(".column div");
+
+    numElements = 0;
+    numberChange();
+
 
     loadFavoritesFromStorage();
+    deleteFavorite("123");
+}
+
+const numberChange = () => {
+    favoriteString.innerHTML = (`Number of favorites: ${numElements}`);
+    console.log(favoriteString);
 }
 
 const deleteFavorite = (fid) => {
-    for (let i = 0; i < favorites.length; i++) {
+    // From here: https://stackoverflow.com/questions/5767325/how-can-i-remove-a-specific-item-from-an-array-in-javascript
+    // No specific user gave me my solution, understanding how splice worked was a result of multiple answers and I modified things from there
 
+    // Get index of correct element;
+    for (let c = 0; c < favorites.length; c++) {
+        if (favorites[c].fid == fid) {
+            // remove from list
+            favorites.splice(c, 1);
+
+            // remove from document
+            document.querySelector(`#bookmarks li:nth-child(${c + 1})`).remove();
+
+            // update number of elements
+            numElements--;
+            numberChange();
+
+            break;
+        }
     }
 }
 
