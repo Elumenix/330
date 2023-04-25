@@ -10,6 +10,7 @@ let bookmark;
 let numElements;
 let favoriteString;
 let startSaving;
+let error;
 
 const submitClicked = (evt) => {
     console.log("submitClicked");
@@ -24,9 +25,11 @@ const submitClicked = (evt) => {
         textField.value = "";
         urlField.value = "";
         commentField.value = "";
+        error.style.visibility = 'hidden';
     }
     else {
         console.log("Not all fields are filled out correctly");
+        error.style.visibility = 'visible';
     }
 
     evt.preventDefault();
@@ -39,6 +42,7 @@ const clearFormFields = (evt) => {
     textField.value = "";
     urlField.value = "";
     commentField.value = "";
+    error.style.visibility = 'hidden';
 
     evt.preventDefault();
     return false;
@@ -94,6 +98,8 @@ window.onload = () => {
     bookmark = document.querySelector("#bookmarks");
     favoriteString = document.querySelector(".column div");
     startSaving = false;
+    error = document.querySelector(".error");
+    error.style.visibility = 'hidden';
 
     numElements = 0;
     numberChange();
