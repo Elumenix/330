@@ -1,14 +1,16 @@
 class MyBookmark extends HTMLElement {
     // called when the component is first created, but before it is added to the DOM
-    constructor() {
+    constructor(deleteEvent) {
         super();
         this._text = "RIT";
         this._url = "https://www.rit.edu/";
         this._comments = "No comments found";
         this._fid = crypto.randomUUID();
+        this._deleteEvent = deleteEvent;
 
         // Attach a shadow DOM tree to this instance - this reates `.shadowRoot` for us
         this.attachShadow({ mode: "open" });
+
         // Clone `template` and append it
         this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
@@ -22,6 +24,11 @@ class MyBookmark extends HTMLElement {
 
     // called when the component is inserted into the DOM
     connectedCallback() {
+
+        this.shadowRoot.querySelector(".is-warning").onclick = () => {
+            this._deleteEvent(this._fid);
+        }; 
+
         this.render();
     }
 
