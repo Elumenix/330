@@ -86,6 +86,12 @@ const isFavorite = (id) => {
 			// Button can only be unfavorited
 			favoriteButton.setAttribute('disabled', '');
 			unfavoriteButton.removeAttribute('disabled');
+
+			// Update events
+			favoriteButton.onclick = null;
+			unfavoriteButton.onclick = () => {
+				deleteFavorite(id);
+			};
 			return;
 		}
 	}
@@ -93,7 +99,29 @@ const isFavorite = (id) => {
 	// Button can only be favorited
 	unfavoriteButton.setAttribute('disabled', '');
 	favoriteButton.removeAttribute('disabled');
-}
+
+	// Update events
+	unfavoriteButton.onclick = null;
+	favoriteButton.onclick = () => {
+		addToFavorites(id);
+	};
+};
+
+const addToFavorites = (id) => {
+	favoriteIds.push(id);
+	refreshFavorites();
+
+	// Changes the function of the buttons
+	isFavorite(id);
+};
+
+const deleteFavorite = (id) => {
+	favoriteIds = favoriteIds.filter(item => item !== id);
+	refreshFavorites();
+
+	// Changes the function of the buttons
+	isFavorite(id);
+};
 
 const init = () => {
 	map.initMap(lnglatNYS);
