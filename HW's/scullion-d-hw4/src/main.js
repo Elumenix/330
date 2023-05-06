@@ -7,6 +7,8 @@ const lnglatNYS = [-75.71615970715911, 43.025810763917775];
 const lnglatUSA = [-98.5696, 39.8282];
 let geojson;
 let favoriteIds = ["p20", "p79", "p180", "p43"];
+let favoriteButton;
+let unfavoriteButton;
 
 
 // II. Functions
@@ -32,6 +34,10 @@ const setupUI = () => {
 		map.flyTo(lnglatUSA);
 	};
 
+	// Instantiating these elements
+	unfavoriteButton = document.querySelector("button.button.is-warning.is-small");
+	favoriteButton = document.querySelector("button.button.is-success.is-small");
+
 	refreshFavorites();
 }
 
@@ -40,6 +46,7 @@ const showFeatureDetails = (id) => {
 	document.querySelector("#details-1").innerHTML = `Info for ${feature.properties.title}`;
 	document.querySelector("#details-2").innerHTML = `<p><b>Address:</b> ${feature.properties.address}</p><p><b>Phone:</b> <a href="tel:+${feature.properties.phone}">${feature.properties.phone}</a></p><p><b>Website:</b> <a href="${feature.properties.url}">${feature.properties.url}</a></p>`;
 	document.querySelector("#details-3").innerHTML = `<p>${feature.properties.description}</p>`;
+	isFavorite(id);
 };
 
 const getFeatureById = (id) => {
@@ -72,6 +79,21 @@ const createFavoriteElement = (id) => {
 	`;
 	return a;
 };
+
+const isFavorite = (id) => {
+	for (const identifier of favoriteIds) {
+		if (id == identifier) {
+			// Button can only be unfavorited
+			favoriteButton.setAttribute('disabled', '');
+			unfavoriteButton.removeAttribute('disabled');
+			return;
+		}
+	}
+
+	// Button can only be favorited
+	unfavoriteButton.setAttribute('disabled', '');
+	favoriteButton.removeAttribute('disabled');
+}
 
 const init = () => {
 	map.initMap(lnglatNYS);
