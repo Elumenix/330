@@ -110,6 +110,7 @@ const isFavorite = (id) => {
 const addToFavorites = (id) => {
 	favoriteIds.push(id);
 	refreshFavorites();
+	writeToLocalStorage();
 
 	// Changes the function of the buttons
 	isFavorite(id);
@@ -118,13 +119,25 @@ const addToFavorites = (id) => {
 const deleteFavorite = (id) => {
 	favoriteIds = favoriteIds.filter(item => item !== id);
 	refreshFavorites();
+	writeToLocalStorage();
 
 	// Changes the function of the buttons
 	isFavorite(id);
 };
 
+const writeToLocalStorage = () => {
+	localStorage.setItem("dps5393-330-HW4", JSON.stringify(favoriteIds));
+}
+
+const retrieveIds = () => {
+	let json = localStorage.getItem("dps5393-330-HW4")
+	favoriteIds = JSON.parse(json);
+}
+
 const init = () => {
 	map.initMap(lnglatNYS);
+	retrieveIds();
+
 	ajax.downloadFile("data/parks.geojson", (str) => {
 		geojson = JSON.parse(str);
 		map.addMarkersToMap(geojson, showFeatureDetails);
