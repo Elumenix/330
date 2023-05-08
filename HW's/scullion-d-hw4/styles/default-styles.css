@@ -27,6 +27,15 @@
 	font-family: sans-serif;
 }
 
-.mapboxgl-popup-content p{
+.mapboxgl-popup-content p {
 	text-align: left;
+}
+
+#details-3 p {
+	margin-bottom: 1em !important;
+}
+
+#favorites-list {
+	height: 144px;
+	overflow: auto;
 }

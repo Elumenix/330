@@ -36,8 +36,8 @@ class MyHeader extends HTMLElement {
     render() {
         const titleSlot = this.shadowRoot.querySelector('slot[name="title"]');
         const subtitleSlot = this.shadowRoot.querySelector('slot[name="subtitle"]');
-        titleSlot.textContent = this.dataset.title || "No title provided";
-        subtitleSlot.textContent = this.dataset.subtitle || "No subtitle provided";
+        titleSlot.textContent = this.dataset.title || "";
+        subtitleSlot.textContent = this.dataset.subtitle || "";
     }
 }
 

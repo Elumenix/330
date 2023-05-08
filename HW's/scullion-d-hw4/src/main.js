@@ -42,6 +42,7 @@ const setupUI = () => {
 }
 
 const showFeatureDetails = (id) => {
+	document.querySelector("#favorite-buttons").style.display = "block";
 	const feature = getFeatureById(id);
 	document.querySelector("#details-1").innerHTML = `Info for ${feature.properties.title}`;
 	document.querySelector("#details-2").innerHTML = `<p><b>Address:</b> ${feature.properties.address}</p><p><b>Phone:</b> <a href="tel:+${feature.properties.phone}">${feature.properties.phone}</a></p><p><b>Website:</b> <a href="${feature.properties.url}">${feature.properties.url}</a></p>`;
@@ -143,6 +144,8 @@ const init = () => {
 		map.addMarkersToMap(geojson, showFeatureDetails);
 		setupUI();
 	});
+
+	document.querySelector("#favorite-buttons").style.display = "none";
 };
 
 init();

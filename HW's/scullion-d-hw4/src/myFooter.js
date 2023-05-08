@@ -31,8 +31,8 @@ class myFooter extends HTMLElement {
     render() {
         const titleSlot = this.shadowRoot.querySelector('slot[name="title"]');
         const yearSlot = this.shadowRoot.querySelector('slot[name="year"]');
-        titleSlot.textContent = this.dataset.title || "No title provided";
-        yearSlot.textContent = this.dataset.year || "No subtitle provided";
+        titleSlot.textContent = this.dataset.title || "";
+        yearSlot.textContent = this.dataset.year || "";
     }
 
 }
