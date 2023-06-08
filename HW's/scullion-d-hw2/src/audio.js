@@ -30,6 +30,13 @@ const setupWebaudio = (filePath) => {
     // 4 - create an a source node that points at the <audio> element
     sourceNode = audioCtx.createMediaElementSource(element);
 
+    // Might not be a good standard, but only way I could think of to change the button back
+    sourceNode.mediaElement.onended = () => {
+        if (sourceNode.mediaElement.loop == false) {
+            document.querySelector("#play-button").dataset.playing = "no";
+        }
+    }
+
 
     biquadFilter = audioCtx.createBiquadFilter();
     biquadFilter.type = "highshelf";
@@ -87,4 +94,9 @@ const setVolume = (value) => {
     gainNode.gain.value = value;
 }
 
-export { audioCtx, setupWebaudio, playCurrentSound, pauseCurrentSound, loadSoundFile, setVolume, analyserNode, biquadFilter, lowShelfBiquadFilter };
+const setLooping = (value) => {
+    console.log(sourceNode);
+    sourceNode.mediaElement.loop = value;
+}
+
+export { audioCtx, setupWebaudio, playCurrentSound, pauseCurrentSound, loadSoundFile, setVolume, setLooping, analyserNode, biquadFilter, lowShelfBiquadFilter };

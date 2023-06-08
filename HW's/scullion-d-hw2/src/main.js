@@ -163,6 +163,7 @@ const setupUI = (canvasElement) => {
   };
 
 
+
   // E - Add event handlers for the checkbox settings
   const gradientBox = document.querySelector("#gradient-cb");
   const barsBox = document.querySelector("#bars-cb");
@@ -175,6 +176,7 @@ const setupUI = (canvasElement) => {
   const embossBox = document.querySelector("#emboss-cb");
   const trebleBox = document.querySelector("#highshelf-cb");
   const baseBox = document.querySelector("#lowshelf-cb");
+  const loopButton = document.querySelector("#loop-cb");
   const frequencyButton = document.querySelector("#frequency");
   const waveformButton = document.querySelector("#waveform");
 
@@ -284,6 +286,10 @@ const setupUI = (canvasElement) => {
   waveformButton.onclick = () => {
     drawParams.displayFrequency = false;
     drawParams.displayWaveform = true;
+  }
+
+  loopButton.onchange = () => {
+    audio.setLooping(loopButton.checked);
   }
 } // end setupUI
 

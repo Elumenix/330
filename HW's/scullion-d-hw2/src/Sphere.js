@@ -293,8 +293,19 @@ export class Sphere {
         // Calculate the distance between P1 and P2
         const d = Math.acos(P1[0] * P2[0] + P1[1] * P2[1] + P1[2] * P2[2]);
 
+        // Handle edge case where d is very close to 0 or π
+        if (Math.abs(d) < 1e-6 || Math.abs(d - Math.PI) < 1e-6) {
+            return new Point(V1.x, V1.y, 0);
+        }
+
         // Calculate the value of t that represents the position of the point along the great circle connecting P1 and P2
-        const t = -P1[2] / (P2[2] - P1[2]);
+        let t;
+        if (Math.abs(P2[2] - P1[2]) < 1e-6) {
+            // Handle edge case where z-coordinates of both points are equal
+            t = 0.5;
+        } else {
+            t = -P1[2] / (P2[2] - P1[2]);
+        }
 
         // Calculate the point P on the surface of the sphere with a z-coordinate equal to zero
         const sin1 = Math.sin((1 - t) * d);
