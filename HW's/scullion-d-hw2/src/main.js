@@ -19,7 +19,7 @@ const DEFAULTS = Object.freeze({
   sound1: "media/new_adventure_theme.mp3"
 });
 
- const init = () => {
+const init = () => {
   console.log("init called");
   console.log(`Testing utils.getRandomColor() import: ${utils.getRandomColor()}`);
   audio.setupWebaudio(DEFAULTS.sound1);
@@ -127,6 +127,41 @@ const setupUI = (canvasElement) => {
       playButton.dispatchEvent(new MouseEvent("click"));
     }
   };
+
+  // Set up button that can get audio from the computer
+  let trackFile = document.querySelector("#music-file");
+  trackFile.value = "";
+
+  trackFile.onchange = e => {
+    let file = e.target.files[0];
+    let fileName = file.name.substring(0, file.name.lastIndexOf('.'));
+    let objectURL = URL.createObjectURL(file);
+    audio.loadSoundFile(objectURL);
+
+    // pause the current track if it is playing
+    if (playButton.dataset.playing == "yes") {
+      playButton.dispatchEvent(new MouseEvent("click"));
+    }
+
+    // Adds new track to track select if it doesn't exist already 
+    const select = document.getElementById('track-select');
+    let option = Array.from(select.options).find(option => option.textContent === fileName);
+
+    if (option) {
+      // Select existing option
+      option.selected = true;
+      audio.loadSoundFile(option.value);
+    } else {
+      // Create new option
+      option = document.createElement('option');
+      option.value = objectURL;
+      option.textContent = fileName;
+      option.selected = true;
+      select.appendChild(option);
+      audio.loadSoundFile(option.value);
+    }
+  };
+
 
   // E - Add event handlers for the checkbox settings
   const gradientBox = document.querySelector("#gradient-cb");
