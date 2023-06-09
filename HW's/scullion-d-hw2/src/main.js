@@ -10,6 +10,8 @@
 import * as utils from './utils.js';
 import * as audio from './audio.js';
 import * as canvas from './visualizer.js';
+//import GUI from 'dat.gui'; Delete index script when budeling
+//const gui = new dat.GUI();
 
 const drawParams = {
 };
@@ -137,6 +139,16 @@ const setupUI = (canvasElement) => {
 
   // set value of label to match initial value of slider
   volumeSlider.dispatchEvent(new Event("input"));
+
+  const gui = new dat.GUI();
+  const VolumeFolder = gui.addFolder('Volume');
+  const volumeController = VolumeFolder.add({ volume: 0 }, 'volume', 0, 100);
+  volumeController.onChange(function (newValue) {
+    audio.setVolume(newValue);
+  });
+  VolumeFolder.open();
+
+
 
   // D - hookup track <select>
   let trackSelect = document.querySelector("#track-select");
