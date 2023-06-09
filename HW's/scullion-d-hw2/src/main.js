@@ -27,17 +27,14 @@ const init = () => {
   setupUI(canvasElement);
   canvas.setupCanvas(canvasElement, audio.analyserNode);
 
-  const url = "./data/av-data.json"
+  const url = "./data/av-data.json";
 
-  const xhr = new XMLHttpRequest();
-  xhr.onload = (e) => {
-    console.log(`In onload - HTTP Status Code = ${e.target.status}`);
-    const json = e.target.responseText;
-
-    const { drawParams: params } = JSON.parse(json);
+  if (localStorage.getItem("dpsAudio") !== null) {
+    // The item exists in local storage
+    let data = JSON.parse(localStorage.getItem("dpsAudio"));
+    // Use the data from local storage
+    const { drawParams: params } = data;
     Object.assign(drawParams, params);
-
-    const data = JSON.parse(json);
 
     const title = document.createElement('h1');
     title.textContent = data.Title;
@@ -45,24 +42,35 @@ const init = () => {
     // Add the h1 element to the DOM
     document.body.insertBefore(title, document.body.firstChild);
 
-
     const select = document.getElementById('track-select');
 
     // Loop through the songs and create an option element for each one
-    for (let i = 0; i < data.Songs.length; i++) {
-      const song = data.Songs[i];
-      const option = document.createElement('option');
-      option.value = song.location;
-      option.textContent = song.title;
-      if (i === 0) {
-        option.selected = true;
-      }
-      select.appendChild(option);
-    };
+    for (const song of data.Songs) {
+      select.insertAdjacentHTML('beforeend', `<option value="${URL.createObjectURL(song.location)}">${song.title}</option>`);
+    }
+  } else {
+    // The item does not exist in local storage
+    // Use the data from the JSON file
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const { drawParams: params } = data;
+        Object.assign(drawParams, params);
+
+        const title = document.createElement('h1');
+        title.textContent = data.Title;
+
+        // Add the h1 element to the DOM
+        document.body.insertBefore(title, document.body.firstChild);
+
+        const select = document.getElementById('track-select');
+
+        // Loop through the songs and create an option element for each one
+        for (const song of data.Songs) {
+          select.insertAdjacentHTML('beforeend', `<option value="${song.location}">${song.title}</option>`);
+        }
+      });
   }
-  xhr.onerror = e => console.log(`In onerrer - HTTP Status Code = ${e.target.status}`);
-  xhr.open("GET", url);
-  xhr.send();
 
   loop();
 }
@@ -135,33 +143,47 @@ const setupUI = (canvasElement) => {
   trackFile.onchange = e => {
     let file = e.target.files[0];
     let fileName = file.name.substring(0, file.name.lastIndexOf('.'));
-    let objectURL = URL.createObjectURL(file);
-    audio.loadSoundFile(objectURL);
 
-    // pause the current track if it is playing
-    if (playButton.dataset.playing == "yes") {
-      playButton.dispatchEvent(new MouseEvent("click"));
-    }
+    // Send file to server-side script
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch('http://localhost:80/upload', {
+      method: 'POST',
+      body: formData
+    })
+      .then(response => response.text())
+      .then(data => {
+        console.log(data);
+        // data contains the file path on the server
+        audio.loadSoundFile(data);
 
-    // Adds new track to track select if it doesn't exist already 
-    const select = document.getElementById('track-select');
-    let option = Array.from(select.options).find(option => option.textContent === fileName);
+        // pause the current track if it is playing
+        if (playButton.dataset.playing == "yes") {
+          playButton.dispatchEvent(new MouseEvent("click"));
+        }
 
-    if (option) {
-      // Select existing option
-      option.selected = true;
-      audio.loadSoundFile(option.value);
-    } else {
-      // Create new option
-      option = document.createElement('option');
-      option.value = objectURL;
-      option.textContent = fileName;
-      option.selected = true;
-      select.appendChild(option);
-      audio.loadSoundFile(option.value);
-    }
+        // Adds new track to track select if it doesn't exist already 
+        const select = document.getElementById('track-select');
+        let option = Array.from(select.options).find(option => option.textContent === fileName);
+
+        if (option) {
+          // Select existing option
+          option.selected = true;
+          audio.loadSoundFile(option.value);
+        } else {
+          // Create new option
+          option = document.createElement('option');
+          option.value = data; // set value to file path on server
+          option.textContent = fileName;
+          option.selected = true;
+          select.appendChild(option);
+          audio.loadSoundFile(option.value);
+          localSave();
+        }
+      }).catch(error => {
+        console.error(error);
+      });;
   };
-
 
 
   // E - Add event handlers for the checkbox settings
@@ -176,9 +198,28 @@ const setupUI = (canvasElement) => {
   const embossBox = document.querySelector("#emboss-cb");
   const trebleBox = document.querySelector("#highshelf-cb");
   const baseBox = document.querySelector("#lowshelf-cb");
-  const loopButton = document.querySelector("#loop-cb");
+  const loopBox = document.querySelector("#loop-cb");
   const frequencyButton = document.querySelector("#frequency");
   const waveformButton = document.querySelector("#waveform");
+
+  // Assign defaults from cache on page load
+  drawParams.showGradient = gradientBox.checked;
+  drawParams.showBars = barsBox.checked;
+  drawParams.showSphere = sphereBox.checked;
+  drawParams.pulseSphere = pulseBox.checked;
+  drawParams.spinSphere = spinBox.checked;
+  drawParams.showConfetti = confettiBox.checked;
+  drawParams.showNoise = noiseBox.checked;
+  drawParams.showInvert = invertBox.checked;
+  drawParams.showEmboss = embossBox.checked;
+  drawParams.useTreble = trebleBox.checked;
+  drawParams.useBase = baseBox.checked;
+  drawParams.loopAudio = loopBox.checked;
+  drawParams.displayFrequency = frequencyButton.checked;
+  drawParams.displayWaveform = waveformButton.checked;
+  console.log(invertBox.checked);
+  console.log(drawParams.showInvert);
+
 
   // add onclick event to checkboxes
   gradientBox.onclick = e => {
@@ -188,6 +229,8 @@ const setupUI = (canvasElement) => {
     else {
       drawParams.showGradient = false;
     }
+
+    localSave();
   }
   barsBox.onclick = e => {
     if (e.target.checked) {
@@ -196,6 +239,8 @@ const setupUI = (canvasElement) => {
     else {
       drawParams.showBars = false;
     }
+
+    localSave();
   }
   sphereBox.onclick = e => {
     if (e.target.checked) {
@@ -204,6 +249,8 @@ const setupUI = (canvasElement) => {
     else {
       drawParams.showSphere = false;
     }
+
+    localSave();
   }
   pulseBox.onclick = e => {
     if (e.target.checked) {
@@ -212,6 +259,8 @@ const setupUI = (canvasElement) => {
     else {
       drawParams.pulseSphere = false;
     }
+
+    localSave();
   }
   spinBox.onclick = e => {
     if (e.target.checked) {
@@ -220,6 +269,8 @@ const setupUI = (canvasElement) => {
     else {
       drawParams.spinSphere = false;
     }
+
+    localSave();
   }
   confettiBox.onclick = e => {
     if (e.target.checked) {
@@ -228,6 +279,8 @@ const setupUI = (canvasElement) => {
     else {
       drawParams.showConfetti = false;
     }
+
+    localSave();
   }
   noiseBox.onclick = e => {
     if (e.target.checked) {
@@ -236,6 +289,8 @@ const setupUI = (canvasElement) => {
     else {
       drawParams.showNoise = false;
     }
+
+    localSave();
   }
   invertBox.onclick = e => {
     if (e.target.checked) {
@@ -244,6 +299,8 @@ const setupUI = (canvasElement) => {
     else {
       drawParams.showInvert = false;
     }
+
+    localSave();
   }
   embossBox.onclick = e => {
     if (e.target.checked) {
@@ -252,6 +309,8 @@ const setupUI = (canvasElement) => {
     else {
       drawParams.showEmboss = false;
     }
+
+    localSave();
   }
 
   trebleBox.onclick = e => {
@@ -264,6 +323,8 @@ const setupUI = (canvasElement) => {
       drawParams.useTreble = false;
       audio.biquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
     }
+
+    localSave();
   }
 
   baseBox.onclick = e => {
@@ -276,20 +337,29 @@ const setupUI = (canvasElement) => {
       drawParams.useBase = false;
       audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
     }
+
+    localSave();
+  }
+
+  loopBox.onchange = () => {
+    drawParams.loopAudio = loopButton.checked;
+    audio.setLooping(loopButton.checked);
+
+    localSave();
   }
 
   frequencyButton.onclick = () => {
     drawParams.displayFrequency = true;
     drawParams.displayWaveform = false;
+
+    localSave();
   }
 
   waveformButton.onclick = () => {
     drawParams.displayFrequency = false;
     drawParams.displayWaveform = true;
-  }
 
-  loopButton.onchange = () => {
-    audio.setLooping(loopButton.checked);
+    localSave();
   }
 } // end setupUI
 
@@ -299,6 +369,28 @@ const loop = () => {
   }, 1000 / 60);
 
   canvas.draw(drawParams);
+}
+
+const localSave = () => {
+  let trackSelect = document.querySelector("#track-select");
+  let songs = [];
+
+  for (let i = 0; i < trackSelect.children.length; i++) {
+    let song = {
+      title: trackSelect.children[i].textContent,
+      location: trackSelect.children[i].getAttribute("value")
+    };
+
+    songs.push(song);
+  }
+
+  let data = {
+    Title: "Spherical Audio Visualizer",
+    Songs: songs,
+    drawParams: drawParams
+  };
+
+  localStorage.setItem("dpsAudio", JSON.stringify(data));
 }
 
 export { init };
