@@ -14,9 +14,12 @@ import * as canvas from './visualizer.js';
 const drawParams = {
 };
 
+// Define filePaths array in a scope accessible to both init() and localSave() functions
+let filePaths = [];
+
 // 1 - here we are faking an enumeration
 const DEFAULTS = Object.freeze({
-  sound1: "media/new_adventure_theme.mp3"
+  sound1: "./uploads/new_adventure_theme.mp3"
 });
 
 const init = () => {
@@ -46,7 +49,16 @@ const init = () => {
 
     // Loop through the songs and create an option element for each one
     for (const song of data.Songs) {
-      select.insertAdjacentHTML('beforeend', `<option value="${URL.createObjectURL(song.location)}">${song.title}</option>`);
+      console.log(typeof song);
+      fetch(song.location)
+        .then(response => response.blob())
+        .then(blob => {
+          let objectURL = URL.createObjectURL(blob);
+          // Use objectURL here
+          select.insertAdjacentHTML('beforeend', `<option value="${objectURL}">${song.title}</option>`);
+          // Store original file path in filePaths array
+          filePaths.push(song.location);
+        });
     }
   } else {
     // The item does not exist in local storage
@@ -67,6 +79,7 @@ const init = () => {
 
         // Loop through the songs and create an option element for each one
         for (const song of data.Songs) {
+          filePaths.push(song.location);
           select.insertAdjacentHTML('beforeend', `<option value="${song.location}">${song.title}</option>`);
         }
       });
@@ -130,6 +143,8 @@ const setupUI = (canvasElement) => {
   // add .onchange event to <select>
   trackSelect.onchange = e => {
     audio.loadSoundFile(e.target.value);
+    audio.setLooping(loopBox.checked);
+
     // pause the current track if it is playing
     if (playButton.dataset.playing == "yes") {
       playButton.dispatchEvent(new MouseEvent("click"));
@@ -141,6 +156,7 @@ const setupUI = (canvasElement) => {
   trackFile.value = "";
 
   trackFile.onchange = e => {
+    e.preventDefault(); // Don't reload page when finished
     let file = e.target.files[0];
     let fileName = file.name.substring(0, file.name.lastIndexOf('.'));
 
@@ -175,14 +191,17 @@ const setupUI = (canvasElement) => {
           option = document.createElement('option');
           option.value = data; // set value to file path on server
           option.textContent = fileName;
+          filePaths.push(data);
+          console.log(data);
           option.selected = true;
           select.appendChild(option);
           audio.loadSoundFile(option.value);
+          audio.setLooping(loopBox.checked);
           localSave();
         }
       }).catch(error => {
         console.error(error);
-      });;
+      });
   };
 
 
@@ -217,9 +236,6 @@ const setupUI = (canvasElement) => {
   drawParams.loopAudio = loopBox.checked;
   drawParams.displayFrequency = frequencyButton.checked;
   drawParams.displayWaveform = waveformButton.checked;
-  console.log(invertBox.checked);
-  console.log(drawParams.showInvert);
-
 
   // add onclick event to checkboxes
   gradientBox.onclick = e => {
@@ -342,8 +358,8 @@ const setupUI = (canvasElement) => {
   }
 
   loopBox.onchange = () => {
-    drawParams.loopAudio = loopButton.checked;
-    audio.setLooping(loopButton.checked);
+    drawParams.loopAudio = loopBox.checked;
+    audio.setLooping(loopBox.checked);
 
     localSave();
   }
@@ -372,25 +388,27 @@ const loop = () => {
 }
 
 const localSave = () => {
+  console.log(filePaths);
   let trackSelect = document.querySelector("#track-select");
   let songs = [];
 
   for (let i = 0; i < trackSelect.children.length; i++) {
     let song = {
       title: trackSelect.children[i].textContent,
-      location: trackSelect.children[i].getAttribute("value")
+      location: filePaths[i] // Use original file path from filePaths array
     };
 
     songs.push(song);
   }
 
-  let data = {
+  let dataToSave = {
     Title: "Spherical Audio Visualizer",
     Songs: songs,
     drawParams: drawParams
   };
 
-  localStorage.setItem("dpsAudio", JSON.stringify(data));
+  localStorage.setItem("dpsAudio", JSON.stringify(dataToSave));
 }
+
 
 export { init };

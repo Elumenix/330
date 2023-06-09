@@ -3,15 +3,15 @@
     "Songs": [
         {
             "title": "New Adventure Theme",
-            "location": "media/new_adventure_theme.mp3"
+            "location": "uploads/new_adventure_theme.mp3"
         },
         {
             "title": "Peanuts Theme",
-            "location": "media/peanuts_theme.mp3"
+            "location": "uploads/peanuts_theme.mp3"
         },
         {
             "title": "The Picard Song",
-            "location": "media/the_picard_song.mp3"
+            "location": "uploads/the_picard_song.mp3"
         }
     ],
     "drawParams": {
