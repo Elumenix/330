@@ -84,10 +84,19 @@ export class Sphere {
 
     drawSphere(audioData, pulse) {
         let ctx = this.ctx;
-        let currentRing = this.rings[0];
+        let currentRing;
         let canvasWidth = this.canvasWidth;
         let canvasHeight = this.canvasHeight;
         let scaling = new Array(this.rings.length);
+        let startBack = Math.min(this.rings[0][0].z, this.rings[0][this.rings[0].length / 2].z) < Math.min(this.rings[this.rings.length - 1][0].z, this.rings[this.rings.length - 1][this.rings[this.rings.length - 1].length / 2].z);
+
+        if (startBack) {
+            currentRing = this.rings[0]
+        }
+        else {
+            currentRing = this.rings[this.rings.length - 1];
+        }
+
 
 
         const soundDistribution = 128 / this.rings.length
@@ -114,7 +123,8 @@ export class Sphere {
         ctx.lineWidth = 3;
 
         // Color The back af all rings
-        for (let i = 0; i < this.rings.length; i++, currentRing = this.rings[i]) {
+        let i;
+        for (startBack ? i = 0 : i = this.rings.length - 1; startBack ? i < this.rings.length : i >= 0; startBack ? i++ : i--, currentRing = this.rings[i]) {
 
             ctx.beginPath();
 
@@ -130,7 +140,7 @@ export class Sphere {
 
         // Color the front side of all rings
         currentRing = this.rings[0];
-        for (let i = 0; i < this.rings.length; i++, currentRing = this.rings[i]) {
+        for (startBack ? i = 0 : i = this.rings.length; startBack ? i < this.rings.length : i >= 0; startBack ? i++ : i--, currentRing = this.rings[i]) {
             let startNum = -1;
             let allSame = false;
             ctx.strokeStyle = `rgb(${Math.floor(220 + 10 * (scaling[i] ** 3.1))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))})`;
