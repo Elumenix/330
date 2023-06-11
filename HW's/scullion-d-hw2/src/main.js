@@ -144,12 +144,10 @@ const setupUI = (canvasElement) => {
   const trebleController = soundFolder.add(drawParams, 'useTreble');
   trebleController.onChange(function (e) {
     if (e == true) {
-      drawParams.useTreble = true;
       audio.biquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
       audio.biquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
     }
     else {
-      drawParams.useTreble = false;
       audio.biquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
     }
 
@@ -167,12 +165,10 @@ const setupUI = (canvasElement) => {
   const baseController = soundFolder.add(drawParams, 'useBase');
   baseController.onChange(function (e) {
     if (e == true) {
-      drawParams.useBase = true;
       audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
       audio.lowShelfBiquadFilter.gain.setValueAtTime(30, audio.audioCtx.currentTime);
     }
     else {
-      drawParams.useBase = false;
       audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
     }
 
@@ -188,7 +184,6 @@ const setupUI = (canvasElement) => {
 
   // Display section in settings
   soundFolder.open();
-
 
 
   // D - hookup track <select>
@@ -259,132 +254,88 @@ const setupUI = (canvasElement) => {
 
 
   // E - Add event handlers for the checkbox settings
+  const sphereFolder = gui.addFolder('Sphere');
+  const sphereController = sphereFolder.add(drawParams, 'showSphere');
+  sphereController.name("Display Sphere");
+
+  sphereController.onChange(function(e) {
+    localSave();
+  });
+
+  const pulseController = sphereFolder.add(drawParams, 'pulseSphere');
+  pulseController.name("Pulse");
+
+  pulseController.onChange(function(e) {
+    localSave();
+  });
+
+  const spinController = sphereFolder.add(drawParams, 'spinSphere');
+  spinController.name("Spin");
+
+  spinController.onChange(function(e) {
+    localSave();
+  });
+
+  sphereFolder.open();
+
+  const backgroundFolder = gui.addFolder('Background');
+
+  const barController = backgroundFolder.add(drawParams, 'showBars');
+  barController.name("Display Bars");
+
+  barController.onChange(function(e){
+    localSave();
+  });
+
+  const gradientController = backgroundFolder.add(drawParams, 'showGradient');
+  gradientController.name("Display Gradient");
+
+  gradientController.onChange(function(e){
+    localSave();
+  });
+
+  const particleController = backgroundFolder.add(drawParams, 'showConfetti');
+  particleController.name("Display Particles");
+
+  particleController.onChange(function(e) {
+    localSave();
+  });
+
+  backgroundFolder.open();
 
 
-  const gradientBox = document.querySelector("#gradient-cb");
-  const barsBox = document.querySelector("#bars-cb");
-  const sphereBox = document.querySelector("#sphere-cb");
-  const pulseBox = document.querySelector("#pulse-sphere-cb")
-  const spinBox = document.querySelector("#spin-sphere-cb");
-  const confettiBox = document.querySelector("#confetti-cb");
-  const noiseBox = document.querySelector("#noise-cb");
-  const invertBox = document.querySelector("#invert-cb");
-  const embossBox = document.querySelector("#emboss-cb");
-  const trebleBox = document.querySelector("#highshelf-cb");
-  const baseBox = document.querySelector("#lowshelf-cb");
+  const overlayFolder = gui.addFolder('Overlay');
+  
+  const embossController = overlayFolder.add(drawParams, 'showEmboss');
+  embossController.onChange(function(e) {
+    localSave();
+  });
+  embossController.name("Emboss");
+
+  const invertController = overlayFolder.add(drawParams, 'showInvert');
+  invertController.name("Invert");
+  
+  invertController.onChange(function(e) {
+    localSave();
+  });
+
+  const noiseController = overlayFolder.add(drawParams, 'showNoise');
+  noiseController.name("Noise");
+
+  noiseController.onChange(function(e){
+    localSave();
+  });
+
+  overlayFolder.open();
+
   const loopBox = document.querySelector("#loop-cb");
   const frequencyButton = document.querySelector("#frequency");
   const waveformButton = document.querySelector("#waveform");
 
   // Assign defaults from cache on page load
-  drawParams.showGradient = gradientBox.checked;
-  drawParams.showBars = barsBox.checked;
-  drawParams.showSphere = sphereBox.checked;
-  drawParams.pulseSphere = pulseBox.checked;
-  drawParams.spinSphere = spinBox.checked;
-  drawParams.showConfetti = confettiBox.checked;
-  drawParams.showNoise = noiseBox.checked;
-  drawParams.showInvert = invertBox.checked;
-  drawParams.showEmboss = embossBox.checked;
-  drawParams.loopAudio = loopBox.checked;
+  /*drawParams.loopAudio = loopBox.checked;
   drawParams.displayFrequency = frequencyButton.checked;
-  drawParams.displayWaveform = waveformButton.checked;
-
-  
-
-  // add onclick event to checkboxes
-  gradientBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.showGradient = true;
-    }
-    else {
-      drawParams.showGradient = false;
-    }
-
-    localSave();
-  }
-  barsBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.showBars = true;
-    }
-    else {
-      drawParams.showBars = false;
-    }
-
-    localSave();
-  }
-  sphereBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.showSphere = true;
-    }
-    else {
-      drawParams.showSphere = false;
-    }
-
-    localSave();
-  }
-  pulseBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.pulseSphere = true;
-    }
-    else {
-      drawParams.pulseSphere = false;
-    }
-
-    localSave();
-  }
-  spinBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.spinSphere = true;
-    }
-    else {
-      drawParams.spinSphere = false;
-    }
-
-    localSave();
-  }
-  confettiBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.showConfetti = true;
-    }
-    else {
-      drawParams.showConfetti = false;
-    }
-
-    localSave();
-  }
-  noiseBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.showNoise = true;
-    }
-    else {
-      drawParams.showNoise = false;
-    }
-
-    localSave();
-  }
-  invertBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.showInvert = true;
-    }
-    else {
-      drawParams.showInvert = false;
-    }
-
-    localSave();
-  }
-  embossBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.showEmboss = true;
-    }
-    else {
-      drawParams.showEmboss = false;
-    }
-
-    localSave();
-  }
-
-
+  drawParams.displayWaveform = waveformButton.checked;*/
 
   loopBox.onchange = () => {
     drawParams.loopAudio = loopBox.checked;
@@ -409,12 +360,11 @@ const setupUI = (canvasElement) => {
 } // end setupUI
 
 const loop = () => {
-  setTimeout(() => {
-    requestAnimationFrame(loop);
-  }, 1000 / 60);
-
   canvas.draw(drawParams);
 }
+
+const interval = setInterval(loop, 1000 / 60);
+
 
 const localSave = () => {
   let trackSelect = document.querySelector("#track-select");
