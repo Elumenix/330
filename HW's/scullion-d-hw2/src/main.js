@@ -10,8 +10,7 @@
 import * as utils from './utils.js';
 import * as audio from './audio.js';
 import * as canvas from './visualizer.js';
-//import GUI from 'dat.gui'; Delete index script when budeling
-//const gui = new dat.GUI();
+import dat from './dat.gui.module.js';
 
 const drawParams = {
 };
@@ -29,8 +28,7 @@ const init = () => {
   console.log(`Testing utils.getRandomColor() import: ${utils.getRandomColor()}`);
   audio.setupWebaudio(DEFAULTS.sound1);
   let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
-  setupUI(canvasElement);
-  canvas.setupCanvas(canvasElement, audio.analyserNode);
+
 
   const url = "./data/av-data.json";
 
@@ -87,11 +85,17 @@ const init = () => {
       });
   }
 
+  setupUI(canvasElement);
+  canvas.setupCanvas(canvasElement, audio.analyserNode);
+
   loop();
 }
 
 
 const setupUI = (canvasElement) => {
+  // Immediatly set up gui element
+  const gui = new dat.GUI();
+
   // A - hookup fullscreen button
   const fsButton = document.querySelector("#fs-button");
 
@@ -126,27 +130,64 @@ const setupUI = (canvasElement) => {
   };
 
   // C - hookup volume slider & label
-  let volumeSlider = document.querySelector("#volume-slider");
-  let volumeLabel = document.querySelector("#volume-label");
+  const soundFolder = gui.addFolder('Sound');
 
-  // add .oninput event to slider
-  volumeSlider.oninput = e => {
-    // set the gain
-    audio.setVolume(e.target.value);
-    // update value of label to match value of slider
-    volumeLabel.innerHTML = Math.round((e.target.value / 2 * 100));
-  };
+  // Initial volume
+  const volumeController = soundFolder.add({ volume: 50 }, 'volume', 0, 100);
+  audio.setVolume(.5);
 
-  // set value of label to match initial value of slider
-  volumeSlider.dispatchEvent(new Event("input"));
-
-  const gui = new dat.GUI();
-  const VolumeFolder = gui.addFolder('Volume');
-  const volumeController = VolumeFolder.add({ volume: 0 }, 'volume', 0, 100);
   volumeController.onChange(function (newValue) {
-    audio.setVolume(newValue);
+    audio.setVolume(newValue / 100);
   });
-  VolumeFolder.open();
+  volumeController.name("Volume");
+
+  const trebleController = soundFolder.add(drawParams, 'useTreble');
+  trebleController.onChange(function (e) {
+    if (e == true) {
+      drawParams.useTreble = true;
+      audio.biquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
+      audio.biquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
+    }
+    else {
+      drawParams.useTreble = false;
+      audio.biquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
+    }
+
+    localSave();
+  });
+  trebleController.name("Treble Boost");
+
+  // Set initial condition
+  if (drawParams.useTreble == true) {
+    audio.biquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
+    audio.biquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
+  }
+
+
+  const baseController = soundFolder.add(drawParams, 'useBase');
+  baseController.onChange(function (e) {
+    if (e == true) {
+      drawParams.useBase = true;
+      audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
+      audio.lowShelfBiquadFilter.gain.setValueAtTime(30, audio.audioCtx.currentTime);
+    }
+    else {
+      drawParams.useBase = false;
+      audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
+    }
+
+    localSave();
+  });
+  baseController.name("Bass Boost");
+
+  // Set initial condition
+  if (drawParams.useBase == true) {
+    audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
+    audio.lowShelfBiquadFilter.gain.setValueAtTime(30, audio.audioCtx.currentTime);
+  }
+
+  // Display section in settings
+  soundFolder.open();
 
 
 
@@ -218,6 +259,8 @@ const setupUI = (canvasElement) => {
 
 
   // E - Add event handlers for the checkbox settings
+
+
   const gradientBox = document.querySelector("#gradient-cb");
   const barsBox = document.querySelector("#bars-cb");
   const sphereBox = document.querySelector("#sphere-cb");
@@ -243,11 +286,11 @@ const setupUI = (canvasElement) => {
   drawParams.showNoise = noiseBox.checked;
   drawParams.showInvert = invertBox.checked;
   drawParams.showEmboss = embossBox.checked;
-  drawParams.useTreble = trebleBox.checked;
-  drawParams.useBase = baseBox.checked;
   drawParams.loopAudio = loopBox.checked;
   drawParams.displayFrequency = frequencyButton.checked;
   drawParams.displayWaveform = waveformButton.checked;
+
+  
 
   // add onclick event to checkboxes
   gradientBox.onclick = e => {
@@ -341,33 +384,7 @@ const setupUI = (canvasElement) => {
     localSave();
   }
 
-  trebleBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.useTreble = true;
-      audio.biquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
-      audio.biquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
-    }
-    else {
-      drawParams.useTreble = false;
-      audio.biquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
-    }
 
-    localSave();
-  }
-
-  baseBox.onclick = e => {
-    if (e.target.checked) {
-      drawParams.useBase = true;
-      audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
-      audio.lowShelfBiquadFilter.gain.setValueAtTime(30, audio.audioCtx.currentTime);
-    }
-    else {
-      drawParams.useBase = false;
-      audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
-    }
-
-    localSave();
-  }
 
   loopBox.onchange = () => {
     drawParams.loopAudio = loopBox.checked;
@@ -400,7 +417,6 @@ const loop = () => {
 }
 
 const localSave = () => {
-  console.log(filePaths);
   let trackSelect = document.querySelector("#track-select");
   let songs = [];
 

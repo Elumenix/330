@@ -82,7 +82,9 @@ const loadSoundFile = (filePath) => {
 }
 
 const playCurrentSound = () => {
+    let value = gainNode.gain.value;
     element.play();
+    gainNode.gain.value = value;
 }
 
 const pauseCurrentSound = () => {
@@ -95,7 +97,6 @@ const setVolume = (value) => {
 }
 
 const setLooping = (value) => {
-    console.log(sourceNode);
     sourceNode.mediaElement.loop = value;
 }
 

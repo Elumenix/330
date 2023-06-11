@@ -26,6 +26,7 @@
         "showNoise": false,
         "showInvert": false,
         "showEmboss": false,
+        "loopAudio": false,
         "useTreble": false,
         "useBase": false
     }

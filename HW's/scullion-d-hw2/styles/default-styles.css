@@ -45,6 +45,3 @@ button[data-playing="no"]:after {
   font-family: sans-serif;
 }
 
-span {
-  margin-right: 2em;
-}
