@@ -10,6 +10,9 @@ export class Sphere {
         this.constant = (2 * Math.PI) / 40;
         this.rings = [];
         this.ctx = ctx;
+        this.totalX = 0;
+        this.totalY = 0;
+        this.totalZ = 0;
 
         // Establish x and z position of points
         for (let i = 0; i <= 2 * Math.PI; i += this.constant) {
@@ -96,6 +99,8 @@ export class Sphere {
         else {
             currentRing = this.rings[this.rings.length - 1];
         }
+
+        this.finalRotation();
 
 
 
@@ -258,9 +263,47 @@ export class Sphere {
                 }
             }
         }
+        console.log(this.rings);
     }
 
-    rotateX(degrees) {
+    // This is an amalgamation of the rotation functions below and keeping track of the starting points of the sphere so that I know the actual boundries of rotation
+    finalRotation() {
+
+
+// Update current points based on starting points and total rotation
+for (const point of this.boundry) {
+    let xFactor = this.rdt(this.totalX);
+    let yFactor = this.rdt(this.totalY);
+    let zFactor = this.rdt(this.totalZ);
+
+    // Rotate around X axis
+    let y = point.sy;
+    let z = point.sz;
+    let newY = (y * Math.cos(xFactor)) + (z * Math.sin(xFactor) * -1.0);
+    let newZ = (y * Math.sin(xFactor)) + (z * Math.cos(xFactor));
+    point.y = newY;
+    point.z = newZ;
+
+    // Rotate around Y axis
+    let x = point.sx;
+    z = point.z;
+    let newX = (x * Math.cos(yFactor)) + (z * Math.sin(yFactor) * -1.0);
+    newZ = (x * Math.sin(yFactor)) + (z * Math.cos(yFactor));
+    point.x = newX;
+    point.z = newZ;
+
+    // Rotate around Z axis
+    x = point.x;
+    y = point.y;
+    newX = (x * Math.cos(zFactor)) + (y * Math.sin(zFactor) * -1.0);
+    newY = (x * Math.sin(zFactor)) + (y * Math.cos(zFactor));
+    point.x = newX;
+    point.y = newY;
+}
+
+    }
+
+    /*rotateX(degrees) {
         degrees = this.rdt(degrees);
 
         for (const point of this.boundry) {
@@ -288,6 +331,30 @@ export class Sphere {
             point.x = (x * Math.cos(degrees)) + (point.y * Math.sin(degrees) * -1.0);
             point.y = (x * Math.sin(degrees)) + (point.y * Math.cos(degrees));
         }
+    }*/
+
+    turnX(degrees) {
+        this.totalX += degrees % 361
+    }
+
+    turnY(degrees) {
+        this.totalY += degrees % 361
+    }
+
+    turnZ(degrees) {
+        this.totalZ += degrees % 361
+    }
+
+    setX(degrees) {
+        this.totalX = degrees;
+    }
+
+    setY(degrees) {
+        this.totalY = degrees;
+    }
+
+    setZ(degrees) {
+        this.totalZ = degrees;
     }
 
     // Helper Functions

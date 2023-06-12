@@ -12,8 +12,11 @@ import * as audio from './audio.js';
 import * as canvas from './visualizer.js';
 import dat from './dat.gui.module.js';
 
+const rotation = {};
+
 const drawParams = {
 };
+
 
 // Define filePaths array in a scope accessible to both init() and localSave() functions
 let filePaths = [];
@@ -24,8 +27,6 @@ const DEFAULTS = Object.freeze({
 });
 
 const init = () => {
-  console.log("init called");
-  console.log(`Testing utils.getRandomColor() import: ${utils.getRandomColor()}`);
   audio.setupWebaudio(DEFAULTS.sound1);
   let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
 
@@ -38,6 +39,9 @@ const init = () => {
     // Use the data from local storage
     const { drawParams: params } = data;
     Object.assign(drawParams, params);
+
+    const { Rotation: axis } = data;
+    Object.assign(rotation, axis);
 
     const title = document.createElement('h1');
     title.textContent = data.Title;
@@ -60,6 +64,11 @@ const init = () => {
           filePaths.push(song.location);
         });
     }
+
+    setupUI(canvasElement);
+    canvas.setupCanvas(canvasElement, audio.analyserNode);
+
+    loop();
   } else {
     // The item does not exist in local storage
     // Use the data from the JSON file
@@ -68,6 +77,11 @@ const init = () => {
       .then(data => {
         const { drawParams: params } = data;
         Object.assign(drawParams, params);
+
+        const { Rotation: axis } = data;
+        Object.assign(rotation, axis);
+
+        console.log(rotation);
 
         const title = document.createElement('h1');
         title.textContent = data.Title;
@@ -82,13 +96,14 @@ const init = () => {
           filePaths.push(song.location);
           select.insertAdjacentHTML('beforeend', `<option value="${song.location}">${song.title}</option>`);
         }
+
+        setupUI(canvasElement);
+        loop();
       });
+
+      // Out of order on first one because not accessing server is fast enough to access the visualizer before ctx is established
+      canvas.setupCanvas(canvasElement, audio.analyserNode);
   }
-
-  setupUI(canvasElement);
-  canvas.setupCanvas(canvasElement, audio.analyserNode);
-
-  loop();
 }
 
 
@@ -258,23 +273,46 @@ const setupUI = (canvasElement) => {
   const sphereController = sphereFolder.add(drawParams, 'showSphere');
   sphereController.name("Display Sphere");
 
-  sphereController.onChange(function(e) {
+  sphereController.onChange(function (e) {
     localSave();
   });
 
   const pulseController = sphereFolder.add(drawParams, 'pulseSphere');
   pulseController.name("Pulse");
 
-  pulseController.onChange(function(e) {
+  pulseController.onChange(function (e) {
     localSave();
   });
 
   const spinController = sphereFolder.add(drawParams, 'spinSphere');
   spinController.name("Spin");
 
-  spinController.onChange(function(e) {
+  spinController.onChange(function (e) {
     localSave();
   });
+
+
+
+  const rotationFolder = sphereFolder.addFolder("Rotation");
+  const x = rotationFolder.add(rotation, 'x', 0.00, 360);
+  const y = rotationFolder.add(rotation, 'y', 0.00, 360);
+  const z = rotationFolder.add(rotation, 'z', 0.00, 360);
+
+  x.onChange(function(e){
+    canvas.sphere.setX(e);
+    localSave();
+  });
+
+  y.onChange(function(e){
+    canvas.sphere.setY(e);
+    localSave();
+  });
+
+  z.onChange(function(e){
+    canvas.sphere.setZ(e);
+    localSave();
+  });
+
 
   sphereFolder.open();
 
@@ -283,21 +321,21 @@ const setupUI = (canvasElement) => {
   const barController = backgroundFolder.add(drawParams, 'showBars');
   barController.name("Display Bars");
 
-  barController.onChange(function(e){
+  barController.onChange(function (e) {
     localSave();
   });
 
   const gradientController = backgroundFolder.add(drawParams, 'showGradient');
   gradientController.name("Display Gradient");
 
-  gradientController.onChange(function(e){
+  gradientController.onChange(function (e) {
     localSave();
   });
 
   const particleController = backgroundFolder.add(drawParams, 'showConfetti');
   particleController.name("Display Particles");
 
-  particleController.onChange(function(e) {
+  particleController.onChange(function (e) {
     localSave();
   });
 
@@ -305,24 +343,24 @@ const setupUI = (canvasElement) => {
 
 
   const overlayFolder = gui.addFolder('Overlay');
-  
+
   const embossController = overlayFolder.add(drawParams, 'showEmboss');
-  embossController.onChange(function(e) {
+  embossController.onChange(function (e) {
     localSave();
   });
   embossController.name("Emboss");
 
   const invertController = overlayFolder.add(drawParams, 'showInvert');
   invertController.name("Invert");
-  
-  invertController.onChange(function(e) {
+
+  invertController.onChange(function (e) {
     localSave();
   });
 
   const noiseController = overlayFolder.add(drawParams, 'showNoise');
   noiseController.name("Noise");
 
-  noiseController.onChange(function(e){
+  noiseController.onChange(function (e) {
     localSave();
   });
 
@@ -382,7 +420,8 @@ const localSave = () => {
   let dataToSave = {
     Title: "Spherical Audio Visualizer",
     Songs: songs,
-    drawParams: drawParams
+    drawParams: drawParams,
+    Rotation: rotation
   };
 
   localStorage.setItem("dpsAudio", JSON.stringify(dataToSave));

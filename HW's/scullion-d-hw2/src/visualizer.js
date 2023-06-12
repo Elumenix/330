@@ -22,9 +22,6 @@ const setupCanvas = (canvasElement, analyserNodeRef) => {
     audioData = new Uint8Array(analyserNode.fftSize / 2);
     sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight);
 
-    // Set default position of the sphere
-    sphere.rotateX(30);
-    sphere.rotateY(10);
 
     circleArray = new Array(30);
 
@@ -146,10 +143,9 @@ const draw = (params = {}) => {
                 trebleVolume = (trebleVolume - 50) / 43;
             }
 
-
-            sphere.rotateX(bassVolume * delta);
-            sphere.rotateY(mediumVolume * delta);
-            sphere.rotateZ(trebleVolume * delta);
+            sphere.turnX(bassVolume * delta);
+            sphere.turnY(mediumVolume * delta);
+            sphere.turnZ(trebleVolume * delta);
         }
         ctx.restore();
     }
@@ -205,4 +201,4 @@ const draw = (params = {}) => {
     lastTime = currentTime
 }
 
-export { setupCanvas, draw };
+export { setupCanvas, draw, sphere, Sphere };

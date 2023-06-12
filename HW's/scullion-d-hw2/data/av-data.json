@@ -29,5 +29,10 @@
         "loopAudio": false,
         "useTreble": false,
         "useBase": false
+    },
+    "Rotation": {
+        "x": 30,
+        "y": 10,
+        "z": 0
     }
 }
