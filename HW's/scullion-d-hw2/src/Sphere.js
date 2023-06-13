@@ -7,8 +7,8 @@ export class Sphere {
         this.boundry = new Array();
         this.radius = radius;
         this.numberOfVertices = 0;
-        this.numberOfRings = 2;
-        this.constant = (2 * Math.PI) / 40;
+        this.numberOfRings = 10;
+        this.constant = (2 * Math.PI) / 700;
         this.rings = [];
         this.ctx = ctx;
         this.totalX = 0;
@@ -27,6 +27,11 @@ export class Sphere {
                 let angle = (j / this.numberOfRings) * (Math.PI / 2);
                 let radius = Math.cos(angle) * this.radius;
                 let fixedY = Math.sin(angle) * this.radius * direction;
+
+                // too many edge cases with a central line + it uses twice as many points for some reason
+                if (fixedY == 0) {
+                    continue;
+                }
 
                 // Establish all x and z positions on ring
                 for (let i = 0; i < 6.28; i += this.constant) {
@@ -129,17 +134,21 @@ export class Sphere {
 
         ctx.lineWidth = 3;
 
+        let firstSlerp = new Array(this.rings.length);
+        let lastSlerp = new Array(this.rings.length);
+
         // Color The back af all rings
         let i;
         for (startBack ? i = 0 : i = this.rings.length - 1; startBack ? i < this.rings.length : i >= 0; startBack ? i++ : i--, currentRing = this.rings[i]) {
             ctx.beginPath();
 
             let startNum = -1;
-            if (currentRing[0].z <= 0 && currentRing[currentRing.length - 1] >= 0) {
+            if (currentRing[0].z <= 0 && currentRing[currentRing.length - 1].z >= 0) {
                 startNum = 0;
 
                 let edge = this.slerp(currentRing[0], currentRing[currentRing.length - 1]);
-                ctx.lineTo(canvasWidth / 2 + (edge.x * scaling[i]), canvasHeight / 2 - (edge.y * scaling[i]));
+                firstSlerp[i] = edge; // save for later
+                ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
             }
             else {
                 for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
@@ -147,7 +156,8 @@ export class Sphere {
                         startNum = pointNum;
 
                         let edge = this.slerp(currentRing[pointNum], currentRing[pointNum - 1]);
-                        ctx.lineTo(canvasWidth / 2 + (edge.x * scaling[i]), canvasHeight / 2 - (edge.y * scaling[i]));
+                        firstSlerp[i] = edge;
+                        ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
                         break;
                     }
                 }
@@ -160,7 +170,7 @@ export class Sphere {
                     }
 
                     for (let pointNum = 0; pointNum < currentRing.length - 1; pointNum++) {
-                        ctx.lineTo(canvasWidth / 2 + (currentRing[pointNum].x * scaling[i]), canvasHeight / 2 - (currentRing[pointNum].y * scaling[i]));
+                        ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                     }
 
                     ctx.strokeStyle = `rgb(${Math.floor(54.3 + 16.7 * (scaling[i] ** 6))}, ${Math.floor(2 * (scaling[i] ** 11.96))}, ${Math.floor(255)})`;
@@ -170,26 +180,26 @@ export class Sphere {
                 }
             }
 
+            // Prevents edge case where startnum falls on 0, which happens always with the center line when y rotation = 0;
+            ctx.lineTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[i]));
 
-            for (let pointNum = startNum; pointNum != -1; pointNum++) {
+            for (let pointNum = startNum + 1; pointNum != -1; pointNum++) {
                 // back to beginning
                 if (pointNum == currentRing.length) {
-                    if (startNum == 0) {
-                        console.log("Error");
-                        break;
-                    }
                     pointNum = 0;
                 }
 
                 // Escape
                 if (currentRing[pointNum].z >= 0) {
-                    if (pointNum == 0) {
+                    if (pointNum == 0 && startNum != 0) {
                         let edge = this.slerp(currentRing[0], currentRing[currentRing.length - 1]);
-                        ctx.lineTo(canvasWidth / 2 + (edge.x * scaling[i]), canvasHeight / 2 - (edge.y * scaling[i]));
+                        lastSlerp[i] = edge;
+                        ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
                     }
                     else {
                         let edge = this.slerp(currentRing[pointNum], currentRing[pointNum - 1]);
-                        ctx.lineTo(canvasWidth / 2 + (edge.x * scaling[i]), canvasHeight / 2 - (edge.y * scaling[i]));
+                        lastSlerp[i] = edge;
+                        ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
                     }
 
                     ctx.strokeStyle = `rgb(${Math.floor(54.3 + 16.7 * (scaling[i] ** 6))}, ${Math.floor(2 * (scaling[i] ** 11.96))}, ${Math.floor(255)})`;
@@ -198,129 +208,72 @@ export class Sphere {
                 }
 
                 // Business as usual
-                ctx.lineTo(canvasWidth / 2 + (currentRing[pointNum].x * scaling[i]), canvasHeight / 2 - (currentRing[pointNum].y * scaling[i]));
+                ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
             }
         }
 
 
         // Color the front side of all rings
         currentRing = this.rings[0];
+
         for (startBack ? i = 0 : i = this.rings.length; startBack ? i < this.rings.length : i >= 0; startBack ? i++ : i--, currentRing = this.rings[i]) {
-            let startNum = -1;
-            let allSame = false;
-            ctx.strokeStyle = `rgb(${Math.floor(220 + 10 * (scaling[i] ** 3.1))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))})`;
+            // Simply color the whole ring or none
+            if (lastSlerp[i] == undefined) {
+                if (currentRing[0].z < 0) {
+                    continue;
+                }
 
-            if (currentRing[0].z >= 0 && currentRing[currentRing.length - 1].z < 0) {
-                startNum = currentRing.length - 1;
+                ctx.beginPath();
+
+                for (let pointNum = 0; pointNum < currentRing.length; pointNum++) {
+                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
+                }
+                ctx.strokeStyle = `rgb(${Math.floor(220 + 10 * (scaling[i] ** 3.1))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))})`;
+                ctx.closePath();
+                ctx.stroke();
             }
             else {
-                for (let j = 1; j < currentRing.length; j++) {
-                    if (currentRing[j].z >= 0 && currentRing[j - 1].z < 0) {
-                        startNum = j - 1;
-                        break;
-                    }
-                }
-
-                // All of it is Positive or negative
-                if (startNum == -1) {
-                    startNum = currentRing.length - 1;
-                    allSame = true;
-                }
-            }
-
-            // This will smooth out borders on one side of the sphere
-            let beginning;
-            if (startNum == 0) {
-                beginning = this.slerp(currentRing[0], currentRing[currentRing.length - 1]);
-            }
-            else {
-                beginning = this.slerp(currentRing[startNum], currentRing[startNum - 1]);
-            }
-
-            ctx.beginPath();
-
-            // starts at z = 0; all same means an interpolated point will appear in the middle of nowhere
-            if (!allSame) {
-                ctx.lineTo(canvasWidth / 2 + (beginning.x * scaling[i]), canvasHeight / 2 - (beginning.y * scaling[i]));
-            }
-
-            for (let pointNum = startNum + 1; pointNum != startNum; pointNum++) {
-                // Early escape, it isn't necessary to color this ring
-                if (allSame && currentRing[0].z < 0) {
-                    break;
-                }
-
-                // Go to beginning of ring
-                if (pointNum >= currentRing.length) {
-                    pointNum = 0;
-
-                    // Another edge case, spheres are complicated
-                    if (currentRing[currentRing.length - 1].z >= 0 && currentRing[0].z < 0) {
-                        let ending = this.slerp(currentRing[0], currentRing[currentRing.length - 1])
-                        ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
-
-
-                        ctx.stroke();
-                        break;
-                    }
-                }
-
-                // This was an annoying edge case
-                if (startNum == 0 && pointNum == 0) {
-                    break;
-                }
-
-                if (allSame) {
-                    ctx.lineTo(canvasWidth / 2 + (currentRing[pointNum].x * scaling[i]), canvasHeight / 2 - (currentRing[pointNum].y * scaling[i]));
+                ctx.beginPath();
+                let startNum = -1;
+                if (currentRing[0].z >= lastSlerp[i].z && currentRing[currentRing.length - 1].z <= lastSlerp[i].z) {
+                    startNum = 0;
+                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                 }
                 else {
-                    if (currentRing[pointNum].z < 0 && pointNum - 1 != -1 && currentRing[pointNum - 1].z >= 0) {
-                        if (pointNum + 1 == currentRing.length) {
-                            let ending = this.slerp(currentRing[pointNum], currentRing[currentRing.length - 1])
-                            ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
-                        }
-                        else {
-                            let ending = this.slerp(currentRing[pointNum - 1], currentRing[pointNum])
-                            ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
-                        }
-
-                        ctx.stroke()
-                        break;
-                    }
-                    // Another annoying edge case
-                    else if (pointNum == 0 && currentRing[pointNum].z < 0 && currentRing[currentRing.length - 1] >= 0) {
-                        let ending = this.slerp(currentRing[pointNum], currentRing[pointNum - 1])
-                        ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
-
-                        ctx.stroke();
-                    }
-                    else {
-                        ctx.lineTo(canvasWidth / 2 + (currentRing[pointNum].x * scaling[i]), canvasHeight / 2 - (currentRing[pointNum].y * scaling[i]));
-
-                        // Edge case where only one point is negative : This should be the final one
-                        if (pointNum + 1 == startNum) {
-                            let ending = this.slerp(currentRing[pointNum], currentRing[startNum])
-                            ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
-
-                            ctx.stroke();
-                        }
-                        else if (pointNum + 1 >= currentRing.length && startNum == 0) {
-                            let ending = this.slerp(currentRing[pointNum], currentRing[0])
-                            ctx.lineTo(canvasWidth / 2 + (ending.x * scaling[i]), canvasHeight / 2 - (ending.y * scaling[i]));
-
-                            ctx.stroke();
+                    for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
+                        if (currentRing[pointNum].z >= lastSlerp[i].z && currentRing[pointNum - 1].z <= lastSlerp[i].z) {
+                            startNum = pointNum;
+                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
+                            break;
                         }
                     }
                 }
-            }
 
-            if (allSame) {
+                ctx.lineTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[i]));
 
-                if (currentRing[startNum].z >= 0) {
+                for (let pointNum = startNum + 1; startNum != -1; pointNum++) {
 
-                    // Path can be closed because full loop
-                    ctx.closePath();
-                    ctx.stroke();
+                    if (pointNum == startNum) {
+                        break;
+                    }
+
+                    // back to beginning
+                    if (pointNum == currentRing.length) {
+                        pointNum = 0;
+                    }
+
+                    // Escape
+                    if (currentRing[pointNum].z <= firstSlerp[i].z) {
+                        ctx.lineTo((canvasWidth / 2) + (firstSlerp[i].x * scaling[i]), (canvasHeight / 2) - (firstSlerp[i].y * scaling[i]));
+
+
+                        ctx.strokeStyle = `rgb(${Math.floor(220 + 10 * (scaling[i] ** 3.1))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))})`;
+                        ctx.stroke();
+                        break;
+                    }
+
+                    // Business as usual
+                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                 }
             }
         }
@@ -365,27 +318,27 @@ export class Sphere {
 
     /*rotateX(degrees) {
         degrees = this.rdt(degrees);
-
+ 
         for (const point of this.boundry) {
             let y = point.y;
             point.y = (y * Math.cos(degrees)) + (point.z * Math.sin(degrees) * -1.0);
             point.z = (y * Math.sin(degrees)) + (point.z * Math.cos(degrees));
         }
     }
-
+ 
     rotateY(degrees) {
         degrees = this.rdt(degrees);
-
+ 
         for (const point of this.boundry) {
             let x = point.x;
             point.x = (x * Math.cos(degrees)) + (point.z * Math.sin(degrees) * -1.0);
             point.z = (x * Math.sin(degrees)) + (point.z * Math.cos(degrees));
         }
     }
-
+ 
     rotateZ(degrees) {
         degrees = this.rdt(degrees);
-
+ 
         for (const point of this.boundry) {
             let x = point.x;
             point.x = (x * Math.cos(degrees)) + (point.y * Math.sin(degrees) * -1.0);
