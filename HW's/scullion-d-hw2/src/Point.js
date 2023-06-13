@@ -3,7 +3,6 @@ export class Point {
         this.x = xPos;
         this.y = yPos;
         this.z = zPos;
-        this.trueY = yPos;
 
         // StartingPositions
         this.sx = xPos;

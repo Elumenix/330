@@ -9,7 +9,7 @@ let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
 let lastTime, currentTime, delta, slowData, circleArray;
 
 
-const setupCanvas = (canvasElement, analyserNodeRef) => {
+const setupCanvas = (canvasElement, analyserNodeRef, rotation) => {
     // create drawing context
     ctx = canvasElement.getContext("2d");
     canvasWidth = canvasElement.width;
@@ -20,7 +20,15 @@ const setupCanvas = (canvasElement, analyserNodeRef) => {
     analyserNode = analyserNodeRef;
     // this is the array where the analyser data will be stored
     audioData = new Uint8Array(analyserNode.fftSize / 2);
-    sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight);
+
+    let color1 = [54, 0, 255];
+    let color2 = [220, 5, 5];
+    let white = [255,255,255];
+
+    sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight, 10, 700, color2, white, color1, white);
+
+    // default rotation is set
+    sphere.setRotation(rotation);
 
 
     circleArray = new Array(30);
@@ -201,4 +209,4 @@ const draw = (params = {}) => {
     lastTime = currentTime
 }
 
-export { setupCanvas, draw, sphere, Sphere };
+export { setupCanvas, draw, sphere };

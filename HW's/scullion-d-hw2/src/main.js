@@ -8,7 +8,7 @@ import * as canvas from './visualizer.js';
 import dat from './dat.gui.module.js';
 
 const stats = new Stats();
-stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild( stats.dom );
 
 const rotation = {};
@@ -53,7 +53,6 @@ const init = () => {
 
     // Loop through the songs and create an option element for each one
     for (const song of data.Songs) {
-      console.log(typeof song);
       fetch(song.location)
         .then(response => response.blob())
         .then(blob => {
@@ -65,8 +64,8 @@ const init = () => {
         });
     }
 
+    canvas.setupCanvas(canvasElement, audio.analyserNode, rotation);
     setupUI(canvasElement);
-    canvas.setupCanvas(canvasElement, audio.analyserNode);
 
     loop();
   } else {
@@ -80,8 +79,6 @@ const init = () => {
 
         const { Rotation: axis } = data;
         Object.assign(rotation, axis);
-
-        console.log(rotation);
 
         const title = document.createElement('h1');
         title.textContent = data.Title;
@@ -97,12 +94,10 @@ const init = () => {
           select.insertAdjacentHTML('beforeend', `<option value="${song.location}">${song.title}</option>`);
         }
 
+        canvas.setupCanvas(canvasElement, audio.analyserNode, rotation);
         setupUI(canvasElement);
         loop();
       });
-
-      // Out of order on first one because not accessing server is fast enough to access the visualizer before ctx is established
-      canvas.setupCanvas(canvasElement, audio.analyserNode);
   }
 }
 
@@ -125,13 +120,10 @@ const setupUI = (canvasElement) => {
 
   // add onclick event to button
   playButton.onclick = e => {
-    console.log(`audioCtx.state before = ${audio.audioCtx.state}`);
-
     // check if context is in suspended state (autoplay policy)
     if (audio.audioCtx.state == "suspended") {
       audio.audioCtx.resume();
     }
-    console.log(`audioCtx.state after = ${audio.audioCtx.state}`);
     if (e.target.dataset.playing == "no") {
       //if track is currently paused, play it
       audio.playCurrentSound();
@@ -298,21 +290,24 @@ const setupUI = (canvasElement) => {
   const y = rotationFolder.add(rotation, 'y', 0.00, 360);
   const z = rotationFolder.add(rotation, 'z', 0.00, 360);
 
+  // Set up function then set initial values
   x.onChange(function(e){
-    canvas.sphere.setX(e);
+    canvas.sphere.setRotation(rotation);
     localSave();
   });
 
   y.onChange(function(e){
-    canvas.sphere.setY(e);
+    canvas.sphere.setRotation(rotation);
     localSave();
   });
 
   z.onChange(function(e){
-    canvas.sphere.setZ(e);
+    canvas.sphere.setRotation(rotation);
     localSave();
   });
 
+
+  sphereFolder.addFolder("Build Options");
 
   sphereFolder.open();
 

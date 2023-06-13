@@ -1,19 +1,23 @@
 import { Point } from "./Point.js";
 
 export class Sphere {
-    constructor(ctx, radius, canvasWidth, canvasHeight) {
+    constructor(ctx, radius, canvasWidth, canvasHeight, numRings, numPoints, frontColor1, frontColor2, backColor1, backColor2) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.boundry = new Array();
         this.radius = radius;
         this.numberOfVertices = 0;
-        this.numberOfRings = 10;
-        this.constant = (2 * Math.PI) / 700;
+        this.numberOfRings = numRings;
+        this.constant = (2 * Math.PI) / numPoints;
         this.rings = [];
         this.ctx = ctx;
         this.totalX = 0;
         this.totalY = 0;
         this.totalZ = 0;
+        this.frontColor1 = frontColor1;
+        this.frontColor2 = frontColor2;
+        this.backColor1 = backColor1;
+        this.backColor2 = backColor2;
 
         // Establish x and z position of points
         for (let i = 0; i <= 2 * Math.PI; i += this.constant) {
@@ -44,7 +48,7 @@ export class Sphere {
 
         // Next section of code puts all points into 2D array by what ring they're in
         // This will make it much easier to sort for when they get affected by wavelengths
-        let currentYRow = this.boundry[0].trueY;
+        let currentYRow = this.boundry[0].sy;
         let firstPoint = this.boundry[0];
         let currentRing = 0;
         let pointNum = 0;
@@ -54,9 +58,9 @@ export class Sphere {
 
 
         for (let i = 0; i < this.numberOfVertices; i++) {
-            if (this.boundry[i].trueY != currentYRow) {
+            if (this.boundry[i].sy != currentYRow) {
                 // Move on to next line
-                currentYRow = this.boundry[i].trueY;
+                currentYRow = this.boundry[i].sy;
                 firstPoint = this.boundry[i];
                 currentRing++;
                 pointNum = 0;
@@ -81,7 +85,7 @@ export class Sphere {
 
                 // Checking if the item at present iteration
                 // is greater than the next iteration
-                if (this.rings[j][0].trueY > this.rings[j + 1][0].trueY) {
+                if (this.rings[j][0].sy > this.rings[j + 1][0].sy) {
 
                     // If the condition is true then swap them
                     let temp = this.rings[j];
@@ -173,7 +177,9 @@ export class Sphere {
                         ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                     }
 
-                    ctx.strokeStyle = `rgb(${Math.floor(54.3 + 16.7 * (scaling[i] ** 6))}, ${Math.floor(2 * (scaling[i] ** 11.96))}, ${Math.floor(255)})`;
+                    let currentColor = this.blendColors(this.backColor1, this.backColor2, scaling[i])
+                    ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
+
                     ctx.closePath();
                     ctx.stroke();
                     continue;
@@ -202,7 +208,9 @@ export class Sphere {
                         ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
                     }
 
-                    ctx.strokeStyle = `rgb(${Math.floor(54.3 + 16.7 * (scaling[i] ** 6))}, ${Math.floor(2 * (scaling[i] ** 11.96))}, ${Math.floor(255)})`;
+                    let currentColor = this.blendColors(this.backColor1, this.backColor2, scaling[i])
+                    ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
+
                     ctx.stroke();
                     break;
                 }
@@ -228,7 +236,10 @@ export class Sphere {
                 for (let pointNum = 0; pointNum < currentRing.length; pointNum++) {
                     ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                 }
-                ctx.strokeStyle = `rgb(${Math.floor(220 + 10 * (scaling[i] ** 3.1))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))})`;
+
+                let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[i])
+                ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
+
                 ctx.closePath();
                 ctx.stroke();
             }
@@ -267,7 +278,9 @@ export class Sphere {
                         ctx.lineTo((canvasWidth / 2) + (firstSlerp[i].x * scaling[i]), (canvasHeight / 2) - (firstSlerp[i].y * scaling[i]));
 
 
-                        ctx.strokeStyle = `rgb(${Math.floor(220 + 10 * (scaling[i] ** 3.1))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))}, ${Math.floor(5 + 5 * (scaling[i] ** 9.65))})`;
+                        let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[i])
+                        ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
+
                         ctx.stroke();
                         break;
                     }
@@ -358,16 +371,11 @@ export class Sphere {
         this.totalZ += degrees % 361
     }
 
-    setX(degrees) {
-        this.totalX = degrees;
-    }
-
-    setY(degrees) {
-        this.totalY = degrees;
-    }
-
-    setZ(degrees) {
-        this.totalZ = degrees;
+    // Sets current rotation outright
+    setRotation(degrees) {
+        this.totalX = degrees.x;
+        this.totalY = degrees.y;
+        this.totalZ = degrees.z;
     }
 
     // Helper Functions
@@ -408,4 +416,13 @@ export class Sphere {
 
         return P;
     }
+
+    // Helps to interpolate between two colors
+    blendColors(color1, color2, scale) {
+        const red = color1[0] + (color2[0] - color1[0]) * (scale - 1) / 0.5;
+        const green = color1[1] + (color2[1] - color1[1]) * (scale - 1) / 0.5;
+        const blue = color1[2] + (color2[2] - color1[2]) * (scale - 1) / 0.5;
+        return [red, green, blue];
+    }
+
 }
