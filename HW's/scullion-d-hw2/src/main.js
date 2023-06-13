@@ -68,7 +68,7 @@ const init = () => {
         });
     }
 
-    canvas.setupCanvas(canvasElement, audio.analyserNode, rotation);
+    canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors);
     setupUI(canvasElement);
 
     loop();
@@ -99,7 +99,7 @@ const init = () => {
           select.insertAdjacentHTML('beforeend', `<option value="${song.location}">${song.title}</option>`);
         }
 
-        canvas.setupCanvas(canvasElement, audio.analyserNode, rotation);
+        canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors);
         setupUI(canvasElement);
         loop();
       });
@@ -328,6 +328,18 @@ const setupUI = (canvasElement) => {
   buildOptions.addColor(tempColors, 1).name("Front Secondary");
   buildOptions.addColor(tempColors, 2).name("Back Primary");
   buildOptions.addColor(tempColors, 3).name("Back Secondary");
+
+  const buildButton = {
+    reBuild: function() {
+      colors = tempColors;
+
+      canvas.rebuildSphere(10, 700, colors, rotation);
+      localSave();
+    }
+  }
+
+  const button = buildOptions.add(buildButton, 'reBuild');
+  button.name("Build Sphere");
 
 
 

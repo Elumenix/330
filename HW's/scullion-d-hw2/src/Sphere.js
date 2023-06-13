@@ -14,10 +14,10 @@ export class Sphere {
         this.totalX = 0;
         this.totalY = 0;
         this.totalZ = 0;
-        this.frontColor1 = frontColor1;
-        this.frontColor2 = frontColor2;
-        this.backColor1 = backColor1;
-        this.backColor2 = backColor2;
+        this.frontColor1 = this.hexToRgb(frontColor1.substring(1, 7));
+        this.frontColor2 = this.hexToRgb(frontColor2.substring(1, 7));
+        this.backColor1 = this.hexToRgb(backColor1.substring(1, 7));
+        this.backColor2 = this.hexToRgb(backColor2.substring(1, 7));
         this.scaleLocation;
 
         // Establish x and z position of points
@@ -574,4 +574,10 @@ export class Sphere {
         return [red, green, blue];
     }
 
+    hexToRgb(hex) {
+        let r = parseInt(hex.substring(0, 2), 16);
+        let g = parseInt(hex.substring(2, 4), 16);
+        let b = parseInt(hex.substring(4, 6), 16);
+        return [r, g, b];
+    }
 }
