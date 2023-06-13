@@ -18,7 +18,7 @@ export class Sphere {
         this.frontColor2 = this.hexToRgb(frontColor2.substring(1, 7));
         this.backColor1 = this.hexToRgb(backColor1.substring(1, 7));
         this.backColor2 = this.hexToRgb(backColor2.substring(1, 7));
-        this.scaleLocation;
+        
 
         // Establish x and z position of points
         for (let i = 0; i <= 2 * Math.PI; i += this.constant) {
@@ -95,12 +95,6 @@ export class Sphere {
                 }
             }
         }
-
-        this.scaleLocation = new Array(this.rings.length);
-
-        for (let i = 0; i < this.scaleLocation.length; i++) {
-            this.scaleLocation[i] = i;
-        }
     }
 
     drawSphere(audioData, pulse) {
@@ -133,11 +127,11 @@ export class Sphere {
                 scale /= (Math.round(soundDistribution * (i + 1)) - Math.round(soundDistribution * i));
 
                 // Final numbers should be between 1 and 1.5
-                scaling[this.scaleLocation[i]] = (scale / 255) / 2 + 1;
+                scaling[i] = (scale / 255) / 2 + 1;
             }
             else {
                 // All rings remain default size
-                scaling[this.scaleLocation[i]] = 1;
+                scaling[i] = 1;
             }
         }
 
@@ -159,7 +153,7 @@ export class Sphere {
 
                 let edge = this.slerp(currentRing[0], currentRing[currentRing.length - 1]);
                 firstSlerp[i] = edge; // save for later
-                ctx.moveTo((canvasWidth / 2) + (edge.x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (edge.y * scaling[this.scaleLocation[i]]));
+                ctx.moveTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
             }
             else {
                 for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
@@ -168,7 +162,7 @@ export class Sphere {
 
                         let edge = this.slerp(currentRing[pointNum], currentRing[pointNum - 1]);
                         firstSlerp[i] = edge;
-                        ctx.moveTo((canvasWidth / 2) + (edge.x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (edge.y * scaling[this.scaleLocation[i]]));
+                        ctx.moveTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
                         break;
                     }
                 }
@@ -181,10 +175,10 @@ export class Sphere {
                     }
 
                     for (let pointNum = 0; pointNum < currentRing.length - 1; pointNum++) {
-                        ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[this.scaleLocation[i]]));
+                        ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                     }
 
-                    let currentColor = this.blendColors(this.backColor1, this.backColor2, scaling[this.scaleLocation[i]])
+                    let currentColor = this.blendColors(this.backColor1, this.backColor2, scaling[i])
                     ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
 
                     ctx.closePath();
@@ -194,7 +188,7 @@ export class Sphere {
             }
 
             // Prevents edge case where startnum falls on 0, which happens always with the center line when y rotation = 0;
-            ctx.moveTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[this.scaleLocation[i]]));
+            ctx.moveTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[i]));
 
             for (let pointNum = startNum + 1; pointNum != -1; pointNum++) {
                 // back to beginning
@@ -207,15 +201,15 @@ export class Sphere {
                     if (pointNum == 0 && startNum != 0) {
                         let edge = this.slerp(currentRing[0], currentRing[currentRing.length - 1]);
                         lastSlerp[i] = edge;
-                        ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (edge.y * scaling[this.scaleLocation[i]]));
+                        ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
                     }
                     else {
                         let edge = this.slerp(currentRing[pointNum], currentRing[pointNum - 1]);
                         lastSlerp[i] = edge;
-                        ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (edge.y * scaling[this.scaleLocation[i]]));
+                        ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
                     }
 
-                    let currentColor = this.blendColors(this.backColor1, this.backColor2, scaling[this.scaleLocation[i]])
+                    let currentColor = this.blendColors(this.backColor1, this.backColor2, scaling[i])
                     ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
 
                     ctx.stroke();
@@ -223,7 +217,7 @@ export class Sphere {
                 }
 
                 // Business as usual
-                ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[this.scaleLocation[i]]));
+                ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
             }
         }
 
@@ -239,13 +233,13 @@ export class Sphere {
 
                 ctx.beginPath();
 
-                ctx.moveTo((canvasWidth / 2) + (currentRing[0].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[0].y * scaling[this.scaleLocation[i]]));
+                ctx.moveTo((canvasWidth / 2) + (currentRing[0].x * scaling[i]), (canvasHeight / 2) - (currentRing[0].y * scaling[i]));
 
                 for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
-                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[this.scaleLocation[i]]));
+                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                 }
 
-                let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[this.scaleLocation[i]])
+                let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[i])
                 ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
 
                 ctx.closePath();
@@ -256,19 +250,19 @@ export class Sphere {
                 let startNum = -1;
                 if (currentRing[0].z >= lastSlerp[i].z && currentRing[currentRing.length - 1].z <= lastSlerp[i].z) {
                     startNum = 0;
-                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[this.scaleLocation[i]]), canvasHeight / 2 - (lastSlerp[i].y * scaling[this.scaleLocation[i]]));
+                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                 }
                 else {
                     for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
                         if (currentRing[pointNum].z >= lastSlerp[i].z && currentRing[pointNum - 1].z <= lastSlerp[i].z) {
                             startNum = pointNum;
-                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[this.scaleLocation[i]]), canvasHeight / 2 - (lastSlerp[i].y * scaling[this.scaleLocation[i]]));
+                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                             break;
                         }
                     }
                 }
 
-                ctx.lineTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[this.scaleLocation[i]]));
+                ctx.lineTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[i]));
 
                 for (let pointNum = startNum + 1; startNum != -1; pointNum++) {
 
@@ -283,10 +277,10 @@ export class Sphere {
 
                     // Escape
                     if (currentRing[pointNum].z <= firstSlerp[i].z) {
-                        ctx.lineTo((canvasWidth / 2) + (firstSlerp[i].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (firstSlerp[i].y * scaling[this.scaleLocation[i]]));
+                        ctx.lineTo((canvasWidth / 2) + (firstSlerp[i].x * scaling[i]), (canvasHeight / 2) - (firstSlerp[i].y * scaling[i]));
 
 
-                        let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[this.scaleLocation[i]])
+                        let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[i])
                         ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
 
                         ctx.stroke();
@@ -294,7 +288,7 @@ export class Sphere {
                     }
 
                     // Business as usual
-                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[this.scaleLocation[i]]));
+                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                 }
             }
         }
@@ -309,13 +303,13 @@ export class Sphere {
 
                 ctx.beginPath();
 
-                ctx.moveTo((canvasWidth / 2) + (currentRing[0].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[0].y * scaling[this.scaleLocation[i]]));
+                ctx.moveTo((canvasWidth / 2) + (currentRing[0].x * scaling[i]), (canvasHeight / 2) - (currentRing[0].y * scaling[i]));
 
                 for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
-                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[this.scaleLocation[i]]));
+                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                 }
 
-                let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[this.scaleLocation[i]])
+                let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[i])
                 ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
 
                 ctx.closePath();
@@ -326,19 +320,19 @@ export class Sphere {
                 let startNum = -1;
                 if (currentRing[0].z >= lastSlerp[i].z && currentRing[currentRing.length - 1].z <= lastSlerp[i].z) {
                     startNum = 0;
-                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[this.scaleLocation[i]]), canvasHeight / 2 - (lastSlerp[i].y * scaling[this.scaleLocation[i]]));
+                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                 }
                 else {
                     for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
                         if (currentRing[pointNum].z >= lastSlerp[i].z && currentRing[pointNum - 1].z <= lastSlerp[i].z) {
                             startNum = pointNum;
-                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[this.scaleLocation[i]]), canvasHeight / 2 - (lastSlerp[i].y * scaling[this.scaleLocation[i]]));
+                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                             break;
                         }
                     }
                 }
 
-                ctx.lineTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[this.scaleLocation[i]]));
+                ctx.lineTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[i]));
 
                 for (let pointNum = startNum + 1; startNum != -1; pointNum++) {
 
@@ -353,10 +347,10 @@ export class Sphere {
 
                     // Escape
                     if (currentRing[pointNum].z <= firstSlerp[i].z) {
-                        ctx.lineTo((canvasWidth / 2) + (firstSlerp[i].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (firstSlerp[i].y * scaling[this.scaleLocation[i]]));
+                        ctx.lineTo((canvasWidth / 2) + (firstSlerp[i].x * scaling[i]), (canvasHeight / 2) - (firstSlerp[i].y * scaling[i]));
 
 
-                        let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[this.scaleLocation[i]])
+                        let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[i])
                         ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
 
                         ctx.stroke();
@@ -364,7 +358,7 @@ export class Sphere {
                     }
 
                     // Business as usual
-                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[this.scaleLocation[i]]));
+                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                 }
             }
         }
@@ -380,13 +374,13 @@ export class Sphere {
 
                 ctx.beginPath();
 
-                ctx.moveTo((canvasWidth / 2) + (currentRing[0].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[0].y * scaling[this.scaleLocation[i]]));
+                ctx.moveTo((canvasWidth / 2) + (currentRing[0].x * scaling[i]), (canvasHeight / 2) - (currentRing[0].y * scaling[i]));
 
                 for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
-                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[this.scaleLocation[i]]));
+                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                 }
 
-                let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[this.scaleLocation[i]])
+                let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[i])
                 ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
 
                 ctx.closePath();
@@ -397,19 +391,19 @@ export class Sphere {
                 let startNum = -1;
                 if (currentRing[0].z >= lastSlerp[i].z && currentRing[currentRing.length - 1].z <= lastSlerp[i].z) {
                     startNum = 0;
-                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[this.scaleLocation[i]]), canvasHeight / 2 - (lastSlerp[i].y * scaling[this.scaleLocation[i]]));
+                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                 }
                 else {
                     for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
                         if (currentRing[pointNum].z >= lastSlerp[i].z && currentRing[pointNum - 1].z <= lastSlerp[i].z) {
                             startNum = pointNum;
-                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[this.scaleLocation[i]]), canvasHeight / 2 - (lastSlerp[i].y * scaling[this.scaleLocation[i]]));
+                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                             break;
                         }
                     }
                 }
 
-                ctx.lineTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[this.scaleLocation[i]]));
+                ctx.lineTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[i]));
 
                 for (let pointNum = startNum + 1; startNum != -1; pointNum++) {
 
@@ -424,10 +418,10 @@ export class Sphere {
 
                     // Escape
                     if (currentRing[pointNum].z <= firstSlerp[i].z) {
-                        ctx.lineTo((canvasWidth / 2) + (firstSlerp[i].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (firstSlerp[i].y * scaling[this.scaleLocation[i]]));
+                        ctx.lineTo((canvasWidth / 2) + (firstSlerp[i].x * scaling[i]), (canvasHeight / 2) - (firstSlerp[i].y * scaling[i]));
 
 
-                        let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[this.scaleLocation[i]])
+                        let currentColor = this.blendColors(this.frontColor1, this.frontColor2, scaling[i])
                         ctx.strokeStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
 
                         ctx.stroke();
@@ -435,7 +429,7 @@ export class Sphere {
                     }
 
                     // Business as usual
-                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[this.scaleLocation[i]]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[this.scaleLocation[i]]));
+                    ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
                 }
             }
         }
