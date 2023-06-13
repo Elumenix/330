@@ -8,14 +8,16 @@ import * as canvas from './visualizer.js';
 import dat from './dat.gui.module.js';
 
 const stats = new Stats();
-stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-document.body.appendChild( stats.dom );
+stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild(stats.dom);
 
 const rotation = {};
 
 const drawParams = {
 };
 
+let colors;
+let tempColors
 
 // Define filePaths array in a scope accessible to both init() and localSave() functions
 let filePaths = [];
@@ -45,6 +47,8 @@ const init = () => {
 
     const title = document.createElement('h1');
     title.textContent = data.Title;
+
+    colors = data.Colors;
 
     // Add the h1 element to the DOM
     document.body.insertBefore(title, document.body.firstChild);
@@ -82,6 +86,7 @@ const init = () => {
 
         const title = document.createElement('h1');
         title.textContent = data.Title;
+        colors = data.Colors;
 
         // Add the h1 element to the DOM
         document.body.insertBefore(title, document.body.firstChild);
@@ -291,23 +296,51 @@ const setupUI = (canvasElement) => {
   const z = rotationFolder.add(rotation, 'z', 0.00, 360);
 
   // Set up function then set initial values
-  x.onChange(function(e){
+  x.onChange(function (e) {
     canvas.sphere.setRotation(rotation);
     localSave();
   });
 
-  y.onChange(function(e){
+  y.onChange(function (e) {
     canvas.sphere.setRotation(rotation);
     localSave();
   });
 
-  z.onChange(function(e){
+  z.onChange(function (e) {
     canvas.sphere.setRotation(rotation);
     localSave();
   });
 
 
-  sphereFolder.addFolder("Build Options");
+  let buildOptions = sphereFolder.addFolder("Build Options");
+
+
+
+
+  // Set a copy of initial values before ui is created
+  tempColors = colors;
+
+
+
+
+
+  buildOptions.addColor(tempColors, 0).name("Front Primary");
+  buildOptions.addColor(tempColors, 1).name("Front Secondary");
+  buildOptions.addColor(tempColors, 2).name("Back Primary");
+  buildOptions.addColor(tempColors, 3).name("Back Secondary");
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   sphereFolder.open();
 
@@ -398,18 +431,18 @@ const interval = 1000 / fps;
 let then = performance.now();
 
 const loop = (now) => {
-    const elapsed = now - then;
+  const elapsed = now - then;
 
-    if (elapsed > interval) {
-        then = now - (elapsed % interval);
+  if (elapsed > interval) {
+    then = now - (elapsed % interval);
 
-        // Keep track of fps
-        stats.begin();
-        canvas.draw(drawParams);
-        stats.end();
-    }
+    // Keep track of fps
+    stats.begin();
+    canvas.draw(drawParams);
+    stats.end();
+  }
 
-    requestAnimationFrame(loop);
+  requestAnimationFrame(loop);
 }
 
 requestAnimationFrame(loop);
@@ -433,7 +466,8 @@ const localSave = () => {
     Title: "Spherical Audio Visualizer",
     Songs: songs,
     drawParams: drawParams,
-    Rotation: rotation
+    Rotation: rotation,
+    Colors: colors
   };
 
   localStorage.setItem("dpsAudio", JSON.stringify(dataToSave));
