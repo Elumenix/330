@@ -2,15 +2,14 @@
   main.js is primarily responsible for hooking up the UI to the rest of the application 
   and setting up the main event loop
 */
-
-// We will write the functions in this file in the traditional ES5 way
-// In this instance, we feel the code is more readable if written this way
-// If you want to re-write these as ES6 arrow functions, to be consistent with the other files, go ahead!
-
 import * as utils from './utils.js';
 import * as audio from './audio.js';
 import * as canvas from './visualizer.js';
 import dat from './dat.gui.module.js';
+
+const stats = new Stats();
+stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild( stats.dom );
 
 const rotation = {};
 
@@ -27,6 +26,7 @@ const DEFAULTS = Object.freeze({
 });
 
 const init = () => {
+  var stats = new Stats();
   audio.setupWebaudio(DEFAULTS.sound1);
   let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
 
@@ -397,11 +397,28 @@ const setupUI = (canvasElement) => {
   }
 } // end setupUI
 
-const loop = () => {
-  canvas.draw(drawParams);
+const fps = 60;
+const interval = 1000 / fps;
+
+let then = performance.now();
+
+const loop = (now) => {
+    const elapsed = now - then;
+
+    if (elapsed > interval) {
+        then = now - (elapsed % interval);
+
+        // Keep track of fps
+        stats.begin();
+        canvas.draw(drawParams);
+        stats.end();
+    }
+
+    requestAnimationFrame(loop);
 }
 
-const interval = setInterval(loop, 1000 / 60);
+requestAnimationFrame(loop);
+
 
 
 const localSave = () => {
