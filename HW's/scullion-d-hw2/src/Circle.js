@@ -1,6 +1,6 @@
 // Inspiration for this class was taken from here: https://codepen.io/Mertl/pen/GexapP
 export class Circle {
-    constructor(canvasWidth, canvasHeight) {
+    constructor(canvasWidth, canvasHeight, color) {
         this.x = Math.random() * canvasWidth;
         this.y = Math.random() * canvasHeight;
         this.size = Math.random() * 3; // Between 0 and 4
@@ -8,6 +8,7 @@ export class Circle {
         this.velocity = (this.size ** 2) / 4;
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
+        this.color = color
     }
     update(soundData) {
         let sum = 0;
@@ -55,7 +56,7 @@ export class Circle {
 
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size * sum, 0, 2 * Math.PI);
-        ctx.fillStyle = "#fddba3";
+        ctx.fillStyle = this.color;
         ctx.fill();
     }
 }

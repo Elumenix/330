@@ -6,12 +6,13 @@ import { Circle } from './Circle.js';
 let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
 
 // Necessary for this script
-let lastTime, currentTime, delta, slowData, circleArray, timer, savedData, iteratingSavedData;
+let lastTime, currentTime, delta, slowData, circleArray, timer, savedData, iteratingSavedData, particleCap;
 
 
-const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOptions) => {
+const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOptions, numParticles) => {
     // create drawing context
     timer = 0;
+    particleCap = numParticles;
     ctx = canvasElement.getContext("2d");
     canvasWidth = canvasElement.width;
     canvasHeight = canvasElement.height;
@@ -32,10 +33,10 @@ const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOpti
     sphere.setRotation(rotation);
 
 
-    circleArray = new Array(30);
+    circleArray = new Array(1000);
 
     for (let i = 0; i < circleArray.length; i++) {
-        circleArray[i] = new Circle(canvasWidth, canvasHeight);
+        circleArray[i] = new Circle(canvasWidth, canvasHeight, color[4]);
     }
 
     lastTime = (new Date()).getTime();
@@ -85,7 +86,7 @@ const draw = (params = {}) => {
     }
 
     if (params.showConfetti) {
-        for (let i = 0; i < circleArray.length; i++) {
+        for (let i = 0; i < particleCap; i++) {
             circleArray[i].update(slowData);
             circleArray[i].draw(ctx, slowData);
         }
@@ -241,4 +242,14 @@ const rebuildSphere = (sphereOptions, color, rotation) => {
     sphere.setRotation(rotation);
 }
 
-export { setupCanvas, draw, sphere, rebuildSphere };
+const changeParticleColor = (color) => {
+    for (let i = 0; i < circleArray.length; i++) {
+        circleArray[i].color = color;
+    }
+}
+
+const changeParticleNumber = (num) => {
+    particleCap = num;
+}
+
+export { setupCanvas, draw, sphere, rebuildSphere, changeParticleColor, changeParticleNumber };

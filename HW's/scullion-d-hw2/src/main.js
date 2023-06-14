@@ -15,6 +15,7 @@ const rotation = {};
 
 const drawParams = {
 };
+let particleNum;
 
 let colors;
 let tempColors
@@ -51,6 +52,7 @@ const init = () => {
     sphereOptions = data.SphereOptions;
     volume = data.Volume;
     biquads = data.Biquads;
+    particleNum = data.NumParticles;
 
     // Add the h1 element to the DOM
     document.body.insertBefore(title, document.body.firstChild);
@@ -81,8 +83,8 @@ const init = () => {
     Promise.all(fetchPromises).then(() => {
       // Call the setupWebaudio function after all of the songs have been fetched
       audio.setupWebaudio(`./${filePaths[0]}`);
-      
-      canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions);
+
+      canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions, particleNum);
       setupUI(canvasElement);
       requestAnimationFrame(loop);
     });
@@ -115,12 +117,13 @@ const init = () => {
         sphereOptions = data.SphereOptions;
         volume = data.Volume;
         biquads = data.Biquads;
+        particleNum = data.NumParticles;
 
         // Add the h1 element to the DOM
         document.body.insertBefore(title, document.body.firstChild);
 
 
-        canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions);
+        canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions, particleNum);
         setupUI(canvasElement);
         requestAnimationFrame(loop);
       });
@@ -436,6 +439,22 @@ const setupUI = (canvasElement) => {
     localSave();
   });
 
+  const particleNumController = optionsFolder.add({number: particleNum}, 'number', 1, 1000).name("# of Particles").step(1);
+
+  particleNumController.onChange(function(e){
+    canvas.changeParticleNumber(e);
+    particleNum = e; // save because object was used
+    localSave();
+  });
+
+  const particleColorController = optionsFolder.addColor(tempColors, 4).name("Particle Color");
+  particleColorController.onChange(function(e){
+    canvas.changeParticleColor(e);
+    localSave();
+  });
+
+
+
   backgroundFolder.open();
 
 
@@ -521,7 +540,8 @@ const localSave = () => {
     drawParams: drawParams,
     Rotation: rotation,
     SphereOptions: sphereOptions,
-    Colors: colors
+    Colors: colors,
+    NumParticles: particleNum
   };
 
   localStorage.setItem("dpsAudio", JSON.stringify(dataToSave));

@@ -50,6 +50,8 @@
         "#DC0505",
         "#FFFFFF",
         "#3600FF",
-        "#FFFFFF"
-    ]
+        "#FFFFFF",
+        "#FDDBA3"
+    ],
+    "NumParticles": 30
 }
