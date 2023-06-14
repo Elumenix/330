@@ -6,7 +6,7 @@ import { Circle } from './Circle.js';
 let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
 
 // Necessary for this script
-let lastTime, currentTime, delta, slowData, circleArray, timer, savedData;
+let lastTime, currentTime, delta, slowData, circleArray, timer, savedData, iteratingSavedData;
 
 
 const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOptions) => {
@@ -43,10 +43,12 @@ const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOpti
     delta = 0;
     slowData = new Array(128);
     savedData = new Array(128);
+    iteratingSavedData = new Array(128);
 
     for (let i = 0; i < slowData.length; i++) {
         slowData[i] = 0;
         savedData[i] = 0;
+        iteratingSavedData[i] = 0;
     }
 }
 
@@ -90,23 +92,25 @@ const draw = (params = {}) => {
     }
 
 
-    if (params.displayWaveform && timer > .04167) {
-        timer -= .04167;
+    if (params.displayWaveform && timer > .03333) {
+        timer -= .03333;
 
         // Get the waveform data from the analyserNode
         analyserNode.getByteTimeDomainData(audioData);
 
         for (let i = 0; i < savedData.length; i++) {
-            //savedData[i] = (audioData[i] + savedData[i]) / 2;
-            savedData[i] = audioData[i];
+            iteratingSavedData[i] = (audioData[i] + iteratingSavedData[i]) / 2;
+            savedData[i] = iteratingSavedData[i];
         }
         slowData = savedData;
     }
     else if (params.displayWaveform) {
+        analyserNode.getByteTimeDomainData(audioData);
+        for (let i = 0; i < savedData.length; i++) {
+            iteratingSavedData[i] = (audioData[i] + iteratingSavedData[i]) / 2;
+        }
         slowData = savedData;
     }
-
-
 
     // 4 - draw bars
     if (params.showBars) {
