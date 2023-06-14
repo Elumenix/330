@@ -9,7 +9,7 @@ let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
 let lastTime, currentTime, delta, slowData, circleArray;
 
 
-const setupCanvas = (canvasElement, analyserNodeRef, rotation, color) => {
+const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOptions) => {
     // create drawing context
     ctx = canvasElement.getContext("2d");
     canvasWidth = canvasElement.width;
@@ -25,7 +25,7 @@ const setupCanvas = (canvasElement, analyserNodeRef, rotation, color) => {
     let color2 = [220, 5, 5];
     let white = [255,255,255];
 
-    sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight, 10, 700, color[0], color[1], color[2], color[3]);
+    sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight, (sphereOptions.rings + 1) / 2, sphereOptions.points, color[0], color[1], color[2], color[3]);
 
     // default rotation is set
     sphere.setRotation(rotation);
@@ -209,8 +209,8 @@ const draw = (params = {}) => {
     lastTime = currentTime
 }
 
-const rebuildSphere = (rings, points, color, rotation) => {
-    sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight, rings, points, color[0], color[1], color[2], color[3]);
+const rebuildSphere = (sphereOptions, color, rotation) => {
+    sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight, (sphereOptions.rings + 1) / 2, sphereOptions.points, color[0], color[1], color[2], color[3]);
 
     sphere.setRotation(rotation);
 }

@@ -41,7 +41,9 @@ button[data-playing="no"]:after {
   width: 8rem;
 }
 
-* {
-  font-family: sans-serif;
+.dg .cr.function {
+  color:red;
 }
+
+
 

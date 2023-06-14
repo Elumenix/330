@@ -153,7 +153,7 @@ export class Sphere {
 
                 let edge = this.slerp(currentRing[0], currentRing[currentRing.length - 1]);
                 firstSlerp[i] = edge; // save for later
-                ctx.moveTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
+                ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
             }
             else {
                 for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
@@ -162,7 +162,7 @@ export class Sphere {
 
                         let edge = this.slerp(currentRing[pointNum], currentRing[pointNum - 1]);
                         firstSlerp[i] = edge;
-                        ctx.moveTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
+                        ctx.lineTo((canvasWidth / 2) + (edge.x * scaling[i]), (canvasHeight / 2) - (edge.y * scaling[i]));
                         break;
                     }
                 }
@@ -188,7 +188,7 @@ export class Sphere {
             }
 
             // Prevents edge case where startnum falls on 0, which happens always with the center line when y rotation = 0;
-            ctx.moveTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[i]));
+            ctx.lineTo((canvasWidth / 2) + (currentRing[startNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[startNum].y * scaling[i]));
 
             for (let pointNum = startNum + 1; pointNum != -1; pointNum++) {
                 // back to beginning
@@ -233,7 +233,7 @@ export class Sphere {
 
                 ctx.beginPath();
 
-                ctx.moveTo((canvasWidth / 2) + (currentRing[0].x * scaling[i]), (canvasHeight / 2) - (currentRing[0].y * scaling[i]));
+                ctx.lineTo((canvasWidth / 2) + (currentRing[0].x * scaling[i]), (canvasHeight / 2) - (currentRing[0].y * scaling[i]));
 
                 for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
                     ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
@@ -250,13 +250,13 @@ export class Sphere {
                 let startNum = -1;
                 if (currentRing[0].z >= lastSlerp[i].z && currentRing[currentRing.length - 1].z <= lastSlerp[i].z) {
                     startNum = 0;
-                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
+                    ctx.lineTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                 }
                 else {
                     for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
                         if (currentRing[pointNum].z >= lastSlerp[i].z && currentRing[pointNum - 1].z <= lastSlerp[i].z) {
                             startNum = pointNum;
-                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
+                            ctx.lineTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                             break;
                         }
                     }
@@ -303,7 +303,7 @@ export class Sphere {
 
                 ctx.beginPath();
 
-                ctx.moveTo((canvasWidth / 2) + (currentRing[0].x * scaling[i]), (canvasHeight / 2) - (currentRing[0].y * scaling[i]));
+                ctx.lineTo((canvasWidth / 2) + (currentRing[0].x * scaling[i]), (canvasHeight / 2) - (currentRing[0].y * scaling[i]));
 
                 for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
                     ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
@@ -320,13 +320,13 @@ export class Sphere {
                 let startNum = -1;
                 if (currentRing[0].z >= lastSlerp[i].z && currentRing[currentRing.length - 1].z <= lastSlerp[i].z) {
                     startNum = 0;
-                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
+                    ctx.lineTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                 }
                 else {
                     for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
                         if (currentRing[pointNum].z >= lastSlerp[i].z && currentRing[pointNum - 1].z <= lastSlerp[i].z) {
                             startNum = pointNum;
-                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
+                            ctx.lineTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                             break;
                         }
                     }
@@ -374,7 +374,7 @@ export class Sphere {
 
                 ctx.beginPath();
 
-                ctx.moveTo((canvasWidth / 2) + (currentRing[0].x * scaling[i]), (canvasHeight / 2) - (currentRing[0].y * scaling[i]));
+                ctx.lineTo((canvasWidth / 2) + (currentRing[0].x * scaling[i]), (canvasHeight / 2) - (currentRing[0].y * scaling[i]));
 
                 for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
                     ctx.lineTo((canvasWidth / 2) + (currentRing[pointNum].x * scaling[i]), (canvasHeight / 2) - (currentRing[pointNum].y * scaling[i]));
@@ -391,13 +391,13 @@ export class Sphere {
                 let startNum = -1;
                 if (currentRing[0].z >= lastSlerp[i].z && currentRing[currentRing.length - 1].z <= lastSlerp[i].z) {
                     startNum = 0;
-                    ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
+                    ctx.lineTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                 }
                 else {
                     for (let pointNum = 1; pointNum < currentRing.length; pointNum++) {
                         if (currentRing[pointNum].z >= lastSlerp[i].z && currentRing[pointNum - 1].z <= lastSlerp[i].z) {
                             startNum = pointNum;
-                            ctx.moveTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
+                            ctx.lineTo(canvasWidth / 2 + (lastSlerp[i].x * scaling[i]), canvasHeight / 2 - (lastSlerp[i].y * scaling[i]));
                             break;
                         }
                     }

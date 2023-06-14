@@ -18,6 +18,8 @@ const drawParams = {
 
 let colors;
 let tempColors
+let sphereOptions = {};
+let tempSphereOptions = {};
 
 // Define filePaths array in a scope accessible to both init() and localSave() functions
 let filePaths = [];
@@ -49,6 +51,7 @@ const init = () => {
     title.textContent = data.Title;
 
     colors = data.Colors;
+    sphereOptions = data.SphereOptions;
 
     // Add the h1 element to the DOM
     document.body.insertBefore(title, document.body.firstChild);
@@ -68,7 +71,7 @@ const init = () => {
         });
     }
 
-    canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors);
+    canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions);
     setupUI(canvasElement);
 
     loop();
@@ -87,6 +90,7 @@ const init = () => {
         const title = document.createElement('h1');
         title.textContent = data.Title;
         colors = data.Colors;
+        sphereOptions = data.SphereOptions;
 
         // Add the h1 element to the DOM
         document.body.insertBefore(title, document.body.firstChild);
@@ -99,7 +103,7 @@ const init = () => {
           select.insertAdjacentHTML('beforeend', `<option value="${song.location}">${song.title}</option>`);
         }
 
-        canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors);
+        canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions);
         setupUI(canvasElement);
         loop();
       });
@@ -319,40 +323,39 @@ const setupUI = (canvasElement) => {
 
   // Set a copy of initial values before ui is created
   tempColors = colors;
+  tempSphereOptions = sphereOptions;
 
 
 
 
+  let ringController = buildOptions.add(tempSphereOptions, 'rings', 1, 45).name("Rings").step(2);
+  ringController.onChange(function (e) {
+    // Stepping defaults to even numbers so i'm taking over
+    if (e % 2 == 0) {
+      e = e - 1;
+      tempSphereOptions.rings = e;
+      ringController.updateDisplay();
+    }
+  })
 
+  buildOptions.add(tempSphereOptions, 'points', 3, 1000).name("Points").step(1);
   buildOptions.addColor(tempColors, 0).name("Front Primary");
   buildOptions.addColor(tempColors, 1).name("Front Secondary");
   buildOptions.addColor(tempColors, 2).name("Back Primary");
   buildOptions.addColor(tempColors, 3).name("Back Secondary");
 
   const buildButton = {
-    reBuild: function() {
+    reBuild: function () {
       colors = tempColors;
+      sphereOptions = tempSphereOptions;
 
-      canvas.rebuildSphere(10, 700, colors, rotation);
+      canvas.rebuildSphere(sphereOptions, colors, rotation);
       localSave();
     }
   }
 
   const button = buildOptions.add(buildButton, 'reBuild');
   button.name("Build Sphere");
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   sphereFolder.open();
 
@@ -479,6 +482,7 @@ const localSave = () => {
     Songs: songs,
     drawParams: drawParams,
     Rotation: rotation,
+    SphereOptions: sphereOptions,
     Colors: colors
   };
 

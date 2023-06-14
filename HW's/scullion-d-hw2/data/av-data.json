@@ -35,6 +35,10 @@
         "y": 10,
         "z": 0
     },
+    "SphereOptions": {
+        "rings": 19,
+        "points": 600
+    },
     "Colors": [
         "#DC0505",
         "#FFFFFF",
