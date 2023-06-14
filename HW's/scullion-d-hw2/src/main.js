@@ -20,6 +20,7 @@ let colors;
 let tempColors
 let sphereOptions = {};
 let tempSphereOptions = {};
+let biquads = {};
 
 // Define filePaths array in a scope accessible to both init() and localSave() functions
 let filePaths = [];
@@ -54,6 +55,7 @@ const init = () => {
     colors = data.Colors;
     sphereOptions = data.SphereOptions;
     volume = data.Volume;
+    biquads = data.Biquads;
 
     // Add the h1 element to the DOM
     document.body.insertBefore(title, document.body.firstChild);
@@ -76,7 +78,7 @@ const init = () => {
     canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions);
     setupUI(canvasElement);
 
-    loop();
+    requestAnimationFrame(loop);
   } else {
     // The item does not exist in local storage
     // Use the data from the JSON file
@@ -94,6 +96,7 @@ const init = () => {
         colors = data.Colors;
         sphereOptions = data.SphereOptions;
         volume = data.Volume;
+        biquads = data.Biquads;
 
         // Add the h1 element to the DOM
         document.body.insertBefore(title, document.body.firstChild);
@@ -108,7 +111,7 @@ const init = () => {
 
         canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions);
         setupUI(canvasElement);
-        loop();
+        requestAnimationFrame(loop);
       });
   }
 }
@@ -161,16 +164,16 @@ const setupUI = (canvasElement) => {
     localSave();
   });
   volumeController.name("Volume");
-  
+
 
   const trebleController = soundFolder.add(drawParams, 'useTreble');
   trebleController.onChange(function (e) {
     if (e == true) {
-      audio.biquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
-      audio.biquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
+      audio.biquadFilter.frequency.setValueAtTime(biquads.trebFreq, audio.audioCtx.currentTime);
+      audio.biquadFilter.gain.setValueAtTime(biquads.trebGain, audio.audioCtx.currentTime);
     }
     else {
-      audio.biquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
+      audio.biquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime);
     }
 
     localSave();
@@ -179,19 +182,19 @@ const setupUI = (canvasElement) => {
 
   // Set initial condition
   if (drawParams.useTreble == true) {
-    audio.biquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
-    audio.biquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
+    audio.biquadFilter.frequency.setValueAtTime(biquads.trebFreq, audio.audioCtx.currentTime);
+    audio.biquadFilter.gain.setValueAtTime(biquads.trebGain, audio.audioCtx.currentTime);
   }
 
 
   const baseController = soundFolder.add(drawParams, 'useBase');
   baseController.onChange(function (e) {
     if (e == true) {
-      audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
-      audio.lowShelfBiquadFilter.gain.setValueAtTime(30, audio.audioCtx.currentTime);
+      audio.lowShelfBiquadFilter.frequency.setValueAtTime(biquads.bassFreq, audio.audioCtx.currentTime);
+      audio.lowShelfBiquadFilter.gain.setValueAtTime(biquads.bassGain, audio.audioCtx.currentTime);
     }
     else {
-      audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime)
+      audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime);
     }
 
     localSave();
@@ -200,9 +203,40 @@ const setupUI = (canvasElement) => {
 
   // Set initial condition
   if (drawParams.useBase == true) {
-    audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
-    audio.lowShelfBiquadFilter.gain.setValueAtTime(30, audio.audioCtx.currentTime);
+    audio.lowShelfBiquadFilter.frequency.setValueAtTime(biquads.bassFreq, audio.audioCtx.currentTime);
+    audio.lowShelfBiquadFilter.gain.setValueAtTime(biquads.bassGain, audio.audioCtx.currentTime);
   }
+
+  const soundOptionsFolder = soundFolder.addFolder("Boost Options");
+
+  const freq1Controller = soundOptionsFolder.add(biquads, 'trebFreq', 10, 24000).name("Treble Frequency");
+  freq1Controller.onChange(function (e) {
+    audio.biquadFilter.frequency.setValueAtTime(biquads.trebFreq, audio.audioCtx.currentTime);
+    localSave();
+  });
+
+  const gain1Controller = soundOptionsFolder.add(biquads, 'trebGain', 0, 50).name("Treble Gain");
+  gain1Controller.onChange(function (e) {
+    if (drawParams.useTreble == true) {
+      audio.biquadFilter.gain.setValueAtTime(biquads.trebGain, audio.audioCtx.currentTime);
+    }
+    localSave();
+  });
+
+  const freq2Controller = soundOptionsFolder.add(biquads, 'bassFreq', 10, 24000).name("Bass Frequency");
+  freq2Controller.onChange(function (e) {
+    audio.lowShelfBiquadFilter.frequency.setValueAtTime(biquads.bassFreq, audio.audioCtx.currentTime);
+    localSave();
+  });
+
+  const gain2Controller = soundOptionsFolder.add(biquads, 'bassGain', 0, 50).name("Bass Gain");
+  gain2Controller.onChange(function (e) {
+    if (drawParams.useBase == true) {
+      audio.lowShelfBiquadFilter.gain.setValueAtTime(biquads.bassGain, audio.audioCtx.currentTime);
+    }
+    localSave();
+  });
+
 
   // Display section in settings
   soundFolder.open();
@@ -466,7 +500,6 @@ const loop = (now) => {
   requestAnimationFrame(loop);
 }
 
-requestAnimationFrame(loop);
 
 
 
@@ -486,6 +519,7 @@ const localSave = () => {
   let dataToSave = {
     Title: "Spherical Audio Visualizer",
     Volume: volume,
+    Biquads: biquads,
     Songs: songs,
     drawParams: drawParams,
     Rotation: rotation,
