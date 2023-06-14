@@ -23,6 +23,7 @@ let tempSphereOptions = {};
 
 // Define filePaths array in a scope accessible to both init() and localSave() functions
 let filePaths = [];
+let volume = 0;
 
 // 1 - here we are faking an enumeration
 const DEFAULTS = Object.freeze({
@@ -52,6 +53,7 @@ const init = () => {
 
     colors = data.Colors;
     sphereOptions = data.SphereOptions;
+    volume = data.Volume;
 
     // Add the h1 element to the DOM
     document.body.insertBefore(title, document.body.firstChild);
@@ -91,6 +93,7 @@ const init = () => {
         title.textContent = data.Title;
         colors = data.Colors;
         sphereOptions = data.SphereOptions;
+        volume = data.Volume;
 
         // Add the h1 element to the DOM
         document.body.insertBefore(title, document.body.firstChild);
@@ -149,13 +152,16 @@ const setupUI = (canvasElement) => {
   const soundFolder = gui.addFolder('Sound');
 
   // Initial volume
-  const volumeController = soundFolder.add({ volume: 50 }, 'volume', 0, 100);
-  audio.setVolume(.5);
+  const volumeController = soundFolder.add({ volOption: volume }, 'volOption', 0, 100);
+  audio.setVolume(volume / 100);
 
   volumeController.onChange(function (newValue) {
     audio.setVolume(newValue / 100);
+    volume = newValue;
+    localSave();
   });
   volumeController.name("Volume");
+  
 
   const trebleController = soundFolder.add(drawParams, 'useTreble');
   trebleController.onChange(function (e) {
@@ -479,6 +485,7 @@ const localSave = () => {
 
   let dataToSave = {
     Title: "Spherical Audio Visualizer",
+    Volume: volume,
     Songs: songs,
     drawParams: drawParams,
     Rotation: rotation,
