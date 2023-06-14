@@ -26,14 +26,9 @@ let biquads = {};
 let filePaths = [];
 let volume = 0;
 
-// 1 - here we are faking an enumeration
-const DEFAULTS = Object.freeze({
-  sound1: "./uploads/new_adventure_theme.mp3"
-});
-
 const init = () => {
   var stats = new Stats();
-  audio.setupWebaudio(DEFAULTS.sound1);
+
   let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
 
 
@@ -63,28 +58,51 @@ const init = () => {
     const select = document.getElementById('track-select');
 
     // Loop through the songs and create an option element for each one
+    // Create an array to store the fetch promises
+    let fetchPromises = [];
+
+    // Loop through the songs and create an option element for each one
     for (const song of data.Songs) {
-      fetch(song.location)
-        .then(response => response.blob())
-        .then(blob => {
-          let objectURL = URL.createObjectURL(blob);
-          // Use objectURL here
-          select.insertAdjacentHTML('beforeend', `<option value="${objectURL}">${song.title}</option>`);
-          // Store original file path in filePaths array
-          filePaths.push(song.location);
-        });
+      // Store the fetch promise in the fetchPromises array
+      fetchPromises.push(
+        fetch(song.location)
+          .then(response => response.blob())
+          .then(blob => {
+            let objectURL = URL.createObjectURL(blob);
+            // Use objectURL here
+            select.insertAdjacentHTML('beforeend', `<option value="${objectURL}">${song.title}</option>`);
+            // Store original file path in filePaths array
+            filePaths.push(song.location);
+          })
+      );
     }
 
-    canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions);
-    setupUI(canvasElement);
-
-    requestAnimationFrame(loop);
+    // Wait for all of the fetch promises to resolve
+    Promise.all(fetchPromises).then(() => {
+      // Call the setupWebaudio function after all of the songs have been fetched
+      audio.setupWebaudio(`./${filePaths[0]}`);
+      
+      canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions);
+      setupUI(canvasElement);
+      requestAnimationFrame(loop);
+    });
   } else {
     // The item does not exist in local storage
+
+    const select = document.getElementById('track-select');
     // Use the data from the JSON file
     fetch(url)
       .then(response => response.json())
       .then(data => {
+        // Loop through the songs and create an option element for each one
+        for (const song of data.Songs) {
+          filePaths.push(song.location);
+          select.insertAdjacentHTML('beforeend', `<option value="${song.location}">${song.title}</option>`);
+        }
+
+        audio.setupWebaudio(`./${filePaths[0]}`);
+
+
         const { drawParams: params } = data;
         Object.assign(drawParams, params);
 
@@ -101,13 +119,6 @@ const init = () => {
         // Add the h1 element to the DOM
         document.body.insertBefore(title, document.body.firstChild);
 
-        const select = document.getElementById('track-select');
-
-        // Loop through the songs and create an option element for each one
-        for (const song of data.Songs) {
-          filePaths.push(song.location);
-          select.insertAdjacentHTML('beforeend', `<option value="${song.location}">${song.title}</option>`);
-        }
 
         canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions);
         setupUI(canvasElement);
@@ -359,14 +370,9 @@ const setupUI = (canvasElement) => {
   let buildOptions = sphereFolder.addFolder("Build Options");
 
 
-
-
   // Set a copy of initial values before ui is created
   tempColors = colors;
   tempSphereOptions = sphereOptions;
-
-
-
 
   let ringController = buildOptions.add(tempSphereOptions, 'rings', 1, 45).name("Rings").step(2);
   ringController.onChange(function (e) {
@@ -422,6 +428,14 @@ const setupUI = (canvasElement) => {
     localSave();
   });
 
+  const optionsFolder = backgroundFolder.addFolder("Specialized Options");
+  const waveformController = optionsFolder.add(drawParams, 'displayWaveform').name("Display Waveform");
+
+  waveformController.onChange(function (e) {
+    drawParams.displayFrequency = !drawParams.displayWaveform;
+    localSave();
+  });
+
   backgroundFolder.open();
 
 
@@ -450,31 +464,14 @@ const setupUI = (canvasElement) => {
   overlayFolder.open();
 
   const loopBox = document.querySelector("#loop-cb");
-  const frequencyButton = document.querySelector("#frequency");
-  const waveformButton = document.querySelector("#waveform");
+
 
   // Assign defaults from cache on page load
-  /*drawParams.loopAudio = loopBox.checked;
-  drawParams.displayFrequency = frequencyButton.checked;
-  drawParams.displayWaveform = waveformButton.checked;*/
+  /*drawParams.loopAudio = loopBox.checked;*/
 
   loopBox.onchange = () => {
     drawParams.loopAudio = loopBox.checked;
     audio.setLooping(loopBox.checked);
-
-    localSave();
-  }
-
-  frequencyButton.onclick = () => {
-    drawParams.displayFrequency = true;
-    drawParams.displayWaveform = false;
-
-    localSave();
-  }
-
-  waveformButton.onclick = () => {
-    drawParams.displayFrequency = false;
-    drawParams.displayWaveform = true;
 
     localSave();
   }

@@ -6,11 +6,12 @@ import { Circle } from './Circle.js';
 let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
 
 // Necessary for this script
-let lastTime, currentTime, delta, slowData, circleArray;
+let lastTime, currentTime, delta, slowData, circleArray, timer, savedData;
 
 
 const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOptions) => {
     // create drawing context
+    timer = 0;
     ctx = canvasElement.getContext("2d");
     canvasWidth = canvasElement.width;
     canvasHeight = canvasElement.height;
@@ -23,7 +24,7 @@ const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOpti
 
     let color1 = [54, 0, 255];
     let color2 = [220, 5, 5];
-    let white = [255,255,255];
+    let white = [255, 255, 255];
 
     sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight, (sphereOptions.rings + 1) / 2, sphereOptions.points, color[0], color[1], color[2], color[3]);
 
@@ -41,9 +42,11 @@ const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOpti
     currentTime = 0;
     delta = 0;
     slowData = new Array(128);
+    savedData = new Array(128);
 
     for (let i = 0; i < slowData.length; i++) {
         slowData[i] = 0;
+        savedData[i] = 0;
     }
 }
 
@@ -52,21 +55,15 @@ const draw = (params = {}) => {
     currentTime = (new Date()).getTime();
     delta = (currentTime - lastTime) / 1000;
 
+    if (params.displayWaveform) {
+        timer += delta;
+    }
+
     // 1 - populate the audioData array with the frequency data from the analyserNode
     // notice these arrays are passed "by reference" 
-    if (params.displayFrequency) {
-        analyserNode.getByteFrequencyData(audioData);
-        slowData = audioData;
-    }
-    // OR
-    if (params.displayWaveform) {
-        analyserNode.getByteTimeDomainData(audioData); // waveform data
 
-        // Average the data so it changes slower
-        for (let i = 0; i < 128; i++) {
-            slowData[i] = (slowData[i] + audioData[i]) / 2;
-        }
-    }
+    analyserNode.getByteFrequencyData(audioData);
+    slowData = audioData;
 
 
     // 2 - draw background
@@ -92,6 +89,25 @@ const draw = (params = {}) => {
         }
     }
 
+
+    if (params.displayWaveform && timer > .04167) {
+        timer -= .04167;
+
+        // Get the waveform data from the analyserNode
+        analyserNode.getByteTimeDomainData(audioData);
+
+        for (let i = 0; i < savedData.length; i++) {
+            //savedData[i] = (audioData[i] + savedData[i]) / 2;
+            savedData[i] = audioData[i];
+        }
+        slowData = savedData;
+    }
+    else if (params.displayWaveform) {
+        slowData = savedData;
+    }
+
+
+
     // 4 - draw bars
     if (params.showBars) {
         ctx.save();
@@ -106,6 +122,12 @@ const draw = (params = {}) => {
             x += frequencyWidth + 0.5;
             ctx.restore();
         }
+    }
+
+    // Revert back because the sphere will cause a seizure warning with waveform data
+    if (params.displayWaveform) {
+        analyserNode.getByteFrequencyData(audioData);
+        slowData = audioData;
     }
 
     // 5 - draw sphere
