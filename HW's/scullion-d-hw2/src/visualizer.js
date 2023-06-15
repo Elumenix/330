@@ -9,7 +9,7 @@ let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, sphere;
 let lastTime, currentTime, delta, slowData, circleArray, timer, savedData, iteratingSavedData, particleCap;
 
 
-const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOptions, numParticles) => {
+const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOptions, numParticles, gradientData) => {
     // create drawing context
     timer = 0;
     particleCap = numParticles;
@@ -17,7 +17,7 @@ const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOpti
     canvasWidth = canvasElement.width;
     canvasHeight = canvasElement.height;
     // create a gradient that runs top to bottom
-    gradient = utils.getLinearGradient(ctx, 0, 0, 0, canvasHeight, [{ percent: 0, color: "aqua" }, { percent: 1, color: "magenta" }]);
+    gradient = utils.getLinearGradient(ctx, 0, 0, 0, canvasHeight, gradientData.colorStops);
     // keep a reference to the analyser node
     analyserNode = analyserNodeRef;
     // this is the array where the analyser data will be stored
@@ -252,4 +252,8 @@ const changeParticleNumber = (num) => {
     particleCap = num;
 }
 
-export { setupCanvas, draw, sphere, rebuildSphere, changeParticleColor, changeParticleNumber };
+const changeGradient = (gradientData) => {
+    gradient = utils.getLinearGradient(ctx, 0, 0, 0, canvasHeight, gradientData.colorStops);
+}
+
+export { setupCanvas, draw, sphere, rebuildSphere, changeParticleColor, changeParticleNumber, changeGradient };

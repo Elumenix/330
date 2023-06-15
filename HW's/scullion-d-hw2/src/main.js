@@ -7,6 +7,14 @@ import * as audio from './audio.js';
 import * as canvas from './visualizer.js';
 import dat from './dat.gui.module.js';
 
+let gradientData = {
+  colorStops: [
+    { percent: 0, color: "#00FFFF" },
+    { percent: 1, color: "#FF00FF" }
+  ]
+};
+
+
 const stats = new Stats();
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
@@ -84,7 +92,7 @@ const init = () => {
       // Call the setupWebaudio function after all of the songs have been fetched
       audio.setupWebaudio(`./${filePaths[0]}`);
 
-      canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions, particleNum);
+      canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions, particleNum, gradientData);
       setupUI(canvasElement);
       requestAnimationFrame(loop);
     });
@@ -123,7 +131,7 @@ const init = () => {
         document.body.insertBefore(title, document.body.firstChild);
 
 
-        canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions, particleNum);
+        canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions, particleNum, gradientData);
         setupUI(canvasElement);
         requestAnimationFrame(loop);
       });
@@ -135,6 +143,118 @@ const setupUI = (canvasElement) => {
   // Immediatly set up gui element
   const gui = new dat.GUI();
 
+
+  let gradientFolder = gui.addFolder("Gradient");
+
+  gradientFolder.add({ addColorStop: function() {
+    // Create a new color stop object with default values
+    let newColorStop = { percent: 0.5, color: "#ffffff" };
+    
+    // Add the new color stop to the gradientData.colorStops array
+    gradientData.colorStops.push(newColorStop);
+    
+    // Create new controls for the added color stop
+    let i = gradientData.colorStops.length - 1;
+    
+    // Create a color controller for the added color stop
+    let colorController = gradientFolder.addColor(newColorStop, "color");
+    colorController.name(`Color ${i + 1}`);
+    colorController.property = `color`;
+    colorController.onChange(function(e){
+      canvas.changeGradient(gradientData);
+      //******************************************************************************** */
+    });
+    
+    // Create a percent controller for the added color stop
+    let percentController = gradientFolder.add(newColorStop, "percent", 0, 1);
+    percentController.name(`Percent`);
+    percentController.property = `percent`;
+    percentController.onChange(function(e){
+      canvas.changeGradient(gradientData)
+      //************************************************************************************ */
+    });
+
+
+    // Change immediatly on innitialization
+    canvas.changeGradient(gradientData);
+    //**************************************************************************************** */
+
+    // Add a button to remove the added color stop
+gradientFolder.add({ [`remove${i + 1}`]: (function(index) {
+  return function() {
+    removeColorStop(index);
+    canvas.changeGradient(gradientData);
+    //************************************ */
+  };
+})(i) }, `remove${i + 1}`).name(`Remove Color Stop ${i + 1}`);
+
+  }}, "addColorStop").name("Add Color Stop");  
+ 
+
+// Color stop removal function
+const removeColorStop = (index) => {
+  // Remove the color stop from the gradientData.colorStops array
+  gradientData.colorStops.splice(index, 1);
+  
+  // Remove the corresponding controls from the dat.GUI interface
+  let colorController = gradientFolder.__controllers[index * 3 + 1];
+
+  let percentController = gradientFolder.__controllers[index * 3 + 2];
+  let removeButtonController = gradientFolder.__controllers.find(controller => controller.property === `remove${index + 1}`);
+  gradientFolder.remove(colorController);
+  gradientFolder.remove(percentController);
+  gradientFolder.remove(removeButtonController);
+  
+  // Renumber the remaining color stops and their corresponding controls
+  for (let i = index; i < gradientData.colorStops.length; i++) {
+    let colorController = gradientFolder.__controllers[i * 3 + 1];
+    let removeButtonController = gradientFolder.__controllers.find(controller => controller.property === `remove${i + 2}`);
+    colorController.name(`Color ${i + 1}`);
+    removeButtonController.name(`Remove Color Stop ${i + 1}`);
+    removeButtonController.property = `remove${i + 1}`;
+    removeButtonController.object[`remove${i + 1}`] = (function(index) {
+      return function() {
+        removeColorStop(index);
+        canvas.changeGradient(gradientData);
+        //*************************************************** */
+      };
+    })(i);
+    delete removeButtonController.object[`remove${i + 2}`];
+  }
+};
+
+// Establishes whatever was gotten from storage
+  for (let i = 0; i < gradientData.colorStops.length; i++) {
+    let colorStop = gradientData.colorStops[i];
+    
+    // Create a color controller for this color stop
+    let colorController = gradientFolder.addColor(colorStop, `color`);
+    colorController.name(`Color ${i + 1}`);
+    colorController.property = `color`;
+    colorController.onChange(function(e){
+      canvas.changeGradient(gradientData);
+      //***************************************************************************** */
+    });
+    
+    // Create a percent controller for this color stop
+    let percentController = gradientFolder.add(colorStop, `percent`, 0, 1);
+    percentController.name(`Percent`);
+    percentController.property = `percent`;
+    percentController.onChange(function(e){
+      canvas.changeGradient(gradientData);
+      //****************************************************************************** */
+    });
+    
+    // Add a button to remove this color stop
+    gradientFolder.add({ [`remove${i + 1}`]: (function(index) {
+      return function() {
+        removeColorStop(index);
+        canvas.changeGradient(gradientData);
+        /****************************************************************************** */
+      };
+    })(i) }, `remove${i + 1}`).name(`Remove Color Stop ${i + 1}`);
+  }
+  
   // A - hookup fullscreen button
   const fsButton = document.querySelector("#fs-button");
 
@@ -495,6 +615,7 @@ const setupUI = (canvasElement) => {
     localSave();
   }
 } // end setupUI
+
 
 const fps = 60;
 const interval = 1000 / fps;
