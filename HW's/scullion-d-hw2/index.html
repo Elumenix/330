@@ -15,9 +15,15 @@
   <main>
     <canvas width="800" height="400"></canvas>
     <div id="controls">
+      <section id = timer>
+        <div id="time-tracker">0:00 / 0:00</div>
+        <span><input type="checkbox" id="loop-cb"><label for="loop-cb">Loop</label></span>
+      </section>
+      <section>
+        <input type="range" id="progress-bar" value="0">
+      </section>
       <section>
         <button id="play-button" data-playing="no"></button>
-        <button id="fs-button">Full Screen</button>
 
         <label>Track:
           <select id="track-select">
@@ -25,9 +31,6 @@
           </select>
         </label>
         <input type="file" id="music-file" accept="audio/*">
-      </section>
-      <section>
-        <span><input type="checkbox" id="loop-cb"><label for="loop-cb">Loop</label></span>
       </section>
     </div>
   </main>

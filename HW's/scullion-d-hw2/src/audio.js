@@ -75,6 +75,43 @@ const setupWebaudio = (filePath) => {
     sourceNode.connect(analyserNode);
     analyserNode.connect(gainNode);
     gainNode.connect(audioCtx.destination);
+
+
+    // 9 - Hook up progress bar
+    const progressBar = document.querySelector('#progress-bar');
+
+    element.addEventListener('timeupdate', () => {
+        progressBar.value = (element.currentTime / element.duration) * 100;
+    });
+
+    progressBar.addEventListener('input', () => {
+        element.currentTime = (progressBar.value / 100) * element.duration;
+    });
+
+
+    // 10 - Hook up time tracker
+    const timeTracker = document.querySelector('#time-tracker');
+
+    element.addEventListener('timeupdate', () => {
+        const currentTime = formatTime(element.currentTime);
+        const duration = formatTime(element.duration);
+        timeTracker.textContent = `${currentTime} / ${duration}`;
+    });
+
+    function formatTime(time) {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+
+    // Makes it so that the bar doesn't start at center when a new song is selected, prevents NaN in timer display
+    element.addEventListener('loadedmetadata', () => {
+        progressBar.value = 0;
+        const currentTime = formatTime(element.currentTime);
+        const duration = formatTime(element.duration);
+        timeTracker.textContent = `${currentTime} / ${duration}`;
+    });
 }
 
 const loadSoundFile = (filePath) => {

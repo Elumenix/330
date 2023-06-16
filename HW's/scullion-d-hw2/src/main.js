@@ -140,14 +140,14 @@ const setupUI = (canvasElement) => {
   // Immediatly set up gui element
   const gui = new dat.GUI();
 
-  // A - hookup fullscreen button
-  const fsButton = document.querySelector("#fs-button");
+  // A - hookup fullscreen button : Deprecated, didn't feel right + too blurry
+  /*const fsButton = document.querySelector("#fs-button");
 
   // add .onclick event to button
   fsButton.onclick = e => {
     console.log("init called");
     utils.goFullscreen(canvasElement);
-  };
+  };*/
 
   // B - hookup play/pause button
   const playButton = document.querySelector("#play-button")

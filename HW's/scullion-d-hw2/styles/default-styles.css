@@ -36,11 +36,6 @@ button[data-playing="no"]:after {
   content: "Play";
 }
 
-#fs-button {
-  font-size: 1.2rem;
-  width: 8rem;
-}
-
 .dg .cr.function {
   color:red;
 }
@@ -48,4 +43,12 @@ button[data-playing="no"]:after {
 li .cr.function.add-button {
   color: green;
   border-left: 3px solid green;
+}
+
+#timer{
+  display:flex;
+}
+
+#time-tracker{
+  margin-right: 2em;
 }
