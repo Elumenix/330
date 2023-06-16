@@ -201,14 +201,13 @@ const draw = (params = {}) => {
 
     // B) Iterate through each pixel, stepping 4 elements at a time (which is the RGBA for 1 pixel)
     for (let i = 0; i < length; i += 4) {
-        // C) randomly change every 20th pixel to red
+        // C) randomly change every 20th pixel
         if (params.showNoise && Math.random() < .05) {
             // data[i] is the red channel
             // data[i+1] is the green channel
             // data[i+2] is the blue channel
             // data[i+3] is the alpha channel
             data[i] = data[i + 1] = data[i + 2] = 0; // zero out the red and green and blue channels
-            data[i + 1] = 130; // make the red channel 100% red
         } // end if
 
         // invert?
