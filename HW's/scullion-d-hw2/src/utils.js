@@ -13,48 +13,12 @@ const getRandomColor = () => {
 };
 
 const getLinearGradient = (ctx, canvasWidth, canvasHeight, gradientData) => {
-
-  let startX = 0;
-  let startY = 0;
-  let endX = 0;
-  let endY = 0;
-
-
-  // First one is tricky because it doesn't carry a consecutive 90 degrees
-  if (gradientData.angle <= 45 || gradientData.angle >= 315) {
-    if (gradientData.angle <= 45) {
-      endY = canvasHeight / 2 + (canvasHeight / 2) * (gradientData.angle / 45);
-      startY = canvasHeight - endY;
-    } else {
-      startY = canvasHeight - (canvasHeight / 2) * ((gradientData.angle - 315) / (360 - 315));
-      endY = canvasHeight - startY;
-    }
-
-    endX = canvasWidth;
-    startX = canvasWidth - endX;
-  }
-  else if (gradientData.angle >= 135 && gradientData.angle <= 225) {
-    startY = canvasHeight * ((gradientData.angle - 135) / (225 - 135));
-    endY = canvasHeight - startY;
-    startX = canvasWidth;
-    endX = 0;
-  }
-  else if (gradientData.angle >= 45 && gradientData.angle <= 135) {
-    startX = canvasWidth * ((gradientData.angle - 45) / (135 - 45));
-    endX = canvasWidth - startX;
-    startY = 0;
-    endY = canvasHeight;
-  }
-  else if (gradientData.angle >= 225 && gradientData.angle <= 315) {
-    startY = canvasHeight;
-    endY = 0;
-    endX = canvasWidth * ((gradientData.angle - 225) / (315 - 225));
-    startX = canvasWidth - endX;
-  }
-
-
-
-  console.log(`startX: ${startX}, startY: ${startY}, endX: ${endX}, endY: ${endY}`);
+  let gradientLength = Math.sqrt((canvasWidth * canvasWidth) * .8 + (canvasHeight * canvasHeight) * .8);
+  let angleInRadians = gradientData.angle * Math.PI / 180;
+  let startX = canvasWidth / 2 - Math.cos(angleInRadians) * gradientLength / 2;
+  let startY = canvasHeight / 2 - Math.sin(angleInRadians) * gradientLength / 2;
+  let endX = canvasWidth / 2 + Math.cos(angleInRadians) * gradientLength / 2;
+  let endY = canvasHeight / 2 + Math.sin(angleInRadians) * gradientLength / 2;
 
   // Create the linear gradient
   let lg = ctx.createLinearGradient(startX, startY, endX, endY);
@@ -66,6 +30,7 @@ const getLinearGradient = (ctx, canvasWidth, canvasHeight, gradientData) => {
 
   return lg;
 };
+
 
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API

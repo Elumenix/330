@@ -516,16 +516,15 @@ const setupUI = (canvasElement) => {
 
 // Set button to be green
 addButton.domElement.parentNode.parentNode.classList.add('add-button');
-
   // Color stop removal function
   const removeColorStop = (index) => {
     // Remove the color stop from the gradientData.colorStops array
     gradientData.colorStops.splice(index, 1);
 
     // Remove the corresponding controls from the dat.GUI interface
-    let colorController = gradientFolder.__controllers[index * 3 + 1];
+    let colorController = gradientFolder.__controllers[index * 3 + 2];
 
-    let percentController = gradientFolder.__controllers[index * 3 + 2];
+    let percentController = gradientFolder.__controllers[index * 3 + 3];
     let removeButtonController = gradientFolder.__controllers.find(controller => controller.property === `remove${index + 1}`);
     gradientFolder.remove(colorController);
     gradientFolder.remove(percentController);
@@ -533,7 +532,7 @@ addButton.domElement.parentNode.parentNode.classList.add('add-button');
 
     // Renumber the remaining color stops and their corresponding controls
     for (let i = index; i < gradientData.colorStops.length; i++) {
-      let colorController = gradientFolder.__controllers[i * 3 + 1];
+      let colorController = gradientFolder.__controllers[i * 3 + 2];
       let removeButtonController = gradientFolder.__controllers.find(controller => controller.property === `remove${i + 2}`);
       colorController.name(`Color ${i + 1}`);
       removeButtonController.name(`Remove Color Stop ${i + 1}`);
@@ -583,8 +582,6 @@ addButton.domElement.parentNode.parentNode.classList.add('add-button');
     }, `remove${i + 1}`).name(`Remove Color Stop ${i + 1}`);
   }
 
-  backgroundFolder.open();
-
 
   const overlayFolder = gui.addFolder('Overlay');
 
@@ -608,7 +605,6 @@ addButton.domElement.parentNode.parentNode.classList.add('add-button');
     localSave();
   });
 
-  overlayFolder.open();
 
   const loopBox = document.querySelector("#loop-cb");
 
