@@ -104,15 +104,10 @@ export class Sphere {
         let canvasHeight = this.canvasHeight;
         let scaling = new Array(this.rings.length);
 
-
-
         currentRing = this.rings[0]
 
-
-
+        // Update point values
         this.finalRotation();
-
-
 
         const soundDistribution = 128 / this.rings.length
         // Figure out scaling audio Data
@@ -137,8 +132,7 @@ export class Sphere {
 
         ctx.lineWidth = 3;
 
-
-
+        // These will save values of rings that use spherical interpolation
         let firstSlerp = new Array(this.rings.length);
         let lastSlerp = new Array(this.rings.length);
 
@@ -435,7 +429,7 @@ export class Sphere {
         }
     }
 
-    // This is an amalgamation of the rotation functions below and keeping track of the starting points of the sphere so that I know the actual boundries of rotation
+    // This is an amalgamation of the commented-out rotation functions below and keeping track of the starting points of the sphere so that I know the actual boundries of rotation
     finalRotation() {
 
 
@@ -503,15 +497,18 @@ export class Sphere {
     }*/
 
     turnX(degrees) {
-        this.totalX += degrees % 361
+        this.totalX += degrees;
+        this.totalX %= 361;
     }
 
     turnY(degrees) {
-        this.totalY += degrees % 361
+        this.totalY += degrees;
+        this.totalY %= 361;
     }
 
     turnZ(degrees) {
-        this.totalZ += degrees % 361
+        this.totalZ += degrees;
+        this.totalZ %= 361;
     }
 
     // Sets current rotation outright
@@ -573,5 +570,16 @@ export class Sphere {
         let g = parseInt(hex.substring(2, 4), 16);
         let b = parseInt(hex.substring(4, 6), 16);
         return [r, g, b];
+    }
+
+    // Get function to update datgui
+    getRotation() {
+        const Rotation = {
+            "x": this.totalX,
+            "y": this.totalY,
+            "z": this.totalZ
+        }
+
+        return Rotation;
     }
 }

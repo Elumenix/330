@@ -8,6 +8,7 @@ import * as canvas from './visualizer.js';
 import dat from './dat.gui.module.js';
 
 let gradientData = {};
+let reloadOverride = false;
 
 
 const stats = new Stats();
@@ -15,6 +16,7 @@ stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
 
 const rotation = {};
+let rotationFolder;
 
 const drawParams = {
 };
@@ -256,7 +258,6 @@ const setupUI = (canvasElement) => {
     localSave();
   });
 
-
   // Display section in settings
   soundFolder.open();
 
@@ -353,7 +354,7 @@ const setupUI = (canvasElement) => {
 
 
 
-  const rotationFolder = sphereFolder.addFolder("Rotation");
+  rotationFolder = sphereFolder.addFolder("Rotation");
   const x = rotationFolder.add(rotation, 'x', 0.00, 360);
   const y = rotationFolder.add(rotation, 'y', 0.00, 360);
   const z = rotationFolder.add(rotation, 'z', 0.00, 360);
@@ -605,6 +606,17 @@ addButton.domElement.parentNode.parentNode.classList.add('add-button');
     localSave();
   });
 
+  // reload the page
+  const resetButton = {
+    reset: function(){
+      reloadOverride = true;
+      localStorage.removeItem("dpsAudio");
+      location.reload();
+    }
+  }
+
+  gui.add(resetButton, 'reset').name("Revert to Default Settings");
+
 
   const loopBox = document.querySelector("#loop-cb");
 
@@ -635,6 +647,21 @@ const loop = (now) => {
     // Keep track of fps
     stats.begin();
     canvas.draw(drawParams);
+
+    // weird location for this, but it prevents exposing main to other classes
+    // Reload override is active because reloading the page is asynchronous, so 
+    // the json would be resaved before the page was reloaded otherwise
+    if (drawParams.spinSphere && !reloadOverride) {
+      let recievedRotation = canvas.sphere.getRotation();
+
+      // Variable is const so I need to do it individually
+      rotation.x = recievedRotation.x;
+      rotation.y = recievedRotation.y;
+      rotation.z = recievedRotation.z;
+      rotationFolder.updateDisplay();
+      localSave();
+    }
+
     stats.end();
   }
 
