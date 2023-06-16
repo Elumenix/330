@@ -17,7 +17,7 @@ const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOpti
     canvasWidth = canvasElement.width;
     canvasHeight = canvasElement.height;
     // create a gradient that runs top to bottom
-    gradient = utils.getLinearGradient(ctx, 0, 0, 0, canvasHeight, gradientData.colorStops);
+    gradient = utils.getLinearGradient(ctx, canvasWidth, canvasHeight, gradientData);
     // keep a reference to the analyser node
     analyserNode = analyserNodeRef;
     // this is the array where the analyser data will be stored
@@ -253,7 +253,7 @@ const changeParticleNumber = (num) => {
 }
 
 const changeGradient = (gradientData) => {
-    gradient = utils.getLinearGradient(ctx, 0, 0, 0, canvasHeight, gradientData.colorStops);
+    gradient = utils.getLinearGradient(ctx, canvasWidth, canvasHeight, gradientData);
 }
 
 export { setupCanvas, draw, sphere, rebuildSphere, changeParticleColor, changeParticleNumber, changeGradient };

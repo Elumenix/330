@@ -53,5 +53,18 @@
         "#FFFFFF",
         "#FDDBA3"
     ],
-    "NumParticles": 30
+    "NumParticles": 30,
+    "GradientData": {
+        "colorStops": [
+            {
+                "percent": 0.00,
+                "color": "#00FFFF"
+            },
+            {
+                "percent": 1.00,
+                "color": "#FF00FF"
+            }
+        ],
+        "angle": 90
+    }
 }
