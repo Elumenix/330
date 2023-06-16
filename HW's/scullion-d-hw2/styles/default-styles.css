@@ -52,3 +52,13 @@ li .cr.function.add-button {
 #time-tracker{
   margin-right: 2em;
 }
+
+ul {
+  overflow:auto;
+}
+
+.selector {
+  transform: translateY(-100px);
+}
+
+
