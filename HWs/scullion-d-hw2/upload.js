@@ -37,9 +37,17 @@ app.post('/upload', (req, res) => {
             console.error(err);
             return res.status(500).send(err);
         }
-        let fileUrl = `${req.protocol}://${req.get('host')}/uploads/${fileName}`;
-        console.log(`File uploaded: ${fileUrl}`);
-        res.send(fileDestination);
+
+        fs.chmod(fileDestination, 0o644, err => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send(err);
+            }
+
+            let fileUrl = `${req.protocol}://${req.get('host')}/uploads/${fileName}`;
+            console.log(`File uploaded: ${fileUrl}`);
+            res.send(fileDestination);
+        });
     });
 });
 
