@@ -255,4 +255,4 @@ const changeGradient = (gradientData) => {
     gradient = utils.getLinearGradient(ctx, canvasWidth, canvasHeight, gradientData);
 }
 
-export { setupCanvas, draw, sphere, rebuildSphere, changeParticleColor, changeParticleNumber, changeGradient };
+export { setupCanvas, draw, sphere, rebuildSphere, changeParticleColor, changeParticleNumber, changeGradient, canvasWidth };

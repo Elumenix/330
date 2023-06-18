@@ -1,3 +1,6 @@
+// Something I deemed necessary later on for glitched audio files
+let duration;
+
 // 1 - our WebAudio context, **we will export and make this public at the bottom of the file**
 let audioCtx;
 
@@ -96,11 +99,17 @@ const setupWebaudio = (filePath) => {
     element.addEventListener('timeupdate', () => {
         const currentTime = formatTime(element.currentTime);
 
-        // Duration used to be updated but that somehow caused it to permanently increase
-        // in number at the end if the user spammed the pause button, for whatever reason
-        const duration = timeTracker.textContent.split(' / ')[1];
+        if (duration < currentTime) {
+            // Some audio files are glitched and show a wrong end time regardless, this needs to account for that
+            duration = currentTime;
+        }
+        else {
+            // Duration used to be updated but that somehow caused it to permanently increase
+            // in number at the end if the user spammed the pause button, for whatever reason
+            duration = timeTracker.textContent.split(' / ')[1];
+        }
         timeTracker.textContent = `${currentTime} / ${duration}`;
-    });    
+    });
 
     function formatTime(time) {
         const minutes = Math.floor(time / 60);
@@ -113,7 +122,7 @@ const setupWebaudio = (filePath) => {
     element.addEventListener('loadedmetadata', () => {
         progressBar.value = 0;
         const currentTime = formatTime(element.currentTime);
-        const duration = formatTime(element.duration);
+        duration = formatTime(element.duration);
         timeTracker.textContent = `${currentTime} / ${duration}`;
     });
 }

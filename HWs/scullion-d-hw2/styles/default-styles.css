@@ -11,6 +11,10 @@ canvas {
   background: #fafafa;
 }
 
+h1 {
+  margin-left: 1rem;
+}
+
 #controls {
   margin-left: 1rem;
 }
@@ -37,7 +41,7 @@ button[data-playing="no"]:after {
 }
 
 .dg .cr.function {
-  color:red;
+  color: red;
 }
 
 li .cr.function.add-button {
@@ -45,20 +49,22 @@ li .cr.function.add-button {
   border-left: 3px solid green;
 }
 
-#timer{
-  display:flex;
+#timer {
+  display: flex;
 }
 
-#time-tracker{
+#time-tracker {
   margin-right: 2em;
 }
 
 ul {
-  overflow:auto;
+  overflow: auto;
 }
 
 .selector {
   transform: translateY(-100px);
 }
 
-
+#my-stats-container div {
+  left: 30% !important;
+}

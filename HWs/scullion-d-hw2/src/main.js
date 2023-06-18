@@ -12,7 +12,6 @@ let reloadOverride = false;
 
 const stats = new Stats();
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-document.body.appendChild(stats.dom);
 
 const rotation = {};
 let rotationFolder;
@@ -32,7 +31,7 @@ let filePaths = [];
 let volume = 0;
 
 const init = () => {
-  var stats = new Stats();
+  document.querySelector("#my-stats-container").appendChild(stats.dom);
 
   let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
 
@@ -138,8 +137,14 @@ const init = () => {
 
 
 const setupUI = (canvasElement) => {
+  let startingWidth = screen.width - canvas.canvasWidth - 125;
+
+  if (startingWidth < 400) {
+    startingWidth = 400;
+  }
+
   // Immediatly set up gui element
-  const gui = new dat.GUI();
+  const gui = new dat.GUI({ width: startingWidth });
 
   // A - hookup fullscreen button : Deprecated, didn't feel right + too blurry
   /*const fsButton = document.querySelector("#fs-button");
@@ -298,10 +303,10 @@ const setupUI = (canvasElement) => {
 
         fileName = fileName.substring(0, fileName.lastIndexOf('.'));
         fileName = fileName.replace('_', " ");
-        while(fileName.includes("_")) {
+        while (fileName.includes("_")) {
           fileName = fileName.replace('_', " ");
         }
-        while(fileName.includes("-")) {
+        while (fileName.includes("-")) {
           fileName = fileName.replace('-', " ");
         }
 
@@ -358,8 +363,6 @@ const setupUI = (canvasElement) => {
   spinController.onChange(function (e) {
     localSave();
   });
-
-
 
   rotationFolder = sphereFolder.addFolder("Rotation");
   const x = rotationFolder.add(rotation, 'x', 0.00, 360);
@@ -467,9 +470,9 @@ const setupUI = (canvasElement) => {
   });
 
   let gradientFolder = optionsFolder.addFolder("Gradient");
-  
+
   const angleController = gradientFolder.add(gradientData, 'angle', 0, 360).name("Angle");
-  angleController.onChange(function(e){
+  angleController.onChange(function (e) {
     canvas.changeGradient(gradientData);
     localSave();
   });
@@ -522,8 +525,8 @@ const setupUI = (canvasElement) => {
     }
   }, "addColorStop").name("Add Color Stop");
 
-// Set button to be green
-addButton.domElement.parentNode.parentNode.classList.add('add-button');
+  // Set button to be green
+  addButton.domElement.parentNode.parentNode.classList.add('add-button');
   // Color stop removal function
   const removeColorStop = (index) => {
     // Remove the color stop from the gradientData.colorStops array
@@ -615,7 +618,7 @@ addButton.domElement.parentNode.parentNode.classList.add('add-button');
 
   // reload the page
   const resetButton = {
-    reset: function(){
+    reset: function () {
       reloadOverride = true;
       localStorage.removeItem("dpsAudio");
       location.reload();
@@ -674,9 +677,6 @@ const loop = (now) => {
 
   requestAnimationFrame(loop);
 }
-
-
-
 
 const localSave = () => {
   let trackSelect = document.querySelector("#track-select");
