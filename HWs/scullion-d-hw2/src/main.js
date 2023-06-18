@@ -297,8 +297,6 @@ const setupUI = (canvasElement) => {
 
         let fileName = data.split('/').pop();
         let fileUrl = `https://music-file-uploader.onrender.com/uploads/${fileName}`;
-        // data contains the file path on the server
-        audio.loadSoundFile(fileUrl);
 
         // pause the current track if it is playing
         if (playButton.dataset.playing == "yes") {
@@ -312,14 +310,14 @@ const setupUI = (canvasElement) => {
         if (option) {
           // Select existing option
           option.selected = true;
-          audio.loadSoundFile(option.value);
+          audio.loadSoundFile(fileName);
         } else {
           // Create new option
           option = document.createElement('option');
-          option.value = data; // set value to file path on server
+          option.value = fileUrl; // set value to file path on server
           option.textContent = fileName;
-          filePaths.push(data);
-          console.log(data);
+          filePaths.push(fileUrl);
+          console.log(fileUrl);
           option.selected = true;
           select.appendChild(option);
           audio.loadSoundFile(option.value);

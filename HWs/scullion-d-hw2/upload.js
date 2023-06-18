@@ -1,13 +1,21 @@
 const cors = require('cors');
 const express = require('express');
 const fileUpload = require('express-fileupload');
-const app = express();
 const fs = require('fs');
+const mime = require('mime');
 const path = require('path');
+
+const app = express();
 const uploadsDir = path.join(__dirname, 'uploads');
 
 app.use(cors());
 app.use(fileUpload());
+app.use('/uploads', express.static(uploadsDir), (req, res, next) => {
+    let filePath = path.join(uploadsDir, req.url);
+    let mimeType = mime.getType(filePath);
+    res.setHeader('Content-Type', mimeType);
+    next();
+});
 
 // Create uploads directory if it does not exist
 if (!fs.existsSync(uploadsDir)) {
@@ -29,6 +37,8 @@ app.post('/upload', (req, res) => {
             console.error(err);
             return res.status(500).send(err);
         }
+        let fileUrl = `${req.protocol}://${req.get('host')}/uploads/${fileName}`;
+        console.log(`File uploaded: ${fileUrl}`);
         res.send(fileDestination);
     });
 });
