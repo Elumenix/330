@@ -287,7 +287,7 @@ const setupUI = (canvasElement) => {
     // Send file to server-side script
     const formData = new FormData();
     formData.append('file', file);
-    fetch('http://localhost:80/upload', {
+    fetch('https://music-file-uploader.onrender.com', {
       method: 'POST',
       body: formData
     })
