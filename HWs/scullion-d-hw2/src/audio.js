@@ -95,9 +95,12 @@ const setupWebaudio = (filePath) => {
 
     element.addEventListener('timeupdate', () => {
         const currentTime = formatTime(element.currentTime);
-        const duration = formatTime(element.duration);
+
+        // Duration used to be updated but that somehow caused it to permanently increase
+        // in number at the end if the user spammed the pause button, for whatever reason
+        const duration = timeTracker.textContent.split(' / ')[1];
         timeTracker.textContent = `${currentTime} / ${duration}`;
-    });
+    });    
 
     function formatTime(time) {
         const minutes = Math.floor(time / 60);
@@ -120,9 +123,9 @@ const loadSoundFile = (filePath) => {
 }
 
 const playCurrentSound = () => {
-    let value = gainNode.gain.value;
+    let temp = gainNode.gain.value;
     element.play();
-    gainNode.gain.value = value;
+    gainNode.gain.value = temp;
 }
 
 const pauseCurrentSound = () => {

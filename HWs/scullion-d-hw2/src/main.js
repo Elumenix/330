@@ -281,7 +281,6 @@ const setupUI = (canvasElement) => {
   trackFile.onchange = e => {
     e.preventDefault(); // Don't reload page when finished
     let file = e.target.files[0];
-    let fileName = file.name.substring(0, file.name.lastIndexOf('.'));
 
     // Send file to server-side script
     const formData = new FormData();
@@ -292,7 +291,6 @@ const setupUI = (canvasElement) => {
     })
       .then(response => response.text())
       .then(data => {
-        console.log(data);
 
         // Format the file name to get rid of underscores and file type
         let fileName = data.split('/').pop();
@@ -326,7 +324,6 @@ const setupUI = (canvasElement) => {
           option.value = fileUrl; // set value to file path on server
           option.textContent = fileName;
           filePaths.push(fileUrl);
-          console.log(fileUrl);
           option.selected = true;
           select.appendChild(option);
           audio.loadSoundFile(option.value);
