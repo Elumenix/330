@@ -23,6 +23,7 @@ const setupWebaudio = (filePath) => {
 
     // 2 - this creates an <audio> element
     element = new Audio(); //document.querySelector("audio");
+    element.crossOrigin = 'anonymous'; // Let files from a server be played without issue
 
     // 3 - have it point at a sound file
     loadSoundFile(filePath);

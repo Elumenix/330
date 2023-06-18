@@ -2,7 +2,6 @@
   main.js is primarily responsible for hooking up the UI to the rest of the application 
   and setting up the main event loop
 */
-import * as utils from './utils.js';
 import * as audio from './audio.js';
 import * as canvas from './visualizer.js';
 import dat from './dat.gui.module.js';
@@ -295,8 +294,18 @@ const setupUI = (canvasElement) => {
       .then(data => {
         console.log(data);
 
+        // Format the file name to get rid of underscores and file type
         let fileName = data.split('/').pop();
         let fileUrl = `https://music-file-uploader.onrender.com/uploads/${fileName}`;
+
+        fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+        fileName = fileName.replace('_', " ");
+        while(fileName.includes("_")) {
+          fileName = fileName.replace('_', " ");
+        }
+        while(fileName.includes("-")) {
+          fileName = fileName.replace('-', " ");
+        }
 
         // pause the current track if it is playing
         if (playButton.dataset.playing == "yes") {
@@ -310,7 +319,7 @@ const setupUI = (canvasElement) => {
         if (option) {
           // Select existing option
           option.selected = true;
-          audio.loadSoundFile(fileName);
+          audio.loadSoundFile(fileUrl);
         } else {
           // Create new option
           option = document.createElement('option');

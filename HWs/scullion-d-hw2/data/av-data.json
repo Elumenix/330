@@ -9,16 +9,20 @@
     },
     "Songs": [
         {
-            "title": "New Adventure Theme",
-            "location": "uploads/new_adventure_theme.mp3"
+            "title": "Gates To Infinity",
+            "location": "uploads/Gates To Infinity.mp3"
         },
         {
-            "title": "Peanuts Theme",
-            "location": "uploads/peanuts_theme.mp3"
+            "title": "Canopy Cacophony",
+            "location": "uploads/Canopy Cacophony.ogg"
         },
         {
-            "title": "The Picard Song",
-            "location": "uploads/the_picard_song.mp3"
+            "title": "GLaDOS Moment",
+            "location": "uploads/GLaDOS Moment.wav"
+        },
+        {
+            "title": "Mario",
+            "location": "uploads/Mario.mp3"
         }
     ],
     "drawParams": {
