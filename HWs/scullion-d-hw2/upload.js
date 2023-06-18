@@ -14,6 +14,7 @@ app.use('/uploads', express.static(uploadsDir), (req, res, next) => {
     let filePath = path.join(uploadsDir, req.url);
     let mimeType = mime.getType(filePath);
     res.setHeader('Content-Type', mimeType);
+    res.setHeader('Access-Control-Allow-Origin', '*');
     next();
 });
 
@@ -50,8 +51,6 @@ app.post('/upload', (req, res) => {
         });
     });
 });
-
-app.use('/uploads', express.static(uploadsDir));
 
 app.listen(process.env.PORT, () => {
     console.log('Server started on Render');
