@@ -3,14 +3,15 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const app = express();
 const fs = require('fs');
-const uploadDir = 'uploads';
+const path = require('path');
+const uploadsDir = path.join(__dirname, 'uploads');
 
 app.use(cors());
 app.use(fileUpload());
 
 // Create uploads directory if it does not exist
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
 }
 
 app.post('/upload', (req, res) => {
@@ -31,6 +32,8 @@ app.post('/upload', (req, res) => {
         res.send(fileDestination);
     });
 });
+
+app.use('/uploads', express.static(uploadsDir));
 
 app.listen(process.env.PORT, () => {
     console.log('Server started on Render');

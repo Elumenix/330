@@ -287,15 +287,18 @@ const setupUI = (canvasElement) => {
     // Send file to server-side script
     const formData = new FormData();
     formData.append('file', file);
-    fetch('https://music-file-uploader.onrender.com', {
+    fetch('https://music-file-uploader.onrender.com/upload', {
       method: 'POST',
       body: formData
     })
       .then(response => response.text())
       .then(data => {
         console.log(data);
+
+        let fileName = data.split('/').pop();
+        let fileUrl = `https://music-file-uploader.onrender.com/uploads/${fileName}`;
         // data contains the file path on the server
-        audio.loadSoundFile(data);
+        audio.loadSoundFile(fileUrl);
 
         // pause the current track if it is playing
         if (playButton.dataset.playing == "yes") {
