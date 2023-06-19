@@ -393,6 +393,8 @@ const setupUI = (canvasElement) => {
   tempColors = colors;
   tempSphereOptions = sphereOptions;
 
+  buildOptions.add(tempSphereOptions, 'radius', 50, 300).name("Radius");
+
   let ringController = buildOptions.add(tempSphereOptions, 'rings', 1, 45).name("Rings").step(2);
   ringController.onChange(function (e) {
     // Stepping defaults to even numbers so i'm taking over

@@ -14,6 +14,16 @@ const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOpti
     timer = 0;
     particleCap = numParticles;
     ctx = canvasElement.getContext("2d");
+
+    // I really want to make the sceen look better horizontal on phones
+    if (screen.width > screen.height) {
+        canvasElement.width = Math.floor(screen.width * .65);
+    }
+    else {
+        canvasElement.width = Math.floor(screen.height * .65);
+    }
+
+    canvasElement.height = Math.floor(canvasElement.width * .5);
     canvasWidth = canvasElement.width;
     canvasHeight = canvasElement.height;
     // create a gradient that runs top to bottom
@@ -27,7 +37,7 @@ const setupCanvas = (canvasElement, analyserNodeRef, rotation, color, sphereOpti
     let color2 = [220, 5, 5];
     let white = [255, 255, 255];
 
-    sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight, (sphereOptions.rings + 1) / 2, sphereOptions.points, color[0], color[1], color[2], color[3]);
+    sphere = new Sphere(ctx, sphereOptions.radius, canvasWidth, canvasHeight, (sphereOptions.rings + 1) / 2, sphereOptions.points, color[0], color[1], color[2], color[3]);
 
     // default rotation is set
     sphere.setRotation(rotation);
@@ -236,7 +246,7 @@ const draw = (params = {}) => {
 }
 
 const rebuildSphere = (sphereOptions, color, rotation) => {
-    sphere = new Sphere(ctx, 100, canvasWidth, canvasHeight, (sphereOptions.rings + 1) / 2, sphereOptions.points, color[0], color[1], color[2], color[3]);
+    sphere = new Sphere(ctx, sphereOptions.radius, canvasWidth, canvasHeight, (sphereOptions.rings + 1) / 2, sphereOptions.points, color[0], color[1], color[2], color[3]);
 
     sphere.setRotation(rotation);
 }

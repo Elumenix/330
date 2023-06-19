@@ -48,12 +48,13 @@
     },
     "SphereOptions": {
         "rings": 19,
-        "points": 600
+        "points": 600,
+        "radius": 150
     },
     "Colors": [
         "#DC0505",
         "#FFFFFF",
-        "#3600FF",
+        "#745CE1",
         "#FFFFFF",
         "#FDDBA3"
     ],
