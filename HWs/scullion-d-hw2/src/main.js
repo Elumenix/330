@@ -240,6 +240,13 @@ const setupUI = (canvasElement) => {
     localSave();
   });
 
+  let propertyName = freq1Controller.domElement.parentNode.querySelector('.property-name');
+  propertyName.classList.add('tooltip');
+  let tooltip = document.createElement("span");
+  tooltip.classList.add("tooltiptext");
+  tooltip.innerHTML = "Gray Area";
+  propertyName.appendChild(tooltip);
+
   const gain1Controller = soundOptionsFolder.add(biquads, 'trebGain', 0, 50).name("Treble Gain");
   gain1Controller.onChange(function (e) {
     if (drawParams.useTreble == true) {
@@ -253,6 +260,13 @@ const setupUI = (canvasElement) => {
     audio.lowShelfBiquadFilter.frequency.setValueAtTime(biquads.bassFreq, audio.audioCtx.currentTime);
     localSave();
   });
+
+  propertyName = freq2Controller.domElement.parentNode.querySelector('.property-name');
+  propertyName.classList.add('tooltip');
+  tooltip = document.createElement("span");
+  tooltip.classList.add("tooltiptext");
+  tooltip.innerHTML = "Blue Area";
+  propertyName.appendChild(tooltip);
 
   const gain2Controller = soundOptionsFolder.add(biquads, 'bassGain', 0, 50).name("Bass Gain");
   gain2Controller.onChange(function (e) {
@@ -405,7 +419,15 @@ const setupUI = (canvasElement) => {
     }
   })
 
-  buildOptions.add(tempSphereOptions, 'points', 3, 1000).name("Points").step(1);
+  const pointController = buildOptions.add(tempSphereOptions, 'points', 3, 1000).name("Points").step(1);
+
+propertyName = pointController.domElement.parentNode.querySelector('.property-name');
+propertyName.classList.add('tooltip');
+tooltip = document.createElement("span");
+tooltip.classList.add("tooltiptext");
+tooltip.innerHTML = "Per Ring: May Cause Lag";
+propertyName.appendChild(tooltip);
+
   buildOptions.addColor(tempColors, 0).name("Front Primary");
   buildOptions.addColor(tempColors, 1).name("Front Secondary");
   buildOptions.addColor(tempColors, 2).name("Back Primary");
@@ -599,10 +621,21 @@ const setupUI = (canvasElement) => {
   const overlayFolder = gui.addFolder('Overlay');
 
   const embossController = overlayFolder.add(drawParams, 'showEmboss');
+  embossController.name("Emboss");
+
+  overlayFolder.open();
+
+// Add a tooltip
+propertyName = embossController.domElement.parentNode.querySelector('.property-name');
+propertyName.classList.add('tooltip');
+tooltip = document.createElement("span");
+tooltip.classList.add("tooltiptext");
+tooltip.innerHTML = "Warning: This Will Cause Lag";
+propertyName.appendChild(tooltip);
+
   embossController.onChange(function (e) {
     localSave();
   });
-  embossController.name("Emboss");
 
   const invertController = overlayFolder.add(drawParams, 'showInvert');
   invertController.name("Invert");

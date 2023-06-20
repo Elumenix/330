@@ -5,7 +5,7 @@
         "trebFreq": 1000,
         "trebGain": 15,
         "bassFreq": 1000,
-        "bassGain": 30
+        "bassGain": 20
     },
     "Songs": [
         {
@@ -48,7 +48,7 @@
     },
     "SphereOptions": {
         "rings": 19,
-        "points": 600,
+        "points": 500,
         "radius": 150
     },
     "Colors": [
