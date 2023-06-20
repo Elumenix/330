@@ -25,13 +25,15 @@ let tempColors
 let sphereOptions = {};
 let tempSphereOptions = {};
 let biquads = {};
+let updateMessage;
 
 // Define filePaths array in a scope accessible to both init() and localSave() functions
 let filePaths = [];
 let volume = 0;
 
-const init = () => {
+const init = async () => {
   document.querySelector("#my-stats-container").appendChild(stats.dom);
+  updateMessage = document.querySelector("#update-message");
 
   let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
 
@@ -39,6 +41,8 @@ const init = () => {
   const url = "./data/av-data.json";
 
   if (localStorage.getItem("dpsAudio") !== null) {
+    updateMessage.innerHTML = "Loading Songs..."
+
     // The item exists in local storage
     let data = JSON.parse(localStorage.getItem("dpsAudio"));
     // Use the data from local storage
@@ -67,11 +71,13 @@ const init = () => {
     // Create an array to store the fetch promises
     let fetchPromises = [];
 
+
+    if (data.Songs.length > 0) {
     // Loop through the songs and create an option element for each one
     for (const song of data.Songs) {
       // Store the fetch promise in the fetchPromises array
       fetchPromises.push(
-        fetch(song.location)
+        await fetch(song.location)
           .then(response => response.blob())
           .then(blob => {
             let objectURL = URL.createObjectURL(blob);
@@ -81,12 +87,15 @@ const init = () => {
             filePaths.push(song.location);
           })
       );
+
     }
+  }
 
     // Wait for all of the fetch promises to resolve
     Promise.all(fetchPromises).then(() => {
+      updateMessage.innerHTML = "";
       // Call the setupWebaudio function after all of the songs have been fetched
-      audio.setupWebaudio(`./${filePaths[0]}`);
+      audio.setupWebaudio(`${filePaths[0]}`);
 
       canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions, particleNum, gradientData);
       setupUI(canvasElement);
@@ -142,6 +151,32 @@ const setupUI = (canvasElement) => {
   if (startingWidth < 400) {
     startingWidth = 400;
   }
+
+  // set up remove button function
+  const removal = document.querySelector("#removal");
+
+  removal.onclick = () => {
+    let trackSelect = document.querySelector("#track-select");
+
+    for (let i = 0; i < trackSelect.children.length; i++) {
+      if (trackSelect.children[i].value === trackSelect.value) {
+        trackSelect.remove(i);
+        filePaths.splice(i, 1);
+
+        // No audio tracks left
+        if (trackSelect.children.length == 0) {
+        audio.loadSoundFile("NaN");
+        }
+        else {
+          audio.loadSoundFile(filePaths[0]);
+        }
+
+        break;
+      }
+    }
+
+    localSave();
+  };
 
   // Immediatly set up gui element
   const gui = new dat.GUI({ width: startingWidth });
@@ -284,6 +319,7 @@ const setupUI = (canvasElement) => {
   let trackSelect = document.querySelector("#track-select");
   // add .onchange event to <select>
   trackSelect.onchange = e => {
+    updateMessage.innerHTML = "";
     audio.loadSoundFile(e.target.value);
     audio.setLooping(loopBox.checked);
 
@@ -304,13 +340,14 @@ const setupUI = (canvasElement) => {
     // Send file to server-side script
     const formData = new FormData();
     formData.append('file', file);
+    updateMessage.innerHTML = "Loading Song...";
     fetch('https://music-file-uploader.onrender.com/upload', {
       method: 'POST',
       body: formData
     })
       .then(response => response.text())
       .then(data => {
-
+        updateMessage.innerHTML = "";
         // Format the file name to get rid of underscores and file type
         let fileName = data.split('/').pop();
         let fileUrl = `https://music-file-uploader.onrender.com/uploads/${fileName}`;
@@ -351,6 +388,7 @@ const setupUI = (canvasElement) => {
         }
       }).catch(error => {
         console.error(error);
+        updateMessage.innerHTML = "Thiaofdjkla;fjkdlsa;fjklda;sjfkla;dsjfkl;asjfkld;as"
       });
   };
 
@@ -421,12 +459,12 @@ const setupUI = (canvasElement) => {
 
   const pointController = buildOptions.add(tempSphereOptions, 'points', 3, 1000).name("Points").step(1);
 
-propertyName = pointController.domElement.parentNode.querySelector('.property-name');
-propertyName.classList.add('tooltip');
-tooltip = document.createElement("span");
-tooltip.classList.add("tooltiptext");
-tooltip.innerHTML = "Per Ring: May Cause Lag";
-propertyName.appendChild(tooltip);
+  propertyName = pointController.domElement.parentNode.querySelector('.property-name');
+  propertyName.classList.add('tooltip');
+  tooltip = document.createElement("span");
+  tooltip.classList.add("tooltiptext");
+  tooltip.innerHTML = "Per Ring: May Cause Lag";
+  propertyName.appendChild(tooltip);
 
   buildOptions.addColor(tempColors, 0).name("Front Primary");
   buildOptions.addColor(tempColors, 1).name("Front Secondary");
@@ -625,13 +663,13 @@ propertyName.appendChild(tooltip);
 
   overlayFolder.open();
 
-// Add a tooltip
-propertyName = embossController.domElement.parentNode.querySelector('.property-name');
-propertyName.classList.add('tooltip');
-tooltip = document.createElement("span");
-tooltip.classList.add("tooltiptext");
-tooltip.innerHTML = "Warning: This Will Cause Lag";
-propertyName.appendChild(tooltip);
+  // Add a tooltip
+  propertyName = embossController.domElement.parentNode.querySelector('.property-name');
+  propertyName.classList.add('tooltip');
+  tooltip = document.createElement("span");
+  tooltip.classList.add("tooltiptext");
+  tooltip.innerHTML = "Warning: This Will Cause Lag";
+  propertyName.appendChild(tooltip);
 
   embossController.onChange(function (e) {
     localSave();

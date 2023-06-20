@@ -28,8 +28,15 @@ const setupWebaudio = (filePath) => {
     element = new Audio(); //document.querySelector("audio");
     element.crossOrigin = 'anonymous'; // Let files from a server be played without issue
 
+    let message = document.querySelector("#update-message");
+
     // 3 - have it point at a sound file
-    loadSoundFile(filePath);
+    if (!filePath.includes('undefined')) {
+        loadSoundFile(filePath);
+    }
+    else {
+        message.innerHTML = "No available tracks."
+    }
 
     // 4 - create an a source node that points at the <audio> element
     sourceNode = audioCtx.createMediaElementSource(element);
@@ -128,12 +135,41 @@ const setupWebaudio = (filePath) => {
 }
 
 const loadSoundFile = (filePath) => {
-    element.src = filePath;
+    let message = document.querySelector('#update-message');
+    element.addEventListener('error', () => {
+        message.innerHTML = "Track was removed after server update. Please reupload.";
+});
+
+    if (!(filePath == "NaN")) {
+        element.src = filePath;
+    }
+    else {
+        // Clears element without throwing an error
+        element.src = "./uploads/silence.mp3";
+    }
+
+    element.removeEventListener('error', () => {
+            message.innerHTML = "Track was removed after server update. Please reupload.";
+    });
 }
 
 const playCurrentSound = () => {
     let temp = gainNode.gain.value;
-    element.play();
+
+
+    element.play().catch((error) => {
+        let message = document.querySelector("#update-message");
+        let select = document.querySelector("#track-select");
+
+        if (select.children.length == 0) {
+            message.innerHTML = "No available tracks."
+        }
+        else {
+            message.innerHTML = "Track was removed after server update. Please reupload.";
+        }
+    });
+
+
     gainNode.gain.value = temp;
 }
 

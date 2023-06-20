@@ -10,19 +10,19 @@
     "Songs": [
         {
             "title": "Gates To Infinity",
-            "location": "uploads/Gates To Infinity.mp3"
+            "location": "./uploads/Gates To Infinity.mp3"
         },
         {
             "title": "Canopy Cacophony",
-            "location": "uploads/Canopy Cacophony.ogg"
+            "location": "./uploads/Canopy Cacophony.ogg"
         },
         {
             "title": "GLaDOS Moment",
-            "location": "uploads/GLaDOS Moment.wav"
+            "location": "./uploads/GLaDOS Moment.wav"
         },
         {
             "title": "Mario",
-            "location": "uploads/Mario.mp3"
+            "location": "./uploads/Mario.mp3"
         }
     ],
     "drawParams": {

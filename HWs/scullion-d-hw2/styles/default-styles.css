@@ -32,7 +32,12 @@ section {
   width:8rem;
   color:white;
   background: linear-gradient(to bottom, #fe3838 0%, #ec7835 100%);
-
+}
+#removal {
+  width:8rem;
+  font-size: 1rem;
+  color:white;
+  background: #fe3838;
 }
 
 button[data-playing="yes"]:after {
@@ -144,4 +149,10 @@ input[type=range]::-moz-range-thumb {
   width: 16px;
   border-radius: 50%;
   background-color: #e52e71;
+}
+
+#update-message {
+  margin-left: 1rem;
+  display: inline-block;
+  color:red;
 }
