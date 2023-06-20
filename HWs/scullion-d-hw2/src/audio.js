@@ -108,7 +108,10 @@ const setupWebaudio = (filePath) => {
 
         if (duration < currentTime) {
             // Some audio files are glitched and show a wrong end time regardless, this needs to account for that
-            duration = currentTime;
+            // Rounding is to prevent pause button glitch
+            if (duration + .3 >= currentTime) {
+                duration = currentTime;
+            }
         }
         else {
             // Duration used to be updated but that somehow caused it to permanently increase
@@ -138,7 +141,7 @@ const loadSoundFile = (filePath) => {
     let message = document.querySelector('#update-message');
     element.addEventListener('error', () => {
         message.innerHTML = "Track was removed after server update. Please reupload.";
-});
+    });
 
     if (!(filePath == "NaN")) {
         element.src = filePath;
@@ -149,7 +152,7 @@ const loadSoundFile = (filePath) => {
     }
 
     element.removeEventListener('error', () => {
-            message.innerHTML = "Track was removed after server update. Please reupload.";
+        message.innerHTML = "Track was removed after server update. Please reupload.";
     });
 }
 

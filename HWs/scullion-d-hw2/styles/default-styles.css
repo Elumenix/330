@@ -1,18 +1,26 @@
 body {
-  background: #eeeeee;
+  background: #353535;
   font-family: tahoma, verdana, sans serif;
+}
+p, label, h1, #time-tracker {
+  color: white;
+}
+#player label {
+  margin-left: 12px;
 }
 
 canvas {
   margin-left: 1rem;
-  margin-top: 1rem;
+  margin-top: .5rem;
   margin-bottom: 1rem;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
   background: #fafafa;
 }
 
 h1 {
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
   margin-left: 1rem;
+  margin-bottom: 6px;
 }
 
 #controls {
@@ -31,13 +39,14 @@ section {
   font-size: 1.4rem;
   width:8rem;
   color:white;
-  background: linear-gradient(to bottom, #fe3838 0%, #ec7835 100%);
+  background: linear-gradient(to bottom, #00670f 0%, #042e0b 100%);
 }
 #removal {
   width:8rem;
+  height: 48px;
   font-size: 1rem;
   color:white;
-  background: #fe3838;
+  background: #782626;
 }
 
 button[data-playing="yes"]:after {
@@ -74,7 +83,9 @@ ul {
 }
 
 #my-stats-container div {
-  left: 30% !important;
+  margin-top: 10px;
+  position: static !important;
+  display:inline-block !important;
 }
 
 .tooltip {
@@ -123,7 +134,7 @@ input[type=range] {
 input[type=range]::-webkit-slider-runnable-track {
   background-image: linear-gradient(
     to left,
-    #ff8a00, #e52e71
+    #2a2ac8, #009bfb
   );
   border-radius: 50%;
 }
@@ -133,14 +144,14 @@ input[type=range]::-webkit-slider-thumb {
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background-color: #e52e71;
+  background-color: #009bfb;
 }
 
 /* Firefox styles */
 input[type=range]::-moz-range-track {
   background-image: -moz-linear-gradient(
     left,
-    #ff8a00, #e52e71
+    #2a2ac8, #009bfb
   );
 }
 
@@ -148,11 +159,17 @@ input[type=range]::-moz-range-thumb {
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background-color: #e52e71;
+  background-color: #009bfb;
 }
 
 #update-message {
   margin-left: 1rem;
   display: inline-block;
   color:red;
+}
+
+#helpfuls {
+  margin-top: -20px;
+  display: flex;
+  align-items: center;
 }
