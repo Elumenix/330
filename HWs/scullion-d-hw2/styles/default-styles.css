@@ -28,8 +28,11 @@ section {
 }
 
 #play-button {
-  font-size: 1.2rem;
-  width: 6rem;
+  font-size: 1.4rem;
+  width:8rem;
+  color:white;
+  background: linear-gradient(to bottom, #fe3838 0%, #ec7835 100%);
+
 }
 
 button[data-playing="yes"]:after {
@@ -96,4 +99,49 @@ ul {
 .tooltip:hover .tooltiptext {
   visibility: visible;
   overflow: auto;
+}
+
+#progress-bar {
+  width: 65vw;
+  border-radius: 50%;
+}
+
+/* Fallback stuff */
+input[type=range] {
+  appearance: none;
+  border: none;
+  outline: none;
+  background-color: transparent;
+}
+
+/* WebKit styles */
+input[type=range]::-webkit-slider-runnable-track {
+  background-image: linear-gradient(
+    to left,
+    #ff8a00, #e52e71
+  );
+  border-radius: 50%;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background-color: #e52e71;
+}
+
+/* Firefox styles */
+input[type=range]::-moz-range-track {
+  background-image: -moz-linear-gradient(
+    left,
+    #ff8a00, #e52e71
+  );
+}
+
+input[type=range]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background-color: #e52e71;
 }
