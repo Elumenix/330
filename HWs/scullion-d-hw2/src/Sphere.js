@@ -18,7 +18,6 @@ export class Sphere {
         this.frontColor2 = this.hexToRgb(frontColor2.substring(1, 7));
         this.backColor1 = this.hexToRgb(backColor1.substring(1, 7));
         this.backColor2 = this.hexToRgb(backColor2.substring(1, 7));
-        
 
         // Establish x and z position of points
         for (let i = 0; i <= 2 * Math.PI; i += this.constant) {

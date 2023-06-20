@@ -2,9 +2,14 @@ body {
   background: #353535;
   font-family: tahoma, verdana, sans serif;
 }
-p, label, h1, #time-tracker {
+
+p,
+label,
+h1,
+#time-tracker {
   color: white;
 }
+
 #player label {
   margin-left: 12px;
 }
@@ -18,7 +23,7 @@ canvas {
 }
 
 h1 {
-  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
   margin-left: 1rem;
   margin-bottom: 6px;
 }
@@ -31,21 +36,22 @@ h1 {
   margin-left: 1rem;
 }
 
-section {
+div {
   margin-bottom: 1rem;
 }
 
 #play-button {
   font-size: 1.4rem;
-  width:8rem;
-  color:white;
+  width: 8rem;
+  color: white;
   background: linear-gradient(to bottom, #00670f 0%, #042e0b 100%);
 }
+
 #removal {
-  width:8rem;
+  width: 8rem;
   height: 48px;
   font-size: 1rem;
-  color:white;
+  color: white;
   background: #782626;
 }
 
@@ -83,9 +89,19 @@ ul {
 }
 
 #my-stats-container div {
-  margin-top: 10px;
+  margin-bottom: -12px;
   position: static !important;
-  display:inline-block !important;
+  display: inline-block !important;
+}
+
+#my-stats-container,
+#update-message,
+#time-tracker,
+#controls,
+#helpfuls,
+.dg,
+.dg div {
+  margin-bottom: 0;
 }
 
 .tooltip {
@@ -132,10 +148,8 @@ input[type=range] {
 
 /* WebKit styles */
 input[type=range]::-webkit-slider-runnable-track {
-  background-image: linear-gradient(
-    to left,
-    #2a2ac8, #009bfb
-  );
+  background-image: linear-gradient(to left,
+      #2a2ac8, #009bfb);
   border-radius: 50%;
 }
 
@@ -149,10 +163,8 @@ input[type=range]::-webkit-slider-thumb {
 
 /* Firefox styles */
 input[type=range]::-moz-range-track {
-  background-image: -moz-linear-gradient(
-    left,
-    #2a2ac8, #009bfb
-  );
+  background-image: -moz-linear-gradient(left,
+      #2a2ac8, #009bfb);
 }
 
 input[type=range]::-moz-range-thumb {
@@ -165,11 +177,10 @@ input[type=range]::-moz-range-thumb {
 #update-message {
   margin-left: 1rem;
   display: inline-block;
-  color:red;
+  color: red;
 }
 
 #helpfuls {
-  margin-top: -20px;
   display: flex;
   align-items: center;
 }

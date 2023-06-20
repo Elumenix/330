@@ -73,29 +73,29 @@ const init = async () => {
 
 
     if (data.Songs.length > 0) {
-    // Loop through the songs and create an option element for each one
-    for (const song of data.Songs) {
-      // Store the fetch promise in the fetchPromises array
-      fetchPromises.push(
-        await fetch(song.location)
-          .then(response => response.blob())
-          .then(blob => {
-            let objectURL = URL.createObjectURL(blob);
-            // Use objectURL here
-            select.insertAdjacentHTML('beforeend', `<option value="${objectURL}">${song.title}</option>`);
-            // Store original file path in filePaths array
-            filePaths.push(song.location);
-          })
-      );
-
+      // Loop through the songs and create an option element for each one
+      for (const song of data.Songs) {
+        // Store the fetch promise in the fetchPromises array
+        fetchPromises.push(
+          await fetch(song.location)
+            .then(response => response.blob())
+            .then(blob => {
+              let objectURL = URL.createObjectURL(blob);
+              // Use objectURL here
+              select.insertAdjacentHTML('beforeend', `<option value="${objectURL}">${song.title}</option>`);
+              // Store original file path in filePaths array
+              filePaths.push(song.location);
+            })
+        );
+      }
     }
-  }
 
     // Wait for all of the fetch promises to resolve
     Promise.all(fetchPromises).then(() => {
       updateMessage.innerHTML = "";
       // Call the setupWebaudio function after all of the songs have been fetched
       audio.setupWebaudio(`${filePaths[0]}`);
+      audio.setLooping(drawParams.loopAudio);
 
       canvas.setupCanvas(canvasElement, audio.analyserNode, rotation, colors, sphereOptions, particleNum, gradientData);
       setupUI(canvasElement);
@@ -165,7 +165,7 @@ const setupUI = (canvasElement) => {
 
         // No audio tracks left
         if (trackSelect.children.length == 0) {
-        audio.loadSoundFile("NaN");
+          audio.loadSoundFile("NaN");
         }
         else {
           audio.loadSoundFile(filePaths[0]);
@@ -374,6 +374,7 @@ const setupUI = (canvasElement) => {
           // Select existing option
           option.selected = true;
           audio.loadSoundFile(fileUrl);
+          audio.setLooping(loopBox.checked);
         } else {
           // Create new option
           option = document.createElement('option');
@@ -388,7 +389,6 @@ const setupUI = (canvasElement) => {
         }
       }).catch(error => {
         console.error(error);
-        updateMessage.innerHTML = "Thiaofdjkla;fjkdlsa;fjklda;sjfkla;dsjfkl;asjfkld;as"
       });
   };
 
@@ -703,9 +703,12 @@ const setupUI = (canvasElement) => {
 
   const loopBox = document.querySelector("#loop-cb");
 
-
-  // Assign defaults from cache on page load
-  /*drawParams.loopAudio = loopBox.checked;*/
+  if (drawParams.loopAudio) {
+    loopBox.checked = true;
+  }
+  else {
+    loopBox.checked = false;
+  }
 
   loopBox.onchange = () => {
     drawParams.loopAudio = loopBox.checked;
