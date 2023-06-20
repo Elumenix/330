@@ -95,13 +95,6 @@ const draw = (params = {}) => {
         ctx.restore();
     }
 
-    if (params.showConfetti) {
-        for (let i = 0; i < particleCap; i++) {
-            circleArray[i].update(slowData);
-            circleArray[i].draw(ctx, slowData);
-        }
-    }
-
 
     if (params.displayWaveform && timer > .03333) {
         timer -= .03333;
@@ -143,6 +136,13 @@ const draw = (params = {}) => {
     if (params.displayWaveform) {
         analyserNode.getByteFrequencyData(audioData);
         slowData = audioData;
+    }
+
+    if (params.showConfetti) {
+        for (let i = 0; i < particleCap; i++) {
+            circleArray[i].update(slowData);
+            circleArray[i].draw(ctx, slowData);
+        }
     }
 
     // 5 - draw sphere

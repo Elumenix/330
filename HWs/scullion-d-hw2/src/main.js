@@ -163,6 +163,13 @@ const setupUI = (canvasElement) => {
         trackSelect.remove(i);
         filePaths.splice(i, 1);
 
+        // Set Audio to paused if already playing
+        let play = document.querySelector("#play-button");
+
+        if (play.dataset.playing == "yes") {
+          play.dataset.playing = "no";
+        }
+
         // No audio tracks left
         if (trackSelect.children.length == 0) {
           audio.loadSoundFile("NaN");
@@ -191,7 +198,7 @@ const setupUI = (canvasElement) => {
   };*/
 
   // B - hookup play/pause button
-  const playButton = document.querySelector("#play-button")
+  const playButton = document.querySelector("#play-button");
 
   // add onclick event to button
   playButton.onclick = e => {
