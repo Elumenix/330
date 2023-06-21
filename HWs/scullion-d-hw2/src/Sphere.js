@@ -498,16 +498,25 @@ export class Sphere {
     turnX(degrees) {
         this.totalX += degrees;
         this.totalX %= 361;
+        if (this.totalX < 0) {
+            this.totalX += 360;
+        }
     }
 
     turnY(degrees) {
         this.totalY += degrees;
         this.totalY %= 361;
+        if (this.totalY < 0) {
+            this.totalY += 360;
+        }
     }
 
     turnZ(degrees) {
         this.totalZ += degrees;
         this.totalZ %= 361;
+        if (this.totalZ < 0) {
+            this.totalZ += 360;
+        }
     }
 
     // Sets current rotation outright

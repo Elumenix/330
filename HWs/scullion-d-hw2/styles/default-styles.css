@@ -50,7 +50,7 @@ div {
 #removal {
   width: 8rem;
   height: 48px;
-  font-size: 1rem;
+  font-size: .8rem;
   color: white;
   background: #782626;
 }
@@ -183,4 +183,10 @@ input[type=range]::-moz-range-thumb {
 #helpfuls {
   display: flex;
   align-items: center;
+}
+.dg.main .close-button.close-bottom {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
