@@ -52,6 +52,7 @@ app.post('/upload', (req, res) => {
     });
 });
 
-app.listen(process.env.PORT, () => {
-    console.log('Server started on Render');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server started on ${PORT}`);
 });

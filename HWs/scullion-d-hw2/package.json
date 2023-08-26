@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run webpack",
-    "webpack": "webpack --watch"
+    "start": "npm run webpack && node upload.js",
+    "heroku-prebuild": "npm install --only=dev",
+    "webpack": "webpack",
+    "dev": "webpack --watch"
   },
   "keywords": [],
   "author": "",
