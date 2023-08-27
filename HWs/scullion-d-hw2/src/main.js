@@ -348,7 +348,7 @@ const setupUI = (canvasElement) => {
     const formData = new FormData();
     formData.append('file', file);
     updateMessage.innerHTML = "Loading Song...";
-    fetch('https://music-file-uploader.onrender.com/upload', {
+    fetch('https://sphericalaudio-4a79e7796729.herokuapp.com/upload', {
       method: 'POST',
       body: formData
     })
@@ -357,7 +357,7 @@ const setupUI = (canvasElement) => {
         updateMessage.innerHTML = "";
         // Format the file name to get rid of underscores and file type
         let fileName = data.split('/').pop();
-        let fileUrl = `https://music-file-uploader.onrender.com/uploads/${fileName}`;
+        let fileUrl = `https://sphericalaudio-4a79e7796729.herokuapp.com/uploads/${fileName}`;
 
         fileName = fileName.substring(0, fileName.lastIndexOf('.'));
         fileName = fileName.replace('_', " ");
